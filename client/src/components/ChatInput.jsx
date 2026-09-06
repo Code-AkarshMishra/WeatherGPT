@@ -1,4 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Mic, Square, Paperclip, SendHorizontal, Sparkles } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useLanguage } from '../contexts/LanguageContext';
 import RoleChip from './RoleChip';
@@ -77,7 +79,6 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Future: upload file and include in message context
       setText((prev) => `${prev} [Attached: ${file.name}]`);
     }
     e.target.value = '';
@@ -87,7 +88,8 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
     <div className="chat-input-area">
       {/* Role chip */}
       <div className="chat-input-meta">
-        <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+        <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Sparkles size={13} style={{ color: 'var(--color-primary)' }} />
           {t('youAreChattingAs')}
         </span>
         <RoleChip role={selectedRole} label={ROLE_LABELS[selectedRole] || selectedRole} />
@@ -117,29 +119,33 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
         <div className="chat-input-actions">
           {/* Mic button */}
           {isSupported && (
-            <button
+            <motion.button
               type="button"
               className={`input-action-btn${isListening ? ' recording' : ''}`}
               onClick={handleMicClick}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               aria-label={isListening ? 'Stop recording' : 'Start voice input'}
               title={isListening ? 'Stop recording' : 'Voice input'}
               id="mic-btn"
             >
-              {isListening ? '⏹️' : '🎙️'}
-            </button>
+              {isListening ? <Square size={16} /> : <Mic size={16} />}
+            </motion.button>
           )}
 
           {/* File upload */}
-          <button
+          <motion.button
             type="button"
             className="input-action-btn"
             onClick={handleFileClick}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             aria-label="Attach file"
             title="Attach file"
             id="attach-btn"
           >
-            📎
-          </button>
+            <Paperclip size={16} />
+          </motion.button>
           <input
             ref={fileInputRef}
             type="file"
@@ -149,17 +155,23 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
             aria-hidden="true"
           />
 
-          {/* Send */}
-          <button
+          {/* Send button */}
+          <motion.button
             type="submit"
             className="input-send-btn"
             disabled={!text.trim() || loading}
+            whileHover={{ scale: text.trim() && !loading ? 1.05 : 1 }}
+            whileTap={{ scale: text.trim() && !loading ? 0.95 : 1 }}
             aria-label={t('send')}
             title={t('send')}
             id="send-btn"
           >
-            {loading ? <span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> : '➤'}
-          </button>
+            {loading ? (
+              <span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />
+            ) : (
+              <SendHorizontal size={17} />
+            )}
+          </motion.button>
         </div>
       </form>
     </div>

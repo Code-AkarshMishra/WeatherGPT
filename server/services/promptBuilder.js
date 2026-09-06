@@ -30,6 +30,10 @@ Rain Probability (heuristic): ${weather.rainProbability}%
 Recent Precipitation (1h): ${weather.recentPrecip1h} mm
 Recent Precipitation (3h): ${weather.recentPrecip3h} mm
 Visibility: ${weather.visibility ?? 'N/A'} km
+${weather.disasterRisk ? `IMD Color Alert: ${weather.disasterRisk.imdColorCode} (${weather.disasterRisk.statusText})
+MoES Severe-Weather Risk: ${weather.disasterRisk.riskAssessment}
+Official Farmer Advisory: [HI] ${weather.disasterRisk.farmerAdvisory?.hi} | [EN] ${weather.disasterRisk.farmerAdvisory?.en}
+Official Marine Advisory: [HI] ${weather.disasterRisk.marineAdvisory?.hi} | [EN] ${weather.disasterRisk.marineAdvisory?.en}` : ''}
 Data freshness: ${weather.fetchedAt}
 ${weather.forecast24h?.length ? `
 24-Hour Forecast (3h intervals):

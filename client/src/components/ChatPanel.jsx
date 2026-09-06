@@ -1,5 +1,9 @@
 import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { Bot, Sparkles, HelpCircle, ArrowRight } from 'lucide-react';
 import ChatBubble from './ChatBubble';
+import RoleDock from './RoleDock';
+import MoESWelcomeHub from './MoESWelcomeHub';
 import { useLanguage } from '../contexts/LanguageContext';
 import '../styles/chat.css';
 
@@ -19,6 +23,8 @@ export default function ChatPanel({
   loading,
   error,
   selectedRole,
+  onRoleChange,
+  onFeatureSelect,
   suggestedRole,
   onRoleSwitch,
   onDismissSuggestion,
@@ -26,9 +32,9 @@ export default function ChatPanel({
   const threadRef = useRef(null);
   const { t } = useLanguage();
 
-  // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom only when there are active chat messages
   useEffect(() => {
-    if (threadRef.current) {
+    if (threadRef.current && messages.length > 0) {
       threadRef.current.scrollTo({ top: threadRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [messages, loading]);
@@ -37,16 +43,20 @@ export default function ChatPanel({
 
   return (
     <div className="chat-container">
+      {/* Front-and-Center Role Dock with Hover Tooltips */}
+      <RoleDock
+        selectedRole={selectedRole}
+        onRoleChange={onRoleChange}
+        onFeatureSelect={onFeatureSelect}
+      />
+
       <div className="chat-thread" ref={threadRef} role="log" aria-live="polite" aria-label="Chat messages">
         {messages.length === 0 && !loading ? (
-          <div className="chat-empty">
-            <span className="chat-empty-icon">🌤️</span>
-            <h2 className="chat-empty-title">Ask WeatherGPT anything</h2>
-            <p className="chat-empty-subtitle">
-              Get weather forecasts, flood alerts, crop advice, and disaster guidance —
-              in English, Hindi, or Hinglish.
-            </p>
-          </div>
+          <MoESWelcomeHub
+            selectedRole={selectedRole}
+            onRoleChange={onRoleChange}
+            onSelectQuery={onFeatureSelect}
+          />
         ) : (
           messages.map((msg) => (
             <ChatBubble key={msg.id} message={msg} showDebug={isDev} />
@@ -55,14 +65,20 @@ export default function ChatPanel({
 
         {/* Typing indicator */}
         {loading && (
-          <div className="bubble-row bubble-row--ai">
-            <div className="bubble-avatar bubble-avatar--ai" aria-hidden="true">🤖</div>
+          <motion.div
+            className="bubble-row bubble-row--ai"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="bubble-avatar bubble-avatar--ai" aria-hidden="true">
+              <Bot size={18} />
+            </div>
             <div className="typing-indicator" aria-label="AI is typing">
               <span className="typing-dot" />
               <span className="typing-dot" />
               <span className="typing-dot" />
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Error */}

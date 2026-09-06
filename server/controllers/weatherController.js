@@ -1,9 +1,6 @@
-/**
- * weatherController.js
- * GET /api/weather?lat=&lon=
- */
 const { query, validationResult } = require('express-validator');
 const { getWeather } = require('../services/weatherService');
+const { predictDisasterRisk } = require('../services/disasterPredictor');
 const logger = require('../config/logger');
 
 exports.validate = [
@@ -44,3 +41,23 @@ exports.getWeather = async (req, res, next) => {
     next(err);
   }
 };
+
+/**
+ * Direct ML-2 MoES disaster risk prediction endpoint.
+ * Accepts query or body: { rain_mm, wind_kmph, temp_c, city }
+ */
+exports.getDisasterRisk = async (req, res) => {
+  try {
+    const params = { ...req.query, ...req.body };
+    const prediction = predictDisasterRisk({
+      rain_mm: params.rain_mm || params.rainMm || 0,
+      wind_kmph: params.wind_kmph || params.windKmph || params.windSpeed || 0,
+      temp_c: params.temp_c || params.tempC || params.temp || 25,
+      city: params.city || 'Your Area',
+    });
+    res.json({ success: true, data: prediction });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+

@@ -16,8 +16,8 @@ export default function Home() {
   const [overrideLon, setOverrideLon] = useState(null);
 
   const { lat: geoLat, lon: geoLon } = useGeolocation();
-  const lat = overrideLat ?? geoLat;
-  const lon = overrideLon ?? geoLon;
+  const lat = overrideLat ?? (geoLat || 26.8467);
+  const lon = overrideLon ?? (geoLon || 80.9462);
 
   const { messages, loading, error, suggestedRole, sendMessage, clearConversation, setSuggestedRole } =
     useChat({ role: selectedRole, lat, lon });
@@ -25,7 +25,6 @@ export default function Home() {
   const handleFeatureSelect = useCallback((query) => {
     setSidebarOpen(false);
     setPrefillText(query);
-    // Pre-fill handled by ChatInput via prefillText prop
   }, []);
 
   const handleSend = useCallback((text) => {
@@ -80,6 +79,11 @@ export default function Home() {
             loading={loading}
             error={error}
             selectedRole={selectedRole}
+            onRoleChange={(role) => {
+              setSelectedRole(role);
+              clearConversation();
+            }}
+            onFeatureSelect={handleFeatureSelect}
             suggestedRole={suggestedRole}
             onRoleSwitch={(role) => { setSelectedRole(role); clearConversation(); }}
             onDismissSuggestion={() => setSuggestedRole(null)}

@@ -42,7 +42,12 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
       {/* Logo */}
       <NavLink to="/" className="navbar-logo" aria-label="WeatherGPT Home">
         <span className="navbar-logo-icon">🌤️</span>
-        <span className="logo-text">{t('appName')}</span>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span className="logo-text">{t('appName')}</span>
+          <span style={{ fontSize: '0.62rem', fontWeight: 700, color: '#3b82f6', letterSpacing: '0.05em', lineHeight: 1 }}>
+            MoES • IMD
+          </span>
+        </div>
       </NavLink>
 
       <div className="navbar-spacer" />
@@ -52,6 +57,16 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
         <li>
           <NavLink to="/" end className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
             {t('home')}
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/weather" className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
+            Weather
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/alerts" className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
+            Alerts & MoES
           </NavLink>
         </li>
         <li>

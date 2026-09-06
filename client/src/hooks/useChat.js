@@ -46,7 +46,7 @@ export function useChat({ role, lat, lon }) {
 
       const res = await api.post('/api/chat', payload);
 
-      const { response, conversationId: cid, nlp, suggestedRole: sr } = res.data.data;
+      const { response, conversationId: cid, nlp, suggestedRole: sr, provider, weather } = res.data.data;
 
       if (cid && !conversationId) setConversationId(cid);
       if (sr) setSuggestedRole(sr);
@@ -57,6 +57,8 @@ export function useChat({ role, lat, lon }) {
         content: response,
         timestamp: new Date().toISOString(),
         nlp,
+        provider,
+        weather,
       };
 
       setMessages((prev) => [...prev, aiMessage]);

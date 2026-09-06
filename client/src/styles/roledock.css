@@ -1,0 +1,271 @@
+/* ── RoleDock — Front & Center Animated Role Switcher ── */
+.role-dock-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 14px 4px;
+  background: var(--color-bg-card);
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+  z-index: 20;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.role-dock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.role-dock-title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.role-dock-hint {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+
+.role-dock-sparkle {
+  color: #f59e0b;
+}
+
+.role-dock-scroll {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 2px 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.role-dock-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.role-dock-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.role-dock-item:hover {
+  color: var(--color-text-primary);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+}
+
+.role-dock-item.active {
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.role-dock-active-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6, #6366f1);
+  z-index: 1;
+}
+
+.role-dock-item-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.role-dock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Floating Tooltip / Floating Txt on Hover ── */
+.role-floating-tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  padding: 12px 14px;
+  background: rgba(15, 23, 42, 0.95);
+  color: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.35), 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 100;
+  pointer-events: auto;
+  text-align: left;
+}
+
+.role-floating-arrow {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: rgba(15, 23, 42, 0.95);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.role-floating-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.role-floating-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.role-floating-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.25);
+  color: #93c5fd;
+  font-weight: 600;
+}
+
+.role-floating-desc {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.role-floating-features-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 5px;
+}
+
+.role-floating-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.role-floating-chip {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.role-floating-chip:hover {
+  background: #3b82f6;
+  border-color: #60a5fa;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* ── Kaam-Wise Categorized Quick-Access Pills ── */
+.kaam-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0;
+  scrollbar-width: none;
+}
+
+.kaam-actions-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.kaam-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kaam-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.kaam-pill:hover {
+  background: var(--color-bg-card);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 3px 10px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+.kaam-pill-icon {
+  font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .role-dock-container {
+    padding: 8px 12px;
+  }
+  .role-floating-tooltip {
+    width: 250px;
+    left: 20%;
+    transform: none;
+  }
+}

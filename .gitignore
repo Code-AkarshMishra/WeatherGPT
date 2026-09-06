@@ -2,7 +2,15 @@ node_modules/
 logs/
 *.log
 .env
+.env.*
+!.env.example
 dist/
 .DS_Store
 Thumbs.db
 *.local
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/

@@ -22,6 +22,9 @@ const Message = require('../models/Message');
 const Role = require('../models/Role');
 const logger = require('../config/logger');
 const axios = require('axios');
+const mongoose = require('mongoose');
+
+const isDbConnected = () => mongoose.connection.readyState === 1;
 
 exports.validate = [
   body('message')
@@ -128,75 +131,125 @@ exports.chat = async (req, res, next) => {
     let conversation = null;
     let conversationHistory = [];
 
-    if (conversationId) {
-      conversation = await Conversation.findById(conversationId);
-      if (conversation) {
-        const recentMessages = await Message.find({ conversationId: conversation._id })
-          .sort({ createdAt: -1 })
-          .limit(10)
-          .lean();
+    if (conversationId && isDbConnected()) {
+      try {
+        conversation = await Conversation.findById(conversationId);
+        if (conversation) {
+          const recentMessages = await Message.find({ conversationId: conversation._id })
+            .sort({ createdAt: -1 })
+            .limit(10)
+            .lean();
 
-        conversationHistory = recentMessages.reverse().map((m) => ({
-          role: m.role === 'user' ? 'user' : 'model',
-          parts: [{ text: m.content }],
-        }));
+          conversationHistory = recentMessages.reverse().map((m) => ({
+            role: m.role === 'user' ? 'user' : 'model',
+            parts: [{ text: m.content }],
+          }));
+        }
+      } catch (convErr) {
+        logger.warn(`Conversation history lookup failed: ${convErr.message}`);
       }
     }
 
     // ── Step 6: Create conversation if new ─────────────────────────────────
     if (!conversation) {
-      conversation = await Conversation.create({
-        userId,
-        guestId: guestId || null,
-        role: selectedRole,
-        title: message.substring(0, 80),
-        language: entities.language,
-        location: {
-          lat: resolvedLat,
-          lon: resolvedLon,
-          locationName: locationOverride || weatherData?.locationName || null,
-        },
-      });
+      if (isDbConnected()) {
+        try {
+          conversation = await Conversation.create({
+            userId,
+            guestId: guestId || null,
+            role: selectedRole,
+            title: message.substring(0, 80),
+            language: entities.language,
+            location: {
+              lat: resolvedLat,
+              lon: resolvedLon,
+              locationName: locationOverride || weatherData?.locationName || null,
+            },
+          });
+        } catch (dbErr) {
+          logger.warn(`Failed to create conversation doc: ${dbErr.message}`);
+          conversation = { _id: new mongoose.Types.ObjectId() };
+        }
+      } else {
+        conversation = { _id: new mongoose.Types.ObjectId() };
+      }
     }
 
     // ── Step 7: Get role API key override ──────────────────────────────────
     let roleApiKey = null;
-    try {
-      const roleDoc = await Role.findOne({ roleId: selectedRole });
-      if (roleDoc?.apiKeyEnvVar && process.env[roleDoc.apiKeyEnvVar]) {
-        roleApiKey = process.env[roleDoc.apiKeyEnvVar];
+    if (isDbConnected()) {
+      try {
+        const roleDoc = await Role.findOne({ roleId: selectedRole });
+        if (roleDoc?.apiKeyEnvVar && process.env[roleDoc.apiKeyEnvVar]) {
+          roleApiKey = process.env[roleDoc.apiKeyEnvVar];
+        }
+      } catch {
+        // Fallback to default GEMINI_API_KEY
       }
-    } catch {
-      // Fallback to default GEMINI_API_KEY
     }
 
-    // ── Step 8: Call Gemini ─────────────────────────────────────────────────
-    const aiResponse = await callGemini(systemPrompt, message, roleApiKey, conversationHistory);
+    // ── Step 8: Call ML-1 Tool Calling or Grounded Role LLM ─────────────
+    let aiResponse = null;
+    let usedProvider = 'gemini-grounded-agent';
+
+    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || process.env.ML1_URL || 'https://weathergpt-jdqt.onrender.com';
+    
+    // Attempt ML microservice tool calling for general queries or if requested
+    if (selectedRole === 'citizen' && (!conversationHistory || conversationHistory.length === 0)) {
+      try {
+        const mlPayload = { message, role: selectedRole };
+        if (resolvedLat !== null && resolvedLon !== null) {
+          mlPayload.location = { lat: resolvedLat, lon: resolvedLon };
+        }
+        const mlRes = await axios.post(`${ML_SERVICE_URL}/chat`, mlPayload, { timeout: 5000 });
+        if (
+          ml1Res.data?.response &&
+          !ml1Res.data.response.toLowerCase().includes('temporary service limit') &&
+          !ml1Res.data.response.toLowerCase().includes('unable to fetch')
+        ) {
+          aiResponse = ml1Res.data.response;
+          usedProvider = 'render-ml1-toolcalling';
+          logger.info(`[CHAT] Successfully answered via ML-1 Render tool-calling service`);
+        }
+      } catch (ml1Err) {
+        logger.warn(`[CHAT] ML-1 Render call skipped (${ml1Err.message}), using grounded Gemini LLM`);
+      }
+    }
+
+    if (!aiResponse) {
+      aiResponse = await callGemini(systemPrompt, message, roleApiKey, conversationHistory);
+    }
 
     // ── Step 9: Persist messages ────────────────────────────────────────────
-    await Promise.all([
-      Message.create({
-        conversationId: conversation._id,
-        role: 'user',
-        content: message,
-        intent: entities.intent,
-        entities: {
-          location: entities.location,
-          timeEntity: entities.timeEntity,
-          language: entities.language,
-        },
-        weatherContext: weatherData,
-      }),
-      Message.create({
-        conversationId: conversation._id,
-        role: 'assistant',
-        content: aiResponse,
-      }),
-    ]);
+    if (isDbConnected()) {
+      try {
+        await Promise.all([
+          Message.create({
+            conversationId: conversation._id,
+            role: 'user',
+            content: message,
+            intent: entities.intent,
+            entities: {
+              location: entities.location,
+              timeEntity: entities.timeEntity,
+              language: entities.language,
+            },
+            weatherContext: weatherData,
+          }),
+          Message.create({
+            conversationId: conversation._id,
+            role: 'assistant',
+            content: aiResponse,
+          }),
+        ]);
 
-    await Conversation.findByIdAndUpdate(conversation._id, {
-      $inc: { messageCount: 2 },
-    });
+        await Conversation.findByIdAndUpdate(conversation._id, {
+          $inc: { messageCount: 2 },
+        });
+      } catch (saveErr) {
+        logger.warn(`Message persistence failed: ${saveErr.message}`);
+      }
+    }
 
     // ── Step 10: Check if role switch is suggested ─────────────────────────
     const suggestedRoleSwitch = suggestRole(entities.intent, selectedRole);
@@ -207,6 +260,7 @@ exports.chat = async (req, res, next) => {
       data: {
         response: aiResponse,
         conversationId: conversation._id,
+        provider: usedProvider,
         nlp: {
           intent: entities.intent,
           location: entities.location || locationOverride,
@@ -218,7 +272,12 @@ exports.chat = async (req, res, next) => {
           ? {
               locationName: weatherData.locationName,
               temperature: weatherData.temperature,
+              feelsLike: weatherData.feelsLike,
               condition: weatherData.condition,
+              humidity: weatherData.humidity,
+              windSpeed: weatherData.windSpeed,
+              rainProbability: weatherData.rainProbability,
+              disasterRisk: weatherData.disasterRisk || null,
             }
           : null,
       },
