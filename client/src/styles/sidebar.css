@@ -1,0 +1,177 @@
+/* ── Sidebar ──────────────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--color-bg-sidebar);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: var(--z-sidebar);
+  transition: transform var(--transition-base), width var(--transition-base);
+  animation: slideInLeft var(--transition-slow) ease both;
+  animation-delay: 150ms;
+}
+
+.sidebar-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sidebar-section-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-2);
+}
+
+/* Role Select */
+.role-select-wrapper {
+  position: relative;
+}
+
+.role-select {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  padding-right: var(--space-8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-semibold);
+  appearance: none;
+  cursor: pointer;
+  min-height: 44px;
+  transition: border-color var(--transition-fast);
+  outline: none;
+}
+
+.role-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+}
+
+.role-select option {
+  background: var(--color-bg-card, #ffffff);
+  color: var(--color-text-primary, #0f172a);
+  padding: 8px;
+}
+
+.role-select-arrow {
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+}
+
+/* Features section */
+.sidebar-features {
+  padding: var(--space-4);
+  flex: 1;
+}
+
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.feature-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all var(--transition-fast);
+  min-height: 44px;
+}
+
+.feature-chip:hover {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+  color: var(--color-primary);
+}
+
+.feature-chip:active {
+  transform: scale(0.98);
+}
+
+.feature-chip-icon {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.feature-chip-label {
+  flex: 1;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ── Tablet: icon rail ─────────────────────────────────────────── */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .sidebar {
+    width: var(--sidebar-rail-width);
+  }
+
+  .sidebar-header { padding: var(--space-3); }
+  .role-select-wrapper { display: none; }
+  .sidebar-section-label { display: none; }
+  .feature-chip-label { display: none; }
+  .feature-chip { justify-content: center; padding: var(--space-2); }
+  .sidebar-footer { display: none; }
+
+  .sidebar.expanded {
+    width: var(--sidebar-width);
+  }
+
+  .sidebar.expanded .role-select-wrapper { display: block; }
+  .sidebar.expanded .sidebar-section-label { display: block; }
+  .sidebar.expanded .feature-chip-label { display: block; }
+  .sidebar.expanded .feature-chip { justify-content: flex-start; padding: var(--space-2) var(--space-3); }
+  .sidebar.expanded .sidebar-footer { display: block; }
+}
+
+/* ── Mobile: hidden by default, shows as drawer ───────────────── */
+@media (max-width: 639px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(var(--sidebar-width), 85vw);
+    z-index: var(--z-overlay);
+    transform: translateX(-100%);
+    border-right: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+    padding-top: var(--navbar-height);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    animation: slideInLeft var(--transition-base) ease both;
+  }
+}
