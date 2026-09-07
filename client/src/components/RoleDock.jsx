@@ -14,6 +14,7 @@ import {
   Check,
 } from 'lucide-react';
 import api from '../services/api';
+import { useLanguage } from '../contexts/LanguageContext';
 import '../styles/roledock.css';
 
 const ROLE_ICON_MAP = {
@@ -71,6 +72,7 @@ const DEFAULT_ROLES_DATA = [
 ];
 
 export default function RoleDock({ selectedRole, onRoleChange }) {
+  const { t } = useLanguage();
   const [roles, setRoles] = useState(DEFAULT_ROLES_DATA);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -106,17 +108,18 @@ export default function RoleDock({ selectedRole, onRoleChange }) {
         position: 'relative',
         zIndex: 50,
         padding: '10px 16px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        background: 'rgba(11, 15, 23, 0.4)',
+        borderBottom: '1px solid var(--color-border)',
+        background: 'var(--color-bg-card)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 12,
+        transition: 'background 200ms ease, border-color 200ms ease',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: '#9ca3af', fontWeight: 600 }}>
-        <Sparkles size={13} style={{ color: '#38bdf8' }} />
-        <span>Operational Intelligence Context:</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
+        <Sparkles size={13} style={{ color: 'var(--color-primary)' }} />
+        <span>{t('selectRole')}:</span>
       </div>
 
       {/* Dropdown Trigger Button */}
@@ -128,20 +131,20 @@ export default function RoleDock({ selectedRole, onRoleChange }) {
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            background: 'rgba(31, 41, 55, 0.85)',
-            border: '1px solid rgba(56, 189, 248, 0.3)',
+            background: 'var(--color-bg-alt, #1f2937)',
+            border: '1px solid var(--color-border)',
             borderRadius: 9999,
             padding: '6px 14px',
-            color: '#f8fafc',
+            color: 'var(--color-text-primary)',
             fontSize: '0.82rem',
             fontWeight: 600,
             cursor: 'pointer',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.25)',
+            boxShadow: 'var(--shadow-sm)',
             transition: 'all 0.15s ease',
           }}
         >
-          <ActiveIcon size={14} style={{ color: '#38bdf8' }} />
-          <span>{activeRoleData.name}</span>
+          <ActiveIcon size={14} style={{ color: 'var(--color-primary)' }} />
+          <span>{t(activeRoleData.roleId, activeRoleData.name)}</span>
           <ChevronDown size={14} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', opacity: 0.7 }} />
         </button>
 
@@ -158,23 +161,25 @@ export default function RoleDock({ selectedRole, onRoleChange }) {
                 top: 'calc(100% + 6px)',
                 right: 0,
                 width: 310,
-                background: '#111827',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: 'var(--color-bg-card)',
+                border: '1px solid var(--color-border)',
                 borderRadius: 14,
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.6)',
+                boxShadow: 'var(--shadow-lg)',
                 padding: '6px',
                 zIndex: 100,
                 maxHeight: 360,
                 overflowY: 'auto',
               }}
             >
-              <div style={{ padding: '6px 10px 4px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                Select Meteorological Context
+              <div style={{ padding: '6px 10px 4px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                {t('selectRole')}
               </div>
 
               {roles.map((role) => {
                 const isSelected = role.roleId === selectedRole;
                 const Icon = ROLE_ICON_MAP[role.roleId] || User;
+                const localizedName = t(role.roleId, role.name);
+                const localizedDesc = t(role.roleId + 'Desc', role.description);
 
                 return (
                   <button
@@ -192,15 +197,15 @@ export default function RoleDock({ selectedRole, onRoleChange }) {
                       gap: 10,
                       padding: '8px 10px',
                       borderRadius: 10,
-                      background: isSelected ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+                      background: isSelected ? 'var(--color-primary-glow, rgba(56, 189, 248, 0.12))' : 'transparent',
                       border: 'none',
-                      color: isSelected ? '#38bdf8' : '#e2e8f0',
+                      color: isSelected ? 'var(--color-primary)' : 'var(--color-text-primary)',
                       cursor: 'pointer',
                       transition: 'background 0.12s ease',
                       marginBottom: 2,
                     }}
                     onMouseEnter={(e) => {
-                      if (!isSelected) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                      if (!isSelected) e.currentTarget.style.background = 'var(--color-border-light)';
                     }}
                     onMouseLeave={(e) => {
                       if (!isSelected) e.currentTarget.style.background = 'transparent';
@@ -208,26 +213,28 @@ export default function RoleDock({ selectedRole, onRoleChange }) {
                   >
                     <div
                       style={{
-                        width: 26,
-                        height: 26,
-                        borderRadius: 7,
-                        background: isSelected ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+                        padding: 6,
+                        borderRadius: 8,
+                        background: isSelected ? 'var(--color-primary)' : 'var(--color-border-light)',
+                        color: isSelected ? '#ffffff' : 'var(--color-text-secondary)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
-                        marginTop: 1,
+                        marginTop: 2,
                       }}
                     >
-                      <Icon size={14} style={{ color: isSelected ? '#38bdf8' : '#9ca3af' }} />
+                      <Icon size={14} />
                     </div>
 
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: '0.83rem', fontWeight: 600 }}>{role.name}</span>
-                        {isSelected && <Check size={14} style={{ color: '#38bdf8' }} />}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>{localizedName}</span>
+                        {isSelected && <Check size={14} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />}
                       </div>
-                      <span style={{ fontSize: '0.72rem', color: '#9ca3af', lineHeight: 1.3 }}>{role.description}</span>
+                      <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--color-text-muted)', lineHeight: 1.3, marginTop: 2 }}>
+                        {localizedDesc}
+                      </p>
                     </div>
                   </button>
                 );
@@ -239,4 +246,3 @@ export default function RoleDock({ selectedRole, onRoleChange }) {
     </div>
   );
 }
-

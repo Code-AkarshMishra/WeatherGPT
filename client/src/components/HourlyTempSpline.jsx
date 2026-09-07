@@ -139,7 +139,7 @@ export default function HourlyTempSpline({
             y1={activePoint.y}
             x2={svgWidth}
             y2={activePoint.y}
-            stroke="rgba(255, 255, 255, 0.28)"
+            stroke="var(--color-border)"
             strokeDasharray="4 4"
             strokeWidth="1"
           />
@@ -150,7 +150,7 @@ export default function HourlyTempSpline({
             y1={activePoint.y}
             x2={activePoint.x}
             y2={chartHeight + 60}
-            stroke="rgba(255, 255, 255, 0.35)"
+            stroke="var(--color-border)"
             strokeDasharray="3 3"
             strokeWidth="1.2"
           />
@@ -192,7 +192,7 @@ export default function HourlyTempSpline({
                       cx={pt.x}
                       cy={pt.y}
                       r="12"
-                      fill="#ffffff"
+                      fill="var(--color-bg-card, #ffffff)"
                       stroke="#f97316"
                       strokeWidth="3"
                     />
@@ -200,7 +200,7 @@ export default function HourlyTempSpline({
                       x={pt.x}
                       y={pt.y + 4}
                       textAnchor="middle"
-                      fill="#0f172a"
+                      fill="var(--color-text-primary, #0f172a)"
                       fontSize="11"
                       fontWeight="bold"
                       fontFamily="system-ui, sans-serif"
@@ -214,7 +214,7 @@ export default function HourlyTempSpline({
                     cx={pt.x}
                     cy={pt.y}
                     r="3.5"
-                    fill="rgba(255, 255, 255, 0.8)"
+                    fill="var(--color-bg-card, #ffffff)"
                     stroke="#fbbf24"
                     strokeWidth="1.5"
                   />

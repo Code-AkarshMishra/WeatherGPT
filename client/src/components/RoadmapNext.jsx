@@ -20,8 +20,8 @@ export default function RoadmapNext() {
     {
       icon: Globe2,
       badge: 'Pipeline Ready',
-      badgeColor: '#7c3aed',
-      bgLight: 'rgba(124, 58, 237, 0.08)',
+      badgeColor: '#0f766e',
+      bgLight: 'rgba(15, 118, 110, 0.1)',
       title: 'NWP Numerical Forecasting',
       desc: 'Direct ingest of GFS 0.25° and NCMRWF high-resolution numerical ensembles for 15-day projections.',
     },

@@ -13,8 +13,10 @@ import {
   CloudRain,
   Thermometer,
 } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimulate }) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('farmer'); // 'farmer' | 'marine' | 'action'
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
@@ -31,37 +33,42 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
   const colorStyles = {
     GREEN: {
       bg: 'rgba(34, 197, 94, 0.12)',
-      border: 'rgba(34, 197, 94, 0.4)',
-      text: '#4ade80',
-      badgeBg: '#22c55e',
+      border: 'rgba(34, 197, 94, 0.35)',
+      text: '#16a34a',
+      badgeBg: '#16a34a',
+      badgeColor: '#ffffff',
       label: 'GREEN (All Clear)',
     },
     YELLOW: {
       bg: 'rgba(234, 179, 8, 0.14)',
-      border: 'rgba(234, 179, 8, 0.45)',
-      text: '#facc15',
+      border: 'rgba(234, 179, 8, 0.4)',
+      text: '#d97706',
       badgeBg: '#eab308',
+      badgeColor: '#000000',
       label: 'YELLOW (Watch & Update)',
     },
     ORANGE: {
       bg: 'rgba(249, 115, 22, 0.15)',
-      border: 'rgba(249, 115, 22, 0.5)',
-      text: '#fb923c',
+      border: 'rgba(249, 115, 22, 0.45)',
+      text: '#ea580c',
       badgeBg: '#f97316',
+      badgeColor: '#ffffff',
       label: 'ORANGE (Alert & Prepare)',
     },
     RED: {
-      bg: 'rgba(239, 68, 68, 0.2)',
-      border: 'rgba(239, 68, 68, 0.6)',
-      text: '#f87171',
+      bg: 'rgba(239, 68, 68, 0.16)',
+      border: 'rgba(239, 68, 68, 0.5)',
+      text: '#dc2626',
       badgeBg: '#ef4444',
+      badgeColor: '#ffffff',
       label: 'RED (Warning & Action)',
     },
   }[imdColor] || {
     bg: 'rgba(34, 197, 94, 0.12)',
-    border: 'rgba(34, 197, 94, 0.4)',
-    text: '#4ade80',
-    badgeBg: '#22c55e',
+    border: 'rgba(34, 197, 94, 0.35)',
+    text: '#16a34a',
+    badgeBg: '#16a34a',
+    badgeColor: '#ffffff',
     label: 'GREEN',
   };
 
@@ -110,9 +117,9 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
         border: `1.5px solid ${colorStyles.border}`,
         borderRadius: 20,
         padding: '16px 20px',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.25)',
+        boxShadow: 'var(--shadow-sm)',
         backdropFilter: 'blur(16px)',
-        color: '#ffffff',
+        color: 'var(--color-text-primary)',
         display: 'flex',
         flexDirection: 'column',
         gap: 14,
@@ -128,7 +135,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
               padding: '4px 12px',
               borderRadius: 9999,
               background: colorStyles.badgeBg,
-              color: '#000000',
+              color: colorStyles.badgeColor,
               fontWeight: 800,
               fontSize: '0.78rem',
               display: 'inline-flex',
@@ -140,8 +147,8 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
             <ShieldAlert size={15} />
             IMD {colorStyles.label}
           </span>
-          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>
-            MoES Severe-Weather Risk: <strong style={{ color: colorStyles.text }}>{activeRisk?.riskAssessment || 'Low'}</strong>
+          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+            {t('riskAssessment', 'MoES Severe-Weather Risk')}: <strong style={{ color: colorStyles.text }}>{activeRisk?.riskAssessment || 'Low'}</strong>
           </span>
         </div>
 
@@ -154,20 +161,21 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
               display: 'flex',
               alignItems: 'center',
               gap: 6,
-              background: isSpeaking ? '#22c55e' : 'rgba(255,255,255,0.12)',
-              color: isSpeaking ? '#000000' : '#ffffff',
-              border: '1px solid rgba(255,255,255,0.2)',
+              background: isSpeaking ? 'var(--color-success)' : 'var(--color-bg-card)',
+              color: isSpeaking ? '#ffffff' : 'var(--color-text-primary)',
+              border: '1px solid var(--color-border)',
               borderRadius: 9999,
-              padding: '5px 12px',
+              padding: '6px 14px',
               fontSize: '0.75rem',
               fontWeight: 700,
               cursor: 'pointer',
+              boxShadow: 'var(--shadow-sm)',
               transition: 'all 0.2s ease',
             }}
-            title="Listen to official warning in Hindi"
+            title={isSpeaking ? t('stopSpeaking') : t('playAudioAlert')}
           >
-            <Volume2 size={14} />
-            <span>{isSpeaking ? 'रोकें (Stop)' : 'चेतावनी सुनें (Audio)'}</span>
+            <Volume2 size={14} style={{ color: isSpeaking ? '#ffffff' : 'var(--color-primary)' }} />
+            <span>{isSpeaking ? t('stopSpeaking') : t('playAudioAlert')}</span>
           </button>
 
           {/* Simulator Toggle */}
@@ -177,43 +185,44 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
               display: 'flex',
               alignItems: 'center',
               gap: 6,
-              background: isSimulatorOpen ? '#6366f1' : 'rgba(255,255,255,0.08)',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.18)',
+              background: isSimulatorOpen ? 'var(--color-primary)' : 'var(--color-bg-card)',
+              color: isSimulatorOpen ? '#ffffff' : 'var(--color-text-primary)',
+              border: '1px solid var(--color-border)',
               borderRadius: 9999,
-              padding: '5px 12px',
+              padding: '6px 14px',
               fontSize: '0.75rem',
               fontWeight: 600,
               cursor: 'pointer',
+              boxShadow: 'var(--shadow-sm)',
             }}
             title="Simulate ML-2 Severe Weather Scenarios"
           >
-            <Sliders size={13} />
+            <Sliders size={13} style={{ color: isSimulatorOpen ? '#ffffff' : 'var(--color-primary)' }} />
             <span>MoES Simulator</span>
           </button>
         </div>
       </div>
 
       {/* Role-Based Tabs (Farmer, Marine, Action Checklist) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid rgba(255,255,255,0.12)', paddingBottom: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid var(--color-border)', paddingBottom: 8 }}>
         <button
           onClick={() => setActiveTab('farmer')}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            background: activeTab === 'farmer' ? 'rgba(74, 222, 128, 0.2)' : 'transparent',
-            color: activeTab === 'farmer' ? '#4ade80' : 'rgba(255,255,255,0.65)',
-            border: activeTab === 'farmer' ? '1px solid rgba(74, 222, 128, 0.4)' : '1px solid transparent',
+            background: activeTab === 'farmer' ? 'rgba(22, 163, 74, 0.15)' : 'transparent',
+            color: activeTab === 'farmer' ? '#16a34a' : 'var(--color-text-secondary)',
+            border: activeTab === 'farmer' ? '1px solid rgba(22, 163, 74, 0.4)' : '1px solid transparent',
             borderRadius: 8,
-            padding: '5px 12px',
-            fontSize: '0.8rem',
+            padding: '6px 14px',
+            fontSize: '0.82rem',
             fontWeight: 700,
             cursor: 'pointer',
           }}
         >
           <Sprout size={15} />
-          <span>किसान सलाह (Farmer Advisory)</span>
+          <span>{t('farmerAdvisoryTitle')}</span>
         </button>
 
         <button
@@ -222,18 +231,18 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            background: activeTab === 'marine' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
-            color: activeTab === 'marine' ? '#38bdf8' : 'rgba(255,255,255,0.65)',
-            border: activeTab === 'marine' ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
+            background: activeTab === 'marine' ? 'rgba(2, 132, 199, 0.15)' : 'transparent',
+            color: activeTab === 'marine' ? '#0284c7' : 'var(--color-text-secondary)',
+            border: activeTab === 'marine' ? '1px solid rgba(2, 132, 199, 0.4)' : '1px solid transparent',
             borderRadius: 8,
-            padding: '5px 12px',
-            fontSize: '0.8rem',
+            padding: '6px 14px',
+            fontSize: '0.82rem',
             fontWeight: 700,
             cursor: 'pointer',
           }}
         >
           <Anchor size={15} />
-          <span>मछुआरा / तटीय (Marine Advisory)</span>
+          <span>{t('marineAdvisoryTitle')}</span>
         </button>
 
         <button
@@ -242,29 +251,29 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            background: activeTab === 'action' ? 'rgba(251, 191, 36, 0.2)' : 'transparent',
-            color: activeTab === 'action' ? '#fbbf24' : 'rgba(255,255,255,0.65)',
-            border: activeTab === 'action' ? '1px solid rgba(251, 191, 36, 0.4)' : '1px solid transparent',
+            background: activeTab === 'action' ? 'rgba(217, 119, 6, 0.15)' : 'transparent',
+            color: activeTab === 'action' ? '#d97706' : 'var(--color-text-secondary)',
+            border: activeTab === 'action' ? '1px solid rgba(217, 119, 6, 0.4)' : '1px solid transparent',
             borderRadius: 8,
-            padding: '5px 12px',
-            fontSize: '0.8rem',
+            padding: '6px 14px',
+            fontSize: '0.82rem',
             fontWeight: 700,
             cursor: 'pointer',
           }}
         >
           <AlertTriangle size={15} />
-          <span>सुरक्षा निर्देश (Action Points)</span>
+          <span>{t('actionPointsTitle')}</span>
         </button>
       </div>
 
       {/* Tab Content Display */}
-      <div style={{ fontSize: '0.88rem', lineHeight: '1.55', color: 'rgba(255,255,255,0.92)' }}>
+      <div style={{ fontSize: '0.92rem', lineHeight: '1.6', color: 'var(--color-text-primary)' }}>
         {activeTab === 'farmer' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <p style={{ margin: 0, fontWeight: 500, fontSize: '0.92rem' }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
               🇮🇳 <strong>{activeRisk?.farmerAdvisory?.hi}</strong>
             </p>
-            <p style={{ margin: 0, opacity: 0.78, fontSize: '0.82rem' }}>
+            <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
               🌐 <em>{activeRisk?.farmerAdvisory?.en}</em>
             </p>
           </div>
@@ -272,10 +281,10 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
 
         {activeTab === 'marine' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <p style={{ margin: 0, fontWeight: 500, fontSize: '0.92rem' }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
               🌊 <strong>{activeRisk?.marineAdvisory?.hi}</strong>
             </p>
-            <p style={{ margin: 0, opacity: 0.78, fontSize: '0.82rem' }}>
+            <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
               🌐 <em>{activeRisk?.marineAdvisory?.en}</em>
             </p>
           </div>
@@ -284,11 +293,11 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
         {activeTab === 'action' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {activeRisk?.actionPoints?.map((pt, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-text-primary)' }}>
                 <CheckCircle size={14} style={{ color: colorStyles.text, flexShrink: 0 }} />
                 <span>{pt}</span>
               </div>
-            )) || <span>Standard safety protocol in effect.</span>}
+            )) || <span style={{ color: 'var(--color-text-secondary)' }}>Standard safety protocol in effect.</span>}
           </div>
         )}
       </div>

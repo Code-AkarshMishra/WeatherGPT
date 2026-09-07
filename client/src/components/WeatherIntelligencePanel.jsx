@@ -21,6 +21,7 @@ import RiskGauge from './RiskGauge';
 import HourlyTempSpline from './HourlyTempSpline';
 import DailyForecastCard from './DailyForecastCard';
 import { weatherAudio } from '../services/weatherAudio';
+import { useLanguage } from '../contexts/LanguageContext';
 import '../styles/weather.css';
 
 export function calculateDynamicRiskScore(weatherData) {
@@ -244,6 +245,7 @@ export default function WeatherIntelligencePanel({
   loading,
   onOpenLocationModal,
 }) {
+  const { t } = useLanguage();
   const [isMuted, setIsMuted] = useState(weatherAudio.getMuted());
 
   const handleAudioToggle = () => {
@@ -253,9 +255,9 @@ export default function WeatherIntelligencePanel({
 
   if (loading && !weatherData) {
     return (
-      <div style={{ padding: 24, textAlign: 'center', color: '#94a3b8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+      <div style={{ padding: 24, textAlign: 'center', color: 'var(--color-text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
         <div className="spinner" style={{ width: 28, height: 28, marginBottom: 12 }} />
-        <span>Loading live weather intelligence...</span>
+        <span>{t('loading')}</span>
       </div>
     );
   }
@@ -278,7 +280,7 @@ export default function WeatherIntelligencePanel({
   const temp = data.temperature ?? 30;
   const feelsLike = data.feelsLike ?? 37;
   const condition = data.condition || 'Clouds';
-  const weatherTitle = data.weatherMain || (condition === 'storm' ? 'Thunderstorm' : condition.toUpperCase());
+  const weatherTitle = t(condition.toLowerCase(), data.weatherMain || (condition === 'storm' ? 'Thunderstorm' : condition.toUpperCase()));
   const imdRisk = data.disasterRisk;
   const imdColor = imdRisk?.imdColorCode || 'GREEN';
   const riskScore = calculateDynamicRiskScore(data);
@@ -292,18 +294,18 @@ export default function WeatherIntelligencePanel({
       style={{
         display: 'block',
         padding: '16px 18px 24px',
-        color: '#f9fafb',
+        color: 'var(--color-text-primary)',
       }}
     >
       {/* Hero Location & Primary Temperature Card with Animated Graphic */}
       <div
         style={{
-          background: 'rgba(17, 24, 39, 0.8)',
+          background: 'var(--color-bg-card)',
           backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid var(--color-border)',
           borderRadius: 16,
           padding: '18px 20px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          boxShadow: 'var(--shadow-md)',
           position: 'relative',
           overflow: 'hidden',
           marginBottom: 14,
@@ -317,7 +319,7 @@ export default function WeatherIntelligencePanel({
             position: 'absolute',
             top: 10,
             right: 120,
-            opacity: 0.22,
+            opacity: 0.18,
             pointerEvents: 'none',
           }}
         >
@@ -332,42 +334,42 @@ export default function WeatherIntelligencePanel({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 6,
-                background: 'rgba(56, 189, 248, 0.12)',
-                border: '1px solid rgba(56, 189, 248, 0.3)',
+                background: 'var(--color-primary-glow)',
+                border: '1px solid var(--color-border)',
                 padding: '4px 10px',
                 borderRadius: 9999,
-                color: '#38bdf8',
+                color: 'var(--color-primary)',
                 fontSize: '0.8rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 marginBottom: 8,
               }}
             >
-              <MapPin size={14} style={{ color: '#ef4444' }} />
+              <MapPin size={14} style={{ color: 'var(--color-danger)' }} />
               <span>📍 {cityName}, {data.country || 'IN'}</span>
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ConditionIcon size={22} style={{ color: graphicColor }} />
-              <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: '#f9fafb' }}>
+              <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: 'var(--color-text-primary)' }}>
                 {weatherTitle}
               </h2>
             </div>
-            <div style={{ fontSize: 13, color: '#9ca3af', marginTop: 4 }}>
-              Feels like <strong style={{ color: '#38bdf8' }}>{feelsLike}°C</strong>
+            <div style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 4 }}>
+              {t('feelsLike')} <strong style={{ color: 'var(--color-primary)' }}>{feelsLike}°C</strong>
             </div>
           </div>
 
           <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', position: 'relative', zIndex: 1 }}>
-            <div className="wx-hero-temp">
+            <div className="wx-hero-temp" style={{ color: 'var(--color-text-primary)' }}>
               {temp}°C
             </div>
             <button
               onClick={handleAudioToggle}
               style={{
                 marginTop: 8,
-                background: isMuted ? 'rgba(255, 255, 255, 0.08)' : 'rgba(34, 197, 94, 0.15)',
-                border: `1px solid ${isMuted ? 'rgba(255, 255, 255, 0.15)' : '#22c55e'}`,
-                color: isMuted ? '#9ca3af' : '#4ade80',
+                background: isMuted ? 'var(--color-border-light)' : 'rgba(16, 185, 129, 0.15)',
+                border: `1px solid ${isMuted ? 'var(--color-border)' : 'var(--color-success)'}`,
+                color: isMuted ? 'var(--color-text-muted)' : 'var(--color-success)',
                 borderRadius: 9999,
                 padding: '3px 9px',
                 fontSize: '0.75rem',
@@ -378,31 +380,31 @@ export default function WeatherIntelligencePanel({
               }}
             >
               {isMuted ? <VolumeX size={12} /> : <Volume2 size={12} />}
-              <span>{isMuted ? 'Audio Off' : 'Audio On'}</span>
+              <span>{isMuted ? t('stopSpeaking') : t('speak')}</span>
             </button>
           </div>
         </div>
 
         {/* Optimized Rain Probability Bar */}
-        <div style={{ marginTop: 14, background: 'rgba(15, 23, 42, 0.5)', padding: '8px 12px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ marginTop: 14, background: 'var(--color-bg-alt, rgba(15, 23, 42, 0.5))', padding: '8px 12px', borderRadius: 12, border: '1px solid var(--color-border)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, marginBottom: 6 }}>
-            <span style={{ color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 600 }}>
-              <Droplets size={13} style={{ color: '#38bdf8' }} /> Precipitation Probability
+            <span style={{ color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 600 }}>
+              <Droplets size={13} style={{ color: 'var(--color-primary)' }} /> {t('rainChance')}
             </span>
-            <span style={{ fontWeight: 700, color: '#38bdf8', background: 'rgba(56, 189, 248, 0.15)', padding: '2px 8px', borderRadius: 10, border: '1px solid rgba(56, 189, 248, 0.3)' }}>
+            <span style={{ fontWeight: 700, color: 'var(--color-primary)', background: 'var(--color-primary-glow)', padding: '2px 8px', borderRadius: 10, border: '1px solid var(--color-border)' }}>
               {rainProb}%
             </span>
           </div>
-          <div style={{ height: 6, background: '#374151', borderRadius: 9999, overflow: 'hidden' }}>
+          <div style={{ height: 6, background: 'var(--color-border)', borderRadius: 9999, overflow: 'hidden' }}>
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${rainProb}%` }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
               style={{
                 height: '100%',
-                background: 'linear-gradient(90deg, #38bdf8, #0284c7)',
+                background: 'linear-gradient(90deg, var(--color-sky-blue), var(--color-teal))',
                 borderRadius: 9999,
-                boxShadow: '0 0 10px rgba(56, 189, 248, 0.5)',
+                boxShadow: '0 0 10px var(--color-primary)',
               }}
             />
           </div>
@@ -411,32 +413,32 @@ export default function WeatherIntelligencePanel({
 
       {/* Compact Secondary Weather Metrics Grid */}
       <div className="wx-metrics-grid" style={{ marginBottom: 14 }}>
-        <div style={{ background: 'rgba(31, 41, 55, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 12, padding: '9px 10px' }}>
-          <span style={{ fontSize: 11, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Droplets size={12} style={{ color: '#38bdf8' }} /> Humidity
+        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 12, padding: '9px 10px' }}>
+          <span style={{ fontSize: 11, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Droplets size={12} style={{ color: 'var(--color-primary)' }} /> {t('humidity')}
           </span>
-          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2 }}>{data.humidity ?? 85}%</div>
+          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2, color: 'var(--color-text-primary)' }}>{data.humidity ?? 85}%</div>
         </div>
 
-        <div style={{ background: 'rgba(31, 41, 55, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 12, padding: '9px 10px' }}>
-          <span style={{ fontSize: 11, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Wind size={12} style={{ color: '#38bdf8' }} /> Wind
+        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 12, padding: '9px 10px' }}>
+          <span style={{ fontSize: 11, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Wind size={12} style={{ color: 'var(--color-primary)' }} /> {t('wind')}
           </span>
-          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2 }}>{data.windSpeed ?? 8} km/h</div>
+          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2, color: 'var(--color-text-primary)' }}>{data.windSpeed ?? 8} km/h</div>
         </div>
 
-        <div style={{ background: 'rgba(31, 41, 55, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 12, padding: '9px 10px' }}>
-          <span style={{ fontSize: 11, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Eye size={12} style={{ color: '#38bdf8' }} /> Visibility
+        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 12, padding: '9px 10px' }}>
+          <span style={{ fontSize: 11, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Eye size={12} style={{ color: 'var(--color-primary)' }} /> {t('visibility')}
           </span>
-          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2 }}>{data.visibility ?? 10} km</div>
+          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2, color: 'var(--color-text-primary)' }}>{data.visibility ?? 10} km</div>
         </div>
 
-        <div style={{ background: 'rgba(31, 41, 55, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 12, padding: '9px 10px' }}>
-          <span style={{ fontSize: 11, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <PressureIcon size={12} style={{ color: '#38bdf8' }} /> Rain
+        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 12, padding: '9px 10px' }}>
+          <span style={{ fontSize: 11, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <PressureIcon size={12} style={{ color: 'var(--color-primary)' }} /> {t('rainMm')}
           </span>
-          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2 }}>{rainProb}%</div>
+          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2, color: 'var(--color-text-primary)' }}>{rainProb}%</div>
         </div>
       </div>
 
@@ -444,7 +446,7 @@ export default function WeatherIntelligencePanel({
       <div className="wx-gauge-grid" style={{ marginBottom: 14 }}>
         <RiskGauge
           score={riskScore}
-          label="Risk Assessment"
+          label={t('riskAssessment')}
           level={imdRisk?.riskAssessment || 'Low'}
           imdColor={imdColor}
           compact={true}
@@ -457,16 +459,17 @@ export default function WeatherIntelligencePanel({
       {/* 24-Hour Forecast Spline Chart */}
       <div
         style={{
-          background: 'rgba(31, 41, 55, 0.75)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: 'var(--color-bg-card)',
+          border: '1px solid var(--color-border)',
           borderRadius: 16,
           padding: '14px 16px',
           marginBottom: 14,
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
-        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6, color: '#9ca3af' }}>
-          <Compass size={14} style={{ color: '#38bdf8' }} />
-          <span>24-HOUR FORECAST TREND</span>
+        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)' }}>
+          <Compass size={14} style={{ color: 'var(--color-primary)' }} />
+          <span>{t('hourlyForecast')}</span>
         </div>
         <HourlyTempSpline
           hourly={data.hourlyForecast || []}
@@ -479,14 +482,15 @@ export default function WeatherIntelligencePanel({
       {/* 7-Day Forecast Outlook */}
       <div
         style={{
-          background: 'rgba(31, 41, 55, 0.75)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: 'var(--color-bg-card)',
+          border: '1px solid var(--color-border)',
           borderRadius: 16,
           padding: '14px 16px',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
-        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10, color: '#9ca3af' }}>
-          7-DAY WEATHER OUTLOOK
+        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10, color: 'var(--color-text-muted)' }}>
+          {t('dailyForecast')}
         </div>
         <DailyForecastCard daily={data.dailyForecast || []} />
       </div>

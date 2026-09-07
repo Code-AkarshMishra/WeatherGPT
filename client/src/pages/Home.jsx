@@ -8,8 +8,10 @@ import ChatInput from '../components/ChatInput';
 import Navbar from '../components/Navbar';
 import AtmosphericCanvas from '../components/AtmosphericCanvas';
 import LocationSelectorModal from '../components/LocationSelectorModal';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function Home() {
+  const { lang, t } = useLanguage();
   const [selectedRole, setSelectedRole] = useState('citizen');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [prefillText, setPrefillText] = useState('');
@@ -26,7 +28,7 @@ export default function Home() {
   const { data: weatherData, loading: weatherLoading } = useWeather(lat, lon);
 
   const { messages, loading, error, suggestedRole, sendMessage, clearConversation, setSuggestedRole } =
-    useChat({ role: selectedRole, lat, lon });
+    useChat({ role: selectedRole, lat, lon, lang });
 
   const handleFeatureSelect = useCallback((query) => {
     setSidebarOpen(false);
@@ -110,20 +112,20 @@ export default function Home() {
           onClick={() => setActiveTab('weather')}
           role="tab"
           aria-selected={activeTab === 'weather'}
-          aria-label="Weather panel"
+          aria-label={t('weather', 'Weather')}
         >
           <span className="tab-icon">🌤️</span>
-          <span>Weather</span>
+          <span>{t('weather', 'Weather')}</span>
         </button>
         <button
           className={`mobile-tab-btn${activeTab === 'chat' ? ' active' : ''}`}
           onClick={() => setActiveTab('chat')}
           role="tab"
           aria-selected={activeTab === 'chat'}
-          aria-label="AI Chat panel"
+          aria-label={t('aiChat', 'AI Chat')}
         >
           <span className="tab-icon">💬</span>
-          <span>AI Chat</span>
+          <span>{t('aiChat', 'AI Chat')}</span>
         </button>
       </nav>
 

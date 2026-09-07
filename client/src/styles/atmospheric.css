@@ -3,7 +3,8 @@
 /* Main Page Container */
 .weather-page-shell {
   min-height: 100vh;
-  background: #090d16;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
   overflow-y: auto !important;
 }
 
@@ -28,9 +29,10 @@
   min-height: calc(100vh - var(--navbar-height) - 40px);
   border-radius: 28px;
   overflow: hidden;
-  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  background: #0f172a;
-  color: #f8fafc;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
   user-select: none;
 }
 
@@ -65,14 +67,13 @@
   font-size: 2rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #ffffff;
+  color: var(--color-text-primary);
   margin: 0;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 .atmospheric-country {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-text-secondary);
   font-weight: 600;
 }
 
@@ -180,15 +181,16 @@
 
 /* ── Generic Glass Card Styling ── */
 .glass-card {
-  background: rgba(15, 23, 42, 0.48);
+  background: var(--color-bg-card-glass, rgba(19, 29, 49, 0.75));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--color-border);
   border-radius: 22px;
   padding: 20px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
+  color: var(--color-text-primary);
 }
 
 .card-section-title {
@@ -199,7 +201,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-text-muted);
   margin-bottom: 12px;
   flex-wrap: wrap;
   word-break: break-word;
@@ -273,10 +275,9 @@
 .atmospheric-condition-title {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-text-primary);
   letter-spacing: -0.01em;
   margin: 0 0 6px 0;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 .atmospheric-sub-status {
@@ -284,7 +285,7 @@
   align-items: center;
   gap: 8px;
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-text-secondary);
   margin-bottom: 12px;
 }
 
@@ -297,8 +298,7 @@
   line-height: 0.95;
   font-weight: 300;
   letter-spacing: -0.04em;
-  color: #ffffff;
-  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  color: var(--color-text-primary);
   display: flex;
   align-items: flex-start;
   margin: 8px 0 18px 0;
@@ -313,8 +313,8 @@
 
 .hero-rain-card {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-bg-alt, rgba(15, 23, 42, 0.05));
+  border: 1px solid var(--color-border);
   border-radius: 14px;
   padding: 10px 14px;
   display: flex;
@@ -326,24 +326,24 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-text-secondary);
 }
 
 .hero-rain-val {
   font-weight: 700;
-  color: #38bdf8;
+  color: var(--color-primary);
 }
 
 .hero-rain-bar {
   height: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--color-border);
   border-radius: 9999px;
   overflow: hidden;
 }
 
 .hero-rain-fill {
   height: 100%;
-  background: linear-gradient(90deg, #38bdf8, #6366f1);
+  background: linear-gradient(90deg, var(--color-sky-blue, #38bdf8), var(--color-teal, #14b8a6));
   border-radius: 9999px;
   transition: width 0.4s ease;
 }
@@ -360,8 +360,8 @@
 }
 
 .pollutant-item {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-bg-alt, rgba(15, 23, 42, 0.05));
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 8px 6px;
   display: flex;
@@ -372,7 +372,7 @@
 
 .pollutant-label {
   font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-muted);
   text-transform: uppercase;
 }
 
@@ -458,7 +458,7 @@
 
 .hourly-time {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-text-secondary);
   font-weight: 500;
 }
 
@@ -481,7 +481,7 @@
   display: flex;
   justify-content: center;
   margin-top: 4px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-muted);
 }
 
 /* Detailed Metrics Grid (3x2 on Landscape, 2x3 on Portrait) */
@@ -492,15 +492,15 @@
 }
 
 .metric-chip {
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--color-bg-card);
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 14px 16px;
   display: flex;
   align-items: center;
   gap: 14px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.15s;
 }
 
@@ -512,11 +512,11 @@
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-primary-glow, rgba(56, 189, 248, 0.12));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #38bdf8;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
@@ -527,7 +527,7 @@
 
 .metric-chip-label {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -535,7 +535,7 @@
 .metric-chip-val {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 /* ── Right Column: 7-Day Forecast ── */
@@ -559,9 +559,9 @@
   align-items: center;
   justify-content: space-between;
   font-size: 0.92rem;
-  color: #ffffff;
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--color-text-primary);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .daily-row:last-child {
@@ -570,7 +570,7 @@
 
 .daily-date {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--color-text-muted);
   font-weight: 500;
   min-width: 48px;
 }
@@ -578,7 +578,7 @@
 .daily-name {
   font-weight: 600;
   flex: 1;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--color-text-primary);
 }
 
 .daily-condition {
@@ -596,7 +596,7 @@
 .daily-pop-badge {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #38bdf8;
+  color: var(--color-primary);
 }
 
 .daily-pop-empty {
@@ -613,18 +613,18 @@
 }
 
 .daily-temp-min {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-muted);
 }
 
 .daily-temp-bar-mini {
   width: 20px;
   height: 3px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--color-border);
 }
 
 .daily-temp-max {
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 /* ── Landscape vs Portrait Media Queries ── */

@@ -49,6 +49,10 @@ exports.validate = [
     .optional({ values: 'falsy' })
     .isString()
     .isLength({ max: 100 }),
+  body('lang')
+    .optional({ values: 'falsy' })
+    .isString()
+    .isLength({ max: 15 }),
 ];
 
 /**
@@ -88,6 +92,7 @@ exports.chat = async (req, res, next) => {
       lon,
       conversationId,
       guestId,
+      lang = 'en',
     } = req.body;
 
     const userId = req.user?._id || null;
@@ -125,7 +130,7 @@ exports.chat = async (req, res, next) => {
     }
 
     // ── Step 4: Build role prompt ───────────────────────────────────────────
-    const systemPrompt = buildPrompt(selectedRole, weatherData, entities);
+    const systemPrompt = buildPrompt(selectedRole, weatherData, entities, lang);
 
     // ── Step 5: Load conversation history (last 10 turns) ──────────────────
     let conversation = null;
@@ -195,26 +200,25 @@ exports.chat = async (req, res, next) => {
     const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000';
     
     // Attempt fast local ML microservice tool calling
-    if ((!conversationHistory || conversationHistory.length === 0)) {
-      try {
-        const mlPayload = { message, role: selectedRole };
-        if (resolvedLat !== null && resolvedLon !== null) {
-          mlPayload.location = { lat: resolvedLat, lon: resolvedLon };
-        }
-        const mlRes = await axios.post(`${ML_SERVICE_URL}/chat`, mlPayload, { timeout: 2500 });
-        if (
-          mlRes.data?.response &&
-          !mlRes.data.response.toLowerCase().includes('temporary service limit') &&
-          !mlRes.data.response.toLowerCase().includes('unable to fetch')
-        ) {
-          aiResponse = mlRes.data.response;
-          usedProvider = 'unified-ml-agent';
-          logger.info(`[CHAT] Successfully answered via Unified ML service (${usedProvider})`);
-        }
-      } catch (mlErr) {
-        logger.info(`[CHAT] ML microservice not reachable (${mlErr.message}), proceeding with grounded Gemini LLM`);
+    try {
+      const mlPayload = { message, role: selectedRole };
+      if (resolvedLat !== null && resolvedLon !== null) {
+        mlPayload.location = { lat: resolvedLat, lon: resolvedLon };
       }
+      const mlRes = await axios.post(`${ML_SERVICE_URL}/chat`, mlPayload, { timeout: 6000 });
+      if (
+        mlRes.data?.response &&
+        !mlRes.data.response.toLowerCase().includes('temporary service limit') &&
+        !mlRes.data.response.toLowerCase().includes('unable to fetch')
+      ) {
+        aiResponse = mlRes.data.response;
+        usedProvider = mlRes.data.provider || 'unified-ml-agent';
+        logger.info(`[CHAT] Successfully answered via Unified ML service (${usedProvider})`);
+      }
+    } catch (mlErr) {
+      logger.info(`[CHAT] ML microservice fallback (${mlErr.message}), proceeding with grounded Gemini LLM`);
     }
+
 
     if (!aiResponse) {
       aiResponse = await callGemini(systemPrompt, message, roleApiKey, conversationHistory);

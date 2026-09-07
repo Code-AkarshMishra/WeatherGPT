@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Cpu, Database, Wifi, Key, X, RefreshCw, Server } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function SystemStatusModal({ isOpen, onClose }) {
+  const { t } = useLanguage();
   const [statusData, setStatusData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -55,28 +57,32 @@ export default function SystemStatusModal({ isOpen, onClose }) {
           exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
           style={{
-            background: 'var(--color-surface, #1e293b)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
+            background: 'var(--color-bg-card, #1e293b)',
+            border: '1px solid var(--color-border, rgba(255, 255, 255, 0.15))',
             borderRadius: 16,
             width: '100%',
             maxWidth: 520,
             padding: 24,
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
-            color: '#f8fafc',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)',
+            color: 'var(--color-text-primary, #f8fafc)',
           }}
         >
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <ShieldCheck size={24} style={{ color: '#38bdf8' }} />
+              <ShieldCheck size={24} style={{ color: 'var(--color-primary, #0284c7)' }} />
               <div>
-                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>AI & System Infrastructure</h3>
-                <span style={{ fontSize: 12, color: '#94a3b8' }}>WeatherGPT Health & API Status</span>
+                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  {t('systemStatus', 'AI & System Infrastructure')}
+                </h3>
+                <span style={{ fontSize: 12, color: 'var(--color-text-secondary, #94a3b8)' }}>
+                  {t('healthStatus', 'WeatherGPT Health & API Status')}
+                </span>
               </div>
             </div>
             <button
               onClick={onClose}
-              style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 4 }}
+              style={{ background: 'none', border: 'none', color: 'var(--color-text-secondary, #94a3b8)', cursor: 'pointer', padding: 4 }}
             >
               <X size={20} />
             </button>
@@ -175,7 +181,7 @@ export default function SystemStatusModal({ isOpen, onClose }) {
                 gap: 6
               }}
             >
-              <RefreshCw size={14} className={loading ? 'spinner' : ''} /> Refresh Status
+              <RefreshCw size={14} className={loading ? 'spinner' : ''} /> {t('refreshStatus', 'Refresh Status')}
             </button>
           </div>
         </motion.div>

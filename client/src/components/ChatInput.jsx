@@ -92,7 +92,7 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
           <Sparkles size={13} style={{ color: 'var(--color-primary)' }} />
           {t('youAreChattingAs')}
         </span>
-        <RoleChip role={selectedRole} label={ROLE_LABELS[selectedRole] || selectedRole} />
+        <RoleChip role={selectedRole} label={t(selectedRole, ROLE_LABELS[selectedRole] || selectedRole)} />
       </div>
 
       {/* Input form */}

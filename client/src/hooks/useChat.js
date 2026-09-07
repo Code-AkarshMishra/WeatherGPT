@@ -4,7 +4,7 @@ import api from '../services/api';
 /**
  * useChat — manages conversation state and API communication.
  */
-export function useChat({ role, lat, lon }) {
+export function useChat({ role, lat, lon, lang = 'en' }) {
   const [messages, setMessages] = useState([]);
   const [conversationId, setConversationId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -39,6 +39,7 @@ export function useChat({ role, lat, lon }) {
         message: text,
         role,
         guestId: guestId.current,
+        lang,
       };
       if (lat != null) payload.lat = lat;
       if (lon != null) payload.lon = lon;
@@ -67,7 +68,7 @@ export function useChat({ role, lat, lon }) {
     } finally {
       setLoading(false);
     }
-  }, [loading, role, lat, lon, conversationId]);
+  }, [loading, role, lat, lon, lang, conversationId]);
 
   const clearConversation = useCallback(() => {
     setMessages([]);

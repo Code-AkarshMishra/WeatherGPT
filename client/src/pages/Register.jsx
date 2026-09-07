@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import Navbar from '../components/Navbar';
 
 export default function Register() {
   const { register } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
@@ -42,9 +44,9 @@ export default function Register() {
         <div className="card animate-fadeInUp" style={{ width: '100%', maxWidth: 420, padding: 'var(--space-8)' }}>
           <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
             <span style={{ fontSize: '2.5rem' }}>🌤️</span>
-            <h1 style={{ fontSize: 'var(--font-size-2xl)', marginTop: 'var(--space-2)' }}>Create Account</h1>
+            <h1 style={{ fontSize: 'var(--font-size-2xl)', marginTop: 'var(--space-2)' }}>{t('registerTitle', 'Create Account')}</h1>
             <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-1)' }}>
-              Join WeatherGPT for personalized weather intelligence
+              {t('registerDesc', 'Join WeatherGPT for personalized weather intelligence')}
             </p>
           </div>
 
@@ -58,7 +60,7 @@ export default function Register() {
           <form onSubmit={handleSubmit} id="register-form">
             <div style={{ marginBottom: 'var(--space-4)' }}>
               <label htmlFor="name" style={{ display: 'block', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', marginBottom: 'var(--space-2)' }}>
-                Full Name
+                {t('name', 'Full Name')}
               </label>
               <input
                 id="name"
@@ -74,7 +76,7 @@ export default function Register() {
 
             <div style={{ marginBottom: 'var(--space-4)' }}>
               <label htmlFor="reg-email" style={{ display: 'block', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', marginBottom: 'var(--space-2)' }}>
-                Email
+                {t('email', 'Email Address')}
               </label>
               <input
                 id="reg-email"
@@ -90,7 +92,7 @@ export default function Register() {
 
             <div style={{ marginBottom: 'var(--space-6)' }}>
               <label htmlFor="reg-password" style={{ display: 'block', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', marginBottom: 'var(--space-2)' }}>
-                Password <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>(min. 8 chars, 1 number)</span>
+                {t('password', 'Password')} <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>(min. 8 chars)</span>
               </label>
               <input
                 id="reg-password"
@@ -111,14 +113,14 @@ export default function Register() {
               disabled={loading}
               id="register-submit-btn"
             >
-              {loading ? <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> Creating account...</> : 'Create Account'}
+              {loading ? <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> {t('signUpBtn', 'Create Account')}...</> : t('signUpBtn', 'Create Account')}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', marginTop: 'var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
-            Already have an account?{' '}
+            {t('haveAccount', 'Already have an account?')}{' '}
             <Link to="/login" style={{ color: 'var(--color-primary)', fontWeight: 'var(--font-weight-semibold)' }}>
-              Sign in
+              {t('signInBtn', 'Sign In')}
             </Link>
           </p>
         </div>

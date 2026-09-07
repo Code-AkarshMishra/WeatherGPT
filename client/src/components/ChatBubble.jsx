@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Bot, User, Copy, Check, Volume2, VolumeX, ShieldAlert, Cpu, Sprout, Anchor } from 'lucide-react';
 import RiskGauge from './RiskGauge';
 import { calculateDynamicRiskScore } from './WeatherIntelligencePanel';
+import { useLanguage } from '../contexts/LanguageContext';
 import '../styles/chat.css';
 
 function formatTime(ts) {
@@ -11,6 +12,7 @@ function formatTime(ts) {
 }
 
 export default function ChatBubble({ message, showDebug }) {
+  const { t } = useLanguage();
   const isUser = message.role === 'user';
   const [copied, setCopied] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -126,23 +128,23 @@ export default function ChatBubble({ message, showDebug }) {
               <button
                 className={`bubble-action-btn ${isSpeaking ? 'active-speaking' : ''}`}
                 onClick={handleSpeak}
-                title={isSpeaking ? 'बोलना बंद करें / Stop Voice' : 'आवाज़ में सुनें / Listen in Hindi'}
-                aria-label="Listen to response"
-                style={{ color: isSpeaking ? '#22c55e' : undefined }}
+                title={isSpeaking ? t('stopSpeaking') : t('speak')}
+                aria-label={t('speak')}
+                style={{ color: isSpeaking ? 'var(--color-success)' : undefined }}
               >
                 {isSpeaking ? <VolumeX size={13} /> : <Volume2 size={13} />}
-                <span>{isSpeaking ? 'रोकें' : 'सुनें'}</span>
+                <span>{isSpeaking ? t('stopSpeaking') : t('speak')}</span>
               </button>
 
               {/* Copy Button */}
               <button
                 className="bubble-action-btn"
                 onClick={handleCopy}
-                title={copied ? 'Copied!' : 'Copy to clipboard'}
-                aria-label="Copy response"
+                title={copied ? t('copied') : t('copy')}
+                aria-label={t('copy')}
               >
-                {copied ? <Check size={12} style={{ color: '#10b981' }} /> : <Copy size={12} />}
-                <span>{copied ? 'Copied' : 'Copy'}</span>
+                {copied ? <Check size={12} style={{ color: 'var(--color-success)' }} /> : <Copy size={12} />}
+                <span>{copied ? t('copied') : t('copy')}</span>
               </button>
 
               {/* Provider Tag */}
@@ -152,9 +154,9 @@ export default function ChatBubble({ message, showDebug }) {
                     fontSize: '0.68rem',
                     padding: '2px 7px',
                     borderRadius: 9999,
-                    background: message.provider.includes('python') ? 'rgba(34, 197, 94, 0.15)' : 'rgba(56, 189, 248, 0.15)',
-                    border: message.provider.includes('python') ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid rgba(56, 189, 248, 0.4)',
-                    color: message.provider.includes('python') ? '#4ade80' : '#38bdf8',
+                    background: 'var(--color-primary-glow)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-primary)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: 4,
@@ -162,7 +164,7 @@ export default function ChatBubble({ message, showDebug }) {
                   title={`Processed via ${message.provider}`}
                 >
                   <Cpu size={10} />
-                  {message.provider === 'render-ml1-toolcalling' ? 'ML-1 Tool Calling' : 'Grounded Agent'}
+                  {message.provider.includes('ml') ? t('mlProvider') : t('groundedAgent')}
                 </span>
               )}
             </>

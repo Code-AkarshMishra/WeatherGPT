@@ -21,6 +21,7 @@ import AtmosphericCanvas from './AtmosphericCanvas';
 import HourlyTempSpline from './HourlyTempSpline';
 import DailyForecastCard from './DailyForecastCard';
 import { weatherAudio } from '../services/weatherAudio';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function WeatherAtmosphericCard({
   data,
@@ -28,6 +29,7 @@ export default function WeatherAtmosphericCard({
   onLocationChange,
   showFullDetails = true,
 }) {
+  const { t } = useLanguage();
   const [isMuted, setIsMuted] = useState(weatherAudio.getMuted());
   const [isSearching, setIsSearching] = useState(false);
   const [searchCity, setSearchCity] = useState('');
@@ -88,7 +90,7 @@ export default function WeatherAtmosphericCard({
     return (
       <div className="atmospheric-card-loading">
         <div className="spinner" />
-        <span>Loading live atmospheric weather...</span>
+        <span>{t('loadingAtmosphere', 'Loading live atmospheric weather...')}</span>
       </div>
     );
   }
@@ -120,7 +122,7 @@ export default function WeatherAtmosphericCard({
             <h1 className="atmospheric-city-name">{cityName}</h1>
             <span className="atmospheric-country">{data.country}</span>
             <span className="atmospheric-live-tag">
-              <span className="live-dot" /> LIVE ATMOSPHERE
+              <span className="live-dot" /> {t('liveAtmosphere', 'LIVE ATMOSPHERE')}
             </span>
           </div>
 
@@ -131,7 +133,7 @@ export default function WeatherAtmosphericCard({
               whileTap={{ scale: 0.92 }}
               onClick={handleAudioToggle}
               className={`atmospheric-btn ${!isMuted ? 'active-audio' : ''}`}
-              title={isMuted ? 'Unmute Ambient Sound' : 'Mute Ambient Sound'}
+              title={isMuted ? t('unmuteSound', 'Unmute Ambient Sound') : t('muteSound', 'Mute Ambient Sound')}
               aria-label="Toggle ambient weather sound"
             >
               {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -144,7 +146,7 @@ export default function WeatherAtmosphericCard({
               whileTap={{ scale: 0.92 }}
               onClick={handleUseGPS}
               className="atmospheric-btn"
-              title="Use current GPS location"
+              title={t('useLocation', 'Use GPS Location')}
               aria-label="Use current location"
             >
               <Navigation size={18} />
@@ -157,7 +159,7 @@ export default function WeatherAtmosphericCard({
                 type="text"
                 value={searchCity}
                 onChange={(e) => setSearchCity(e.target.value)}
-                placeholder="Search city (e.g. Lucknow, Tokyo)..."
+                placeholder={t('searchCity', 'Search city or district...')}
               />
               <button type="submit" disabled={geocoding}>
                 {geocoding ? '...' : <Search size={14} />}
@@ -217,7 +219,7 @@ export default function WeatherAtmosphericCard({
                   <span className="aqi-val-tag">{aqi.pm2_5}</span>
                 </div>
                 <span className="aqi-status-text" style={{ color: aqi.color }}>
-                  {aqi.label} Air Quality
+                  {aqi.label} {t('airQuality', 'Air Quality')}
                 </span>
               </div>
 
@@ -228,7 +230,7 @@ export default function WeatherAtmosphericCard({
               <div className="atmospheric-sub-status">
                 <span>{tempMin}° ~ {tempMax}°C</span>
                 <span className="atmospheric-dot-sep">•</span>
-                <span>Feels like {feelsLike}°C</span>
+                <span>{t('feelsLike', 'Feels like')} {feelsLike}°C</span>
               </div>
 
               {/* Hero Big Temperature */}
@@ -239,7 +241,7 @@ export default function WeatherAtmosphericCard({
               {/* Rain Probability Summary */}
               <div className="hero-rain-card">
                 <div className="hero-rain-header">
-                  <span>Precipitation Chance</span>
+                  <span>{t('precipitationChance', 'Precipitation Chance')}</span>
                   <span className="hero-rain-val">{rainProbability}%</span>
                 </div>
                 <div className="hero-rain-bar">
@@ -253,7 +255,7 @@ export default function WeatherAtmosphericCard({
               <div className="glass-card aqi-breakdown-card">
                 <div className="card-section-title">
                   <ShieldCheck size={16} />
-                  <span>Pollutant Levels (µg/m³)</span>
+                  <span>{t('pollutantLevels', 'Pollutant Levels (µg/m³)')}</span>
                 </div>
                 <div className="pollutant-grid">
                   <div className="pollutant-item">
@@ -283,7 +285,7 @@ export default function WeatherAtmosphericCard({
             <div className="glass-card spline-glass-card">
               <div className="card-section-title">
                 <Compass size={16} />
-                <span>24-Hour Temperature & Rain Trend</span>
+                <span>{t('trend24h', '24-Hour Temperature & Rain Trend')}</span>
               </div>
               <HourlyTempSpline
                 hourly={data.hourlyForecast || []}
@@ -299,7 +301,7 @@ export default function WeatherAtmosphericCard({
                 <div className="metric-chip">
                   <span className="metric-chip-icon"><Droplets size={18} /></span>
                   <div className="metric-chip-info">
-                    <span className="metric-chip-label">Humidity</span>
+                    <span className="metric-chip-label">{t('humidity', 'Humidity')}</span>
                     <span className="metric-chip-val">{data.humidity}%</span>
                   </div>
                 </div>
@@ -307,7 +309,7 @@ export default function WeatherAtmosphericCard({
                 <div className="metric-chip">
                   <span className="metric-chip-icon"><Wind size={18} /></span>
                   <div className="metric-chip-info">
-                    <span className="metric-chip-label">Wind Speed</span>
+                    <span className="metric-chip-label">{t('windSpeed', 'Wind Speed')}</span>
                     <span className="metric-chip-val">{data.windSpeed} km/h</span>
                   </div>
                 </div>
@@ -315,7 +317,7 @@ export default function WeatherAtmosphericCard({
                 <div className="metric-chip">
                   <span className="metric-chip-icon"><Gauge size={18} /></span>
                   <div className="metric-chip-info">
-                    <span className="metric-chip-label">Pressure</span>
+                    <span className="metric-chip-label">{t('pressure', 'Pressure')}</span>
                     <span className="metric-chip-val">{data.pressure} hPa</span>
                   </div>
                 </div>
@@ -323,7 +325,7 @@ export default function WeatherAtmosphericCard({
                 <div className="metric-chip">
                   <span className="metric-chip-icon"><Eye size={18} /></span>
                   <div className="metric-chip-info">
-                    <span className="metric-chip-label">Visibility</span>
+                    <span className="metric-chip-label">{t('visibility', 'Visibility')}</span>
                     <span className="metric-chip-val">{data.visibility ?? 10} km</span>
                   </div>
                 </div>
@@ -332,7 +334,7 @@ export default function WeatherAtmosphericCard({
                   <div className="metric-chip">
                     <span className="metric-chip-icon" style={{ color: '#fbbf24' }}><Sunrise size={18} /></span>
                     <div className="metric-chip-info">
-                      <span className="metric-chip-label">Sunrise</span>
+                      <span className="metric-chip-label">{t('sunrise', 'Sunrise')}</span>
                       <span className="metric-chip-val">{data.sunriseFormatted}</span>
                     </div>
                   </div>
@@ -342,7 +344,7 @@ export default function WeatherAtmosphericCard({
                   <div className="metric-chip">
                     <span className="metric-chip-icon" style={{ color: '#f97316' }}><Sunset size={18} /></span>
                     <div className="metric-chip-info">
-                      <span className="metric-chip-label">Sunset</span>
+                      <span className="metric-chip-label">{t('sunset', 'Sunset')}</span>
                       <span className="metric-chip-val">{data.sunsetFormatted}</span>
                     </div>
                   </div>
@@ -355,7 +357,7 @@ export default function WeatherAtmosphericCard({
           <div className="grid-col-forecast">
             <div className="glass-card forecast-glass-card">
               <div className="card-section-title">
-                <span>7-Day Weather Outlook</span>
+                <span>{t('dailyForecast', '7-Day Weather Outlook')}</span>
               </div>
               <DailyForecastCard daily={data.dailyForecast || []} />
             </div>

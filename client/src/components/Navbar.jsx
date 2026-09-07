@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -44,8 +43,8 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
         <span className="navbar-logo-icon">🌤️</span>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span className="logo-text">{t('appName')}</span>
-          <span style={{ fontSize: '0.62rem', fontWeight: 700, color: '#3b82f6', letterSpacing: '0.05em', lineHeight: 1 }}>
-            MoES • IMD
+          <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--color-primary, #0284c7)', letterSpacing: '0.05em', lineHeight: 1 }}>
+            {t('appSubtitle', 'MoES • IMD')}
           </span>
         </div>
       </NavLink>
@@ -61,12 +60,12 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
         </li>
         <li>
           <NavLink to="/weather" className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
-            Weather
+            {t('weather')}
           </NavLink>
         </li>
         <li>
           <NavLink to="/alerts" className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
-            Alerts & MoES
+            {t('alerts')}
           </NavLink>
         </li>
         <li>
@@ -91,16 +90,16 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
             gap: 6,
             padding: '4px 10px',
             borderRadius: 20,
-            background: 'rgba(34, 197, 94, 0.08)',
-            border: '1px solid rgba(34, 197, 94, 0.25)',
+            background: 'rgba(16, 185, 129, 0.1)',
+            border: '1px solid rgba(16, 185, 129, 0.25)',
             fontSize: '0.72rem',
             fontWeight: 600,
-            color: '#16a34a',
+            color: 'var(--color-success, #10b981)',
           }}
           title="MoES Live Radar + ML-2 Severe Weather RF Predictor Online"
         >
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }} />
-          <span>MoES & ML Live</span>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-success, #10b981)', display: 'inline-block', boxShadow: '0 0 6px var(--color-success, #10b981)' }} />
+          <span>{t('radarOnline', 'MoES Live Radar')}</span>
         </div>
 
         <LanguageToggle />

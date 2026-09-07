@@ -1,92 +1,191 @@
 /* ================================================================
-   WeatherGPT — Design System CSS Variables (Exact Black/Charcoal Theme)
-   Palette: Near-Black (#0b0f17), Charcoal (#111827), Graphite (#1f2937)
-   Semantic Status: Green (#22c55e), Yellow (#eab308), Red (#ef4444)
-   NO PURPLE allowed in design system.
+   WeatherGPT — Natural Meteorological Design System (CSS Variables)
+   Palette: Sky Blue, Cloud White, Rain Grey, Atmospheric Teal,
+            Sunlight Yellow, Living Green.
+   Full Light Mode & Dark Mode persistent dual-theme engine.
+   NO generic AI purple or neon cyber colors.
    ================================================================ */
 
-:root {
-  /* ── Core Palette (Dark Charcoal Command Center) ──────────────── */
-  --color-bg: #0b0f17;
-  --color-bg-card: #1f2937;
-  --color-bg-sidebar: #111827;
-  --color-bg-navbar: #111827;
-  --color-text-primary: #f9fafb;
-  --color-text-secondary: #d1d5db;
-  --color-text-muted: #9ca3af;
-  --color-border: #374151;
-  --color-border-light: rgba(255, 255, 255, 0.1);
+:root,
+:root[data-theme="dark"] {
+  /* ── Dark Theme (Deep Atmospheric Night / Midnight Slate) ── */
+  --color-bg: #0b1120;
+  --color-bg-alt: #0f172a;
+  --color-bg-card: #131d31;
+  --color-bg-card-hover: #1b2742;
+  --color-bg-card-glass: rgba(19, 29, 49, 0.82);
+  --color-bg-sidebar: #0f172a;
+  --color-bg-navbar: rgba(15, 23, 42, 0.92);
+  --color-bg-input: #1b263b;
 
-  /* ── Brand & Semantic Accent System (NO PURPLE) ────────────────── */
+  /* Text Hierarchy */
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+  --color-border: #24324d;
+  --color-border-light: rgba(255, 255, 255, 0.08);
+
+  /* Natural Weather Accents */
+  --color-sky-blue: #38bdf8;
   --color-primary: #38bdf8;
   --color-primary-dark: #0284c7;
   --color-primary-light: #7dd3fc;
-  --color-accent: #38bdf8;
+  --color-primary-glow: rgba(56, 189, 248, 0.18);
+  
+  --color-teal: #14b8a6;
+  --color-teal-dark: #0f766e;
+  --color-teal-light: #2dd4bf;
 
-  /* Semantic status colors */
-  --color-success: #22c55e;     /* Green — safe / clear */
-  --color-secondary: #eab308;   /* Yellow — caution / moderate risk */
-  --color-warning: #eab308;     /* Yellow — advisory */
-  --color-danger: #ef4444;      /* Red — severe warning / disaster */
+  --color-sunlight: #fbbf24;
+  --color-sunlight-warm: #f59e0b;
+  --color-sunlight-light: #fef3c7;
 
-  /* ── Chat Bubbles ──────────────────────────────────────────────── */
+  --color-rain-grey: #64748b;
+  --color-rain-grey-dark: #475569;
+  --color-cloud-white: #f8fafc;
+
+  --color-success: #10b981;       /* Living Green — safe / nominal */
+  --color-warning: #f59e0b;       /* Sunlight Amber — watch / moderate */
+  --color-secondary: #f59e0b;
+  --color-danger: #ef4444;        /* Storm Red — warning / severe */
+
+  /* Chat Bubbles */
   --color-bubble-user-bg: #0284c7;
   --color-bubble-user-text: #ffffff;
-  --color-bubble-ai-bg: #1f2937;
-  --color-bubble-ai-text: #f9fafb;
-  --color-bubble-ai-border: #374151;
+  --color-bubble-ai-bg: #152238;
+  --color-bubble-ai-text: #f8fafc;
+  --color-bubble-ai-border: #24324d;
 
-  /* ── Spacing Scale ─────────────────────────────────────────────── */
+  /* Gradients */
+  --grad-sky: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(20, 184, 166, 0.1) 100%);
+  --grad-sunlight: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(56, 189, 248, 0.08) 100%);
+  --grad-overcast: linear-gradient(135deg, rgba(100, 116, 139, 0.18) 0%, rgba(15, 23, 42, 0.4) 100%);
+  --grad-card-border: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(20, 184, 166, 0.1));
+
+  /* Shadows */
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.55);
+}
+
+:root[data-theme="light"] {
+  /* ── Light Theme (Fresh Morning Sky & Cloud White) ── */
+  --color-bg: #f0f7fc;
+  --color-bg-alt: #e6f1f8;
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #f8fafc;
+  --color-bg-card-glass: rgba(255, 255, 255, 0.88);
+  --color-bg-sidebar: #ffffff;
+  --color-bg-navbar: rgba(255, 255, 255, 0.92);
+  --color-bg-input: #f1f5f9;
+
+  /* Text Hierarchy */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+  --color-border: #cbd5e1;
+  --color-border-light: rgba(14, 165, 233, 0.15);
+
+  /* Natural Weather Accents */
+  --color-sky-blue: #0284c7;
+  --color-primary: #0284c7;
+  --color-primary-dark: #0369a1;
+  --color-primary-light: #38bdf8;
+  --color-primary-glow: rgba(2, 132, 199, 0.12);
+
+  --color-teal: #0f766e;
+  --color-teal-dark: #115e59;
+  --color-teal-light: #14b8a6;
+
+  --color-sunlight: #d97706;
+  --color-sunlight-warm: #b45309;
+  --color-sunlight-light: #fef3c7;
+
+  --color-rain-grey: #475569;
+  --color-rain-grey-dark: #1e293b;
+  --color-cloud-white: #ffffff;
+
+  --color-success: #059669;       /* Living Green */
+  --color-warning: #d97706;       /* Sunlight Amber */
+  --color-secondary: #d97706;
+  --color-danger: #dc2626;        /* Storm Red */
+
+  /* Chat Bubbles */
+  --color-bubble-user-bg: #0284c7;
+  --color-bubble-user-text: #ffffff;
+  --color-bubble-ai-bg: #f8fafc;
+  --color-bubble-ai-text: #0f172a;
+  --color-bubble-ai-border: #cbd5e1;
+
+  /* Gradients */
+  --grad-sky: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(15, 118, 110, 0.06) 100%);
+  --grad-sunlight: linear-gradient(135deg, rgba(217, 119, 6, 0.08) 0%, rgba(2, 132, 199, 0.05) 100%);
+  --grad-overcast: linear-gradient(135deg, rgba(71, 85, 105, 0.08) 0%, rgba(240, 247, 252, 0.6) 100%);
+  --grad-card-border: linear-gradient(135deg, rgba(2, 132, 199, 0.2), rgba(15, 118, 110, 0.1));
+
+  /* Shadows */
+  --shadow-sm: 0 1px 4px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+/* ── Common Sizing & Typography Tokens ── */
+:root {
+  /* Spacing Scale */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
+  --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
+  --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
 
-  /* ── Border Radius ─────────────────────────────────────────────── */
+  /* Border Radius */
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+  --radius-2xl: 24px;
   --radius-full: 9999px;
 
-  /* ── Typography ────────────────────────────────────────────────── */
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-weight-normal: 400;
+  --font-weight-medium: 500;
   --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
   --font-size-lg: 1.125rem;
   --font-size-xl: 1.25rem;
   --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.625;
 
-  /* ── Layout ────────────────────────────────────────────────────── */
-  --navbar-height: 60px;
-  --widget-height: 0px;
+  /* Layout */
+  --navbar-height: 62px;
   --sidebar-width: 260px;
   --sidebar-rail-width: 64px;
 
-  /* ── Shadows ───────────────────────────────────────────────────── */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* ── Transitions ───────────────────────────────────────────────── */
-  --transition-fast: 150ms ease;
-  --transition-base: 220ms ease;
-  --transition-slow: 350ms ease;
-
-  /* ── Z-index ───────────────────────────────────────────────────── */
-  --z-navbar: 100;
+  /* Z-indices */
+  --z-canvas: 1;
   --z-sidebar: 90;
-  --z-overlay: 200;
+  --z-navbar: 100;
   --z-modal: 300;
   --z-toast: 400;
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Search, Navigation, X, Building2 } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const POPULAR_CITIES = [
   { name: 'Lucknow', state: 'Uttar Pradesh', lat: 26.8467, lon: 80.9462 },
@@ -14,6 +15,7 @@ const POPULAR_CITIES = [
 ];
 
 export default function LocationSelectorModal({ isOpen, onClose, onSelectLocation, currentLocationName = 'Lucknow' }) {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -89,14 +91,14 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
           exit={{ scale: 0.9, opacity: 0, y: 10 }}
           onClick={(e) => e.stopPropagation()}
           style={{
-            background: 'rgba(15, 23, 42, 0.95)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
+            background: 'var(--color-bg-card, #1e293b)',
+            border: '1px solid var(--color-border, rgba(255, 255, 255, 0.15))',
             borderRadius: 18,
             width: '100%',
             maxWidth: 480,
             padding: 24,
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.6)',
-            color: '#f8fafc',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+            color: 'var(--color-text-primary, #f8fafc)',
           }}
         >
           {/* Header */}
@@ -104,13 +106,17 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <MapPin size={22} style={{ color: '#ef4444' }} />
               <div>
-                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Select Location</h3>
-                <span style={{ fontSize: 12, color: '#94a3b8' }}>Current: {currentLocationName}</span>
+                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  {t('selectLocation', 'Select Location')}
+                </h3>
+                <span style={{ fontSize: 12, color: 'var(--color-text-secondary, #94a3b8)' }}>
+                  {t('current', 'Current')}: {currentLocationName}
+                </span>
               </div>
             </div>
             <button
               onClick={onClose}
-              style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 4 }}
+              style={{ background: 'none', border: 'none', color: 'var(--color-text-secondary, #94a3b8)', cursor: 'pointer', padding: 4 }}
             >
               <X size={20} />
             </button>
@@ -119,20 +125,20 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
           {/* Search Form */}
           <form onSubmit={handleSearch} style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <div style={{ position: 'relative', flex: 1 }}>
-              <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+              <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-secondary, #94a3b8)' }} />
               <input
                 type="text"
                 autoFocus
-                placeholder="Search city (e.g. Lucknow, Delhi)..."
+                placeholder={t('searchCity', 'Search city or district...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '10px 12px 10px 38px',
-                  background: 'rgba(30, 41, 59, 0.8)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'var(--color-bg-secondary, rgba(30, 41, 59, 0.8))',
+                  border: '1px solid var(--color-border, rgba(255, 255, 255, 0.12))',
                   borderRadius: 10,
-                  color: '#fff',
+                  color: 'var(--color-text-primary, #fff)',
                   fontSize: 14,
                   outline: 'none',
                 }}
@@ -143,7 +149,7 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
               disabled={searching}
               style={{
                 padding: '0 16px',
-                background: '#3b82f6',
+                background: 'var(--color-primary, #0284c7)',
                 border: 'none',
                 borderRadius: 10,
                 color: '#fff',
@@ -152,7 +158,7 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
                 fontSize: 13,
               }}
             >
-              {searching ? '...' : 'Search'}
+              {searching ? '...' : t('search', 'Search')}
             </button>
           </form>
 
@@ -165,7 +171,7 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
               background: 'rgba(56, 189, 248, 0.12)',
               border: '1px solid rgba(56, 189, 248, 0.3)',
               borderRadius: 10,
-              color: '#38bdf8',
+              color: 'var(--color-primary, #0284c7)',
               fontWeight: 600,
               fontSize: 13,
               cursor: 'pointer',
@@ -177,14 +183,14 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
             }}
           >
             <Navigation size={16} />
-            <span>Use My Current GPS Location</span>
+            <span>{t('useLocation', 'Use My Current GPS Location')}</span>
           </button>
 
           {/* Search Results if any */}
           {searchResults.length > 0 && (
             <div style={{ marginBottom: 16 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                Search Result
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary, #94a3b8)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                {t('searchResult', 'Search Result')}
               </span>
               <div style={{ marginTop: 8 }}>
                 {searchResults.map((city, idx) => (
@@ -198,7 +204,7 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
                       background: 'rgba(34, 197, 94, 0.15)',
                       border: '1px solid rgba(34, 197, 94, 0.3)',
                       borderRadius: 10,
-                      color: '#fff',
+                      color: 'var(--color-text-primary, #fff)',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -206,7 +212,7 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
                     }}
                   >
                     <span style={{ fontWeight: 600 }}>{city.name}</span>
-                    <span style={{ fontSize: 12, color: '#94a3b8' }}>{city.state}</span>
+                    <span style={{ fontSize: 12, color: 'var(--color-text-secondary, #94a3b8)' }}>{city.state}</span>
                   </button>
                 ))}
               </div>
@@ -215,8 +221,8 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
 
           {/* Popular Cities Grid */}
           <div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              Popular Indian Cities
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary, #94a3b8)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              {t('popularCities', 'Popular Indian Cities')}
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8, maxHeight: 200, overflowY: 'auto' }}>
               {POPULAR_CITIES.map((city) => (
@@ -226,10 +232,10 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
                   style={{
                     textAlign: 'left',
                     padding: '8px 12px',
-                    background: currentLocationName === city.name ? 'rgba(59, 130, 246, 0.25)' : 'rgba(30, 41, 59, 0.6)',
-                    border: `1px solid ${currentLocationName === city.name ? '#3b82f6' : 'rgba(255, 255, 255, 0.08)'}`,
+                    background: currentLocationName === city.name ? 'rgba(2, 132, 199, 0.2)' : 'var(--color-bg-secondary, rgba(30, 41, 59, 0.6))',
+                    border: `1px solid ${currentLocationName === city.name ? 'var(--color-primary, #0284c7)' : 'var(--color-border, rgba(255, 255, 255, 0.08))'}`,
                     borderRadius: 8,
-                    color: '#fff',
+                    color: 'var(--color-text-primary, #fff)',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
@@ -237,7 +243,7 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
                   }}
                 >
                   <span style={{ fontSize: 13, fontWeight: 600 }}>📍 {city.name}</span>
-                  <span style={{ fontSize: 11, color: '#94a3b8' }}>{city.state}</span>
+                  <span style={{ fontSize: 11, color: 'var(--color-text-secondary, #94a3b8)' }}>{city.state}</span>
                 </button>
               ))}
             </div>

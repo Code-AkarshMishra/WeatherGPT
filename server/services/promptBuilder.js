@@ -248,7 +248,21 @@ Reference Indian standards and guidelines where applicable (NBC, CPWD, BIS).
  * @param {Object} entities - Extracted entities { intent, location, timeEntity, language }
  * @returns {string} Complete system prompt
  */
-function buildPrompt(roleId, weatherData, entities = {}) {
+const LANG_MAP = {
+  hi: 'Hindi (Devanagari script)',
+  bn: 'Bengali (বাংলা)',
+  te: 'Telugu (తెలుగు)',
+  mr: 'Marathi (मराठी)',
+  ta: 'Tamil (தமிழ்)',
+  gu: 'Gujarati (ગુજરાતી)',
+  kn: 'Kannada (ಕನ್ನಡ)',
+  pa: 'Punjabi (ਪੰਜਾਬੀ)',
+  ml: 'Malayalam (മലയാളം)',
+  or: 'Odia (ଓଡ଼ିଆ)',
+  en: 'English',
+};
+
+function buildPrompt(roleId, weatherData, entities = {}, userLang = 'en') {
   const weatherContext = formatWeatherContext(weatherData);
 
   // Get the role-specific prompt template, fallback to citizen
@@ -276,6 +290,11 @@ Use the forecast data if available; otherwise acknowledge the time horizon.\n`;
 Cross-check all available precipitation data. Provide specific flood risk assessment.
 Include: current risk level, recommended actions, and emergency contact resources.\n`;
     }
+  }
+
+  if (userLang && userLang !== 'en' && LANG_MAP[userLang]) {
+    prompt += `\nUSER PREFERRED LANGUAGE: ${LANG_MAP[userLang]}.
+Unless the user explicitly typed in English or requested another language, formulate your entire response and advisories in ${LANG_MAP[userLang]} for seamless regional communication.\n`;
   }
 
   return prompt;

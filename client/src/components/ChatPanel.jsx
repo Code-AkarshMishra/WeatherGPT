@@ -91,14 +91,14 @@ export default function ChatPanel({
               flexDirection: 'column',
               gap: 4
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#38bdf8', fontWeight: 600 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-primary)', fontWeight: 600 }}>
                 <span className="spinner" style={{ width: 12, height: 12, borderWidth: 2 }} />
-                <span>WeatherGPT AI Reasoning Pipeline...</span>
+                <span>{t('aiThinking')}</span>
               </div>
               <div style={{ fontSize: '0.75rem', opacity: 0.8, display: 'flex', gap: 12 }}>
-                <span style={{ color: '#4ade80' }}>✓ Location identified</span>
-                <span style={{ color: '#4ade80' }}>✓ Weather data retrieved</span>
-                <span style={{ color: '#facc15' }}>⟳ Analyzing risk...</span>
+                <span style={{ color: 'var(--color-success)' }}>✓ {t('locationSelected', 'Location')}</span>
+                <span style={{ color: 'var(--color-success)' }}>✓ {t('weather', 'Weather')}</span>
+                <span style={{ color: 'var(--color-warning)' }}>⟳ {t('alerts', 'Risk')}</span>
               </div>
             </div>
           </motion.div>
@@ -120,19 +120,19 @@ export default function ChatPanel({
           gap: 6,
           padding: '6px 14px',
           overflowX: 'auto',
-          background: 'rgba(15, 23, 42, 0.4)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          background: 'var(--color-bg-card)',
+          borderTop: '1px solid var(--color-border)',
         }}>
           {POPUP_PILLS.map((pill, idx) => (
             <button
               key={idx}
               onClick={() => onFeatureSelect && onFeatureSelect(pill.query)}
               style={{
-                background: 'rgba(56, 189, 248, 0.08)',
-                border: '1px solid rgba(56, 189, 248, 0.2)',
+                background: 'var(--color-primary-glow)',
+                border: '1px solid var(--color-border)',
                 borderRadius: 9999,
                 padding: '4px 10px',
-                color: '#38bdf8',
+                color: 'var(--color-primary)',
                 fontSize: '0.75rem',
                 fontWeight: 500,
                 whiteSpace: 'nowrap',
@@ -140,10 +140,10 @@ export default function ChatPanel({
                 transition: 'all 0.15s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(56, 189, 248, 0.2)';
+                e.currentTarget.style.background = 'var(--color-border-light)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)';
+                e.currentTarget.style.background = 'var(--color-primary-glow)';
               }}
             >
               {pill.label}
@@ -157,7 +157,7 @@ export default function ChatPanel({
         <div className="role-suggestion" role="alert" aria-live="polite">
           <span>💡</span>
           <span>
-            {t('switchRoleHint')} <strong>{ROLE_LABELS[suggestedRole] || suggestedRole}</strong> role.
+            {t('switchRoleHint')} <strong>{t(suggestedRole, ROLE_LABELS[suggestedRole] || suggestedRole)}</strong>
           </span>
           <button
             className="role-suggestion-btn"

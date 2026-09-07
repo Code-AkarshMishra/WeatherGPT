@@ -137,7 +137,7 @@ export default function Sidebar({ selectedRole, onRoleChange, onFeatureSelect, i
             ) : (
               roles.map((r) => (
                 <option key={r.roleId} value={r.roleId}>
-                  {r.icon} {r.name}
+                  {r.icon} {t(r.roleId, r.name)}
                 </option>
               ))
             )}

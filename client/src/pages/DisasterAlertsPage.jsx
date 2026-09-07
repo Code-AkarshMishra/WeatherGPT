@@ -4,10 +4,12 @@ import DisasterAdvisoryCard from '../components/DisasterAdvisoryCard';
 import RoadmapNext from '../components/RoadmapNext';
 import { useWeather } from '../hooks/useWeather';
 import { useGeolocation } from '../hooks/useGeolocation';
+import { useLanguage } from '../contexts/LanguageContext';
 import { ShieldAlert, MapPin, Search, Navigation, Info, AlertTriangle, Sprout, Anchor } from 'lucide-react';
 import '../styles/atmospheric.css';
 
 export default function DisasterAlertsPage() {
+  const { t } = useLanguage();
   const { lat: geoLat, lon: geoLon } = useGeolocation();
   const [overrideLat, setOverrideLat] = useState(null);
   const [overrideLon, setOverrideLon] = useState(null);
@@ -86,8 +88,8 @@ export default function DisasterAlertsPage() {
           {/* Header Banner */}
           <div
             style={{
-              background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85))',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              background: 'var(--color-bg-card)',
+              border: '1px solid var(--color-border)',
               borderRadius: 24,
               padding: '24px 28px',
               display: 'flex',
@@ -95,9 +97,9 @@ export default function DisasterAlertsPage() {
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               gap: 16,
-              boxShadow: '0 20px 45px rgba(0, 0, 0, 0.35)',
+              boxShadow: 'var(--shadow-md)',
               backdropFilter: 'blur(20px)',
-              color: '#ffffff',
+              color: 'var(--color-text-primary)',
             }}
           >
             <div>
@@ -106,9 +108,9 @@ export default function DisasterAlertsPage() {
                   style={{
                     padding: '6px 12px',
                     borderRadius: 9999,
-                    background: 'rgba(239, 68, 68, 0.18)',
-                    border: '1px solid rgba(239, 68, 68, 0.4)',
-                    color: '#f87171',
+                    background: 'rgba(239, 68, 68, 0.15)',
+                    border: '1px solid rgba(239, 68, 68, 0.35)',
+                    color: 'var(--color-danger)',
                     fontSize: '0.75rem',
                     fontWeight: 800,
                     letterSpacing: '0.04em',
@@ -117,17 +119,17 @@ export default function DisasterAlertsPage() {
                     gap: 6,
                   }}
                 >
-                  <ShieldAlert size={14} /> MoES & IMD INTELLIGENCE
+                  <ShieldAlert size={14} /> {t('alerts', 'MoES & IMD INTELLIGENCE')}
                 </span>
-                <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.65)' }}>
-                  Active Location: <strong style={{ color: '#ffffff' }}>{cityName}</strong>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                  {t('locationSelected', 'Active Location')}: <strong style={{ color: 'var(--color-text-primary)' }}>{cityName}</strong>
                 </span>
               </div>
-              <h1 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
-                Disaster & Severe-Weather Risk Center
+              <h1 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
+                {t('alertsTitle')}
               </h1>
-              <p style={{ margin: '4px 0 0', fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.75)' }}>
-                MoES Machine Learning Decision Matrix, IMD Color Alerts, Farmer & Marine Advisories.
+              <p style={{ margin: '4px 0 0', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
+                {t('alertsSubtitle')}
               </p>
             </div>
 
@@ -136,22 +138,39 @@ export default function DisasterAlertsPage() {
               <button
                 onClick={handleUseGPS}
                 className="atmospheric-btn"
-                title="Use GPS Location"
-                aria-label="Use GPS"
+                title={t('useLocation')}
+                aria-label={t('useLocation')}
+                style={{
+                  background: 'var(--color-bg-card)',
+                  borderColor: 'var(--color-border)',
+                  color: 'var(--color-text-primary)',
+                }}
               >
                 <Navigation size={18} />
               </button>
 
-              <form onSubmit={handleGeocode} className="atmospheric-search-form">
-                <MapPin size={15} style={{ color: '#ef4444' }} />
+              <form
+                onSubmit={handleGeocode}
+                className="atmospheric-search-form"
+                style={{
+                  background: 'var(--color-bg-card)',
+                  borderColor: 'var(--color-border)',
+                }}
+              >
+                <MapPin size={15} style={{ color: 'var(--color-danger)' }} />
                 <input
                   type="text"
                   value={searchCity}
                   onChange={(e) => setSearchCity(e.target.value)}
-                  placeholder="Change city..."
-                  style={{ width: 140 }}
+                  placeholder={t('searchCity')}
+                  style={{ width: 140, color: 'var(--color-text-primary)' }}
                 />
-                <button type="submit" disabled={geocoding}>
+                <button
+                  type="submit"
+                  disabled={geocoding}
+                  style={{ background: 'var(--color-primary)' }}
+                  aria-label={t('searchCity')}
+                >
                   <Search size={14} />
                 </button>
               </form>
@@ -167,24 +186,28 @@ export default function DisasterAlertsPage() {
           {/* Strategic Context Cards (Farmer + Marine focus) */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
             {/* Farmer Focus */}
-            <div className="glass-card" style={{ padding: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, color: '#4ade80' }}>
+            <div className="glass-card" style={{ padding: 20, background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, color: 'var(--color-success)' }}>
                 <Sprout size={18} />
-                <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 700 }}>कृषि मौसम सलाह (Farmer Priority)</h3>
+                <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  {t('farmerAdvisoryTitle')}
+                </h3>
               </div>
-              <p style={{ fontSize: '0.84rem', color: 'rgba(255,255,255,0.78)', lineHeight: 1.5, margin: 0 }}>
-                MoES disaster intelligence actively monitors soil saturation, 3-hour precipitation bursts, and squall velocity to prevent Kharif/Rabi crop lodging and fertilizer runoff.
+              <p style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
+                {t('farmerDesc')}
               </p>
             </div>
 
             {/* Marine Focus */}
-            <div className="glass-card" style={{ padding: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, color: '#38bdf8' }}>
+            <div className="glass-card" style={{ padding: 20, background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, color: 'var(--color-primary)' }}>
                 <Anchor size={18} />
-                <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 700 }}>तटीय एवं समुद्री सुरक्षा (Marine Priority)</h3>
+                <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  {t('marineAdvisoryTitle')}
+                </h3>
               </div>
-              <p style={{ fontSize: '0.84rem', color: 'rgba(255,255,255,0.78)', lineHeight: 1.5, margin: 0 }}>
-                Dedicated coastal surge and sea-chop monitoring alerts artisanal fishermen and small craft operators before gale-force winds reach nearshore waters.
+              <p style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
+                {t('marineDesc')}
               </p>
             </div>
           </div>
