@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
 import { Bot, User, Copy, Check, Volume2, VolumeX, ShieldAlert, Cpu, Sprout, Anchor } from 'lucide-react';
+import RiskGauge from './RiskGauge';
+import { calculateDynamicRiskScore } from './WeatherIntelligencePanel';
 import '../styles/chat.css';
 
 function formatTime(ts) {
@@ -62,8 +64,26 @@ export default function ChatBubble({ message, showDebug }) {
     };
   }, [isSpeaking]);
 
-  const imdRisk = message.weather?.disasterRisk;
-  const imdColor = imdRisk?.imdColorCode || null;
+  const imdRisk = message.weather?.disasterRisk || message.disaster_risk;
+  const imdColor = imdRisk?.imdColorCode || imdRisk?.imd_color_code || null;
+  const riskScore = calculateDynamicRiskScore(message.weather || {});
+
+  // Determine if Speedometer / Risk Gauge should be rendered for this message
+  const msgText = (message.content || '').toLowerCase();
+  const intent = message.nlp?.intent || '';
+  const isRiskIntent =
+    intent.includes('disaster') ||
+    intent.includes('flood') ||
+    intent.includes('warning') ||
+    intent.includes('alert') ||
+    ['RED', 'ORANGE'].includes(imdColor) ||
+    msgText.includes('risk') ||
+    msgText.includes('hazard') ||
+    msgText.includes('gauge') ||
+    msgText.includes('warning') ||
+    msgText.includes('danger') ||
+    msgText.includes('speedometer') ||
+    msgText.includes('alert');
 
   return (
     <motion.div
@@ -78,7 +98,7 @@ export default function ChatBubble({ message, showDebug }) {
       </div>
 
       <div className="bubble-content-wrapper">
-        {/* Message bubble */}
+        {/* Clean Message bubble */}
         <div
           className={`bubble bubble--${isUser ? 'user' : 'ai'}`}
           role="article"
@@ -95,57 +115,6 @@ export default function ChatBubble({ message, showDebug }) {
           )}
         </div>
 
-        {/* IMD Warning / Disaster Advisory Banner attached to response */}
-        {!isUser && imdRisk && (
-          <div
-            style={{
-              marginTop: 6,
-              padding: '8px 12px',
-              borderRadius: 10,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-              fontSize: '0.78rem',
-              background:
-                imdColor === 'RED'
-                  ? 'rgba(239, 68, 68, 0.15)'
-                  : imdColor === 'ORANGE'
-                  ? 'rgba(249, 115, 22, 0.15)'
-                  : imdColor === 'YELLOW'
-                  ? 'rgba(234, 179, 8, 0.15)'
-                  : 'rgba(34, 197, 94, 0.12)',
-              border: `1px solid ${
-                imdColor === 'RED'
-                  ? '#ef4444'
-                  : imdColor === 'ORANGE'
-                  ? '#f97316'
-                  : imdColor === 'YELLOW'
-                  ? '#eab308'
-                  : '#22c55e'
-              }`,
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <ShieldAlert size={14} />
-                IMD {imdColor} ALERT ({imdRisk.riskAssessment} Risk)
-              </span>
-              <span style={{ opacity: 0.8, fontSize: '0.7rem' }}>{imdRisk.statusTextHi}</span>
-            </div>
-            {imdRisk.farmerAdvisory?.hi && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 2, opacity: 0.9 }}>
-                <Sprout size={13} style={{ flexShrink: 0, marginTop: 2, color: '#4ade80' }} />
-                <span><strong>किसान सलाह:</strong> {imdRisk.farmerAdvisory.hi}</span>
-              </div>
-            )}
-            {imdRisk.marineAdvisory?.hi && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, opacity: 0.9 }}>
-                <Anchor size={13} style={{ flexShrink: 0, marginTop: 2, color: '#38bdf8' }} />
-                <span><strong>तटीय / मरीन:</strong> {imdRisk.marineAdvisory.hi}</span>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Meta row */}
         <div className="bubble-meta">
@@ -183,9 +152,9 @@ export default function ChatBubble({ message, showDebug }) {
                     fontSize: '0.68rem',
                     padding: '2px 7px',
                     borderRadius: 9999,
-                    background: message.provider.includes('ml1') ? 'rgba(34, 197, 94, 0.15)' : 'rgba(99, 102, 241, 0.15)',
-                    border: message.provider.includes('ml1') ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid rgba(99, 102, 241, 0.4)',
-                    color: message.provider.includes('ml1') ? '#4ade80' : '#818cf8',
+                    background: message.provider.includes('python') ? 'rgba(34, 197, 94, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                    border: message.provider.includes('python') ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid rgba(56, 189, 248, 0.4)',
+                    color: message.provider.includes('python') ? '#4ade80' : '#38bdf8',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: 4,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   User,
@@ -10,7 +10,8 @@ import {
   Globe,
   Building2,
   Sparkles,
-  Zap,
+  ChevronDown,
+  Check,
 } from 'lucide-react';
 import api from '../services/api';
 import '../styles/roledock.css';
@@ -31,95 +32,48 @@ const DEFAULT_ROLES_DATA = [
     roleId: 'citizen',
     name: 'Citizen',
     description: 'Everyday forecasts, rain alerts, and simple outdoor tips.',
-    features: [
-      { label: "Today's Weather", query: 'What is the weather like today? Should I carry an umbrella?', icon: '☂️' },
-      { label: 'Week Forecast', query: 'What is the 7-day weather forecast?', icon: '📅' },
-      { label: 'Storm Alert', query: 'Are there any storm or severe weather alerts for my area?', icon: '⛈️' },
-      { label: 'Air Quality', query: 'What is the air quality like today?', icon: '💨' },
-    ],
   },
   {
     roleId: 'farmer',
-    name: 'Farmer',
+    name: 'Farmer / Crop Advisory',
     description: 'Crop advisory, sowing windows, irrigation, and pest hazard alerts.',
-    features: [
-      { label: 'Crop Advisory', query: 'What crops should I sow this week given the weather?', icon: '🌱' },
-      { label: 'Rain Forecast', query: 'Will it rain in the next 3 days? Is irrigation needed?', icon: '🌧️' },
-      { label: 'Pest Risk', query: 'What is the pest/disease risk for my crops given current humidity?', icon: '🐛' },
-      { label: 'Frost Alert', query: 'Is there a frost risk tonight? How should I protect my crops?', icon: '❄️' },
-    ],
   },
   {
     roleId: 'researcher',
     name: 'Researcher',
     description: 'Meteorological anomaly tracking, climate baselines, and monsoon trends.',
-    features: [
-      { label: 'Climate Trends', query: 'Analyze temperature and rainfall trends for this region.', icon: '📊' },
-      { label: 'Anomaly Analysis', query: 'Are current conditions anomalous compared to historical baselines?', icon: '📈' },
-      { label: 'Monsoon Analysis', query: 'Analyze the current monsoon pattern and compare to normal.', icon: '🌀' },
-      { label: 'ENSO Impact', query: 'How is El Niño/La Niña affecting weather patterns here?', icon: '🌊' },
-    ],
   },
   {
     roleId: 'aviation',
     name: 'Aviation',
     description: 'Cruising turbulence, flight hazard briefings, icing, and runway ceiling.',
-    features: [
-      { label: 'Pre-Flight Brief', query: 'Give me a pre-flight weather briefing for my route.', icon: '📋' },
-      { label: 'Turbulence', query: 'What are the turbulence conditions at cruising altitude?', icon: '〰️' },
-      { label: 'Icing Alert', query: 'Are there icing conditions at any altitude on my route?', icon: '🧊' },
-      { label: 'Visibility', query: 'What is the current visibility and ceiling at my destination?', icon: '👁️' },
-    ],
   },
   {
     roleId: 'marine',
     name: 'Marine',
     description: 'Wave state, coastal winds, cyclone tracks, and fishing safety.',
-    features: [
-      { label: 'Sea Conditions', query: 'What are the current sea state and wave height conditions?', icon: '🌊' },
-      { label: 'Cyclone Alert', query: 'Are there any active cyclone or tropical storm alerts?', icon: '🌀' },
-      { label: 'Fishing Safety', query: 'Is it safe for fishing boats to go out today?', icon: '🎣' },
-      { label: 'Port Conditions', query: 'What are the wind and sea conditions at the nearest port?', icon: '🚢' },
-    ],
   },
   {
     roleId: 'flood_disaster',
-    name: 'Disaster / Flood',
+    name: 'Flood & Disaster',
     description: 'Flood risk mapping, evacuation triggers, and river level surge warnings.',
-    features: [
-      { label: 'Flood Alerts', query: 'Are there any flood alerts or warnings for this region?', icon: '🔴' },
-      { label: 'Kerala Risk', query: 'What is the current flood risk for Kerala? Any alerts?', icon: '⚠️' },
-      { label: 'Nepal Floods', query: 'What is the flood situation in Nepal? Any danger zones?', icon: '🏔️' },
-      { label: 'Evacuation Guide', query: 'Should residents evacuate? What are the evacuation priorities?', icon: '🏃' },
-    ],
   },
   {
     roleId: 'climate_analyst',
     name: 'Climate Analyst',
     description: 'Long-term decadal trends, ENSO phase shifts, and heatwave analysis.',
-    features: [
-      { label: 'Climate Trends', query: 'What are the long-term temperature trends for this region?', icon: '📈' },
-      { label: 'ENSO Status', query: 'What is the current ENSO status and its impact on the monsoon?', icon: '🌊' },
-      { label: 'Extreme Events', query: 'How has the frequency of extreme weather events changed?', icon: '⛈️' },
-      { label: 'IOD Impact', query: 'What is the Indian Ocean Dipole status and monsoon impact?', icon: '🌡️' },
-    ],
   },
   {
     roleId: 'urban_planner',
     name: 'Urban Planner',
     description: 'Urban heat islands, stormwater drainage capacity, and green infrastructure.',
-    features: [
-      { label: 'Urban Heat', query: 'What is the urban heat island intensity for this city today?', icon: '🌡️' },
-      { label: 'Flood Risk', query: 'Which urban zones are at highest flood/waterlogging risk?', icon: '🏘️' },
-      { label: 'Green Cover', query: 'What green infrastructure interventions would help most?', icon: '🌳' },
-      { label: 'Storm Drain', query: 'Is the stormwater drainage system adequate for today\'s rainfall?', icon: '🔧' },
-    ],
   },
 ];
 
-export default function RoleDock({ selectedRole, onRoleChange, onFeatureSelect }) {
+export default function RoleDock({ selectedRole, onRoleChange }) {
   const [roles, setRoles] = useState(DEFAULT_ROLES_DATA);
-  const [hoveredRoleId, setHoveredRoleId] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     api.get('/api/roles')
@@ -131,109 +85,158 @@ export default function RoleDock({ selectedRole, onRoleChange, onFeatureSelect }
       .catch(() => {});
   }, []);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const activeRoleData = roles.find((r) => r.roleId === selectedRole) || roles[0];
-  const activeFeatures = activeRoleData?.features || [];
+  const ActiveIcon = ROLE_ICON_MAP[activeRoleData.roleId] || User;
 
   return (
-    <div className="role-dock-container">
-      {/* Dock Header */}
-      {/* Sleek Professional Role Bar */}
-      <div className="role-dock-header">
-        <div className="role-dock-title">
-          <Sparkles className="role-dock-sparkle" size={13} />
-          <span>Operational Role</span>
-        </div>
-        <span className="role-dock-hint">
-          Click to switch specialized intelligence context
-        </span>
+    <div
+      ref={dropdownRef}
+      style={{
+        position: 'relative',
+        zIndex: 50,
+        padding: '10px 16px',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        background: 'rgba(11, 15, 23, 0.4)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: '#9ca3af', fontWeight: 600 }}>
+        <Sparkles size={13} style={{ color: '#38bdf8' }} />
+        <span>Operational Intelligence Context:</span>
       </div>
 
-      {/* Role Items Horizontal Dock */}
-      <div className="role-dock-scroll">
-        {roles.map((role) => {
-          const isActive = role.roleId === selectedRole;
-          const isHovered = hoveredRoleId === role.roleId;
-          const IconComp = ROLE_ICON_MAP[role.roleId] || User;
+      {/* Dropdown Trigger Button */}
+      <div style={{ position: 'relative' }}>
+        <button
+          type="button"
+          onClick={() => setIsOpen((open) => !open)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'rgba(31, 41, 55, 0.85)',
+            border: '1px solid rgba(56, 189, 248, 0.3)',
+            borderRadius: 9999,
+            padding: '6px 14px',
+            color: '#f8fafc',
+            fontSize: '0.82rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.25)',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          <ActiveIcon size={14} style={{ color: '#38bdf8' }} />
+          <span>{activeRoleData.name}</span>
+          <ChevronDown size={14} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', opacity: 0.7 }} />
+        </button>
 
-          return (
-            <div
-              key={role.roleId}
-              style={{ position: 'relative' }}
-              onMouseEnter={() => setHoveredRoleId(role.roleId)}
-              onMouseLeave={() => setHoveredRoleId(null)}
+        {/* Dropdown Menu Popup */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 6, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4, scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 6px)',
+                right: 0,
+                width: 310,
+                background: '#111827',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                borderRadius: 14,
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.6)',
+                padding: '6px',
+                zIndex: 100,
+                maxHeight: 360,
+                overflowY: 'auto',
+              }}
             >
-              <motion.button
-                className={`role-dock-item${isActive ? ' active' : ''}`}
-                onClick={() => onRoleChange(role.roleId)}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                aria-pressed={isActive}
-              >
-                {isActive && (
-                  <motion.div
-                    className="role-dock-active-bg"
-                    layoutId="roleDockActivePill"
-                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <div className="role-dock-item-content">
-                  <span className="role-dock-icon">
-                    <IconComp size={14} />
-                  </span>
-                  <span>{role.name}</span>
-                </div>
-              </motion.button>
+              <div style={{ padding: '6px 10px 4px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Select Meteorological Context
+              </div>
 
-              {/* Floating Tooltip on Hover */}
-              <AnimatePresence>
-                {isHovered && (
-                  <motion.div
-                    className="role-floating-tooltip"
-                    initial={{ opacity: 0, y: 6, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 4, scale: 0.96 }}
-                    transition={{ duration: 0.15, ease: 'easeOut' }}
+              {roles.map((role) => {
+                const isSelected = role.roleId === selectedRole;
+                const Icon = ROLE_ICON_MAP[role.roleId] || User;
+
+                return (
+                  <button
+                    key={role.roleId}
+                    type="button"
+                    onClick={() => {
+                      onRoleChange(role.roleId);
+                      setIsOpen(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                      padding: '8px 10px',
+                      borderRadius: 10,
+                      background: isSelected ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+                      border: 'none',
+                      color: isSelected ? '#38bdf8' : '#e2e8f0',
+                      cursor: 'pointer',
+                      transition: 'background 0.12s ease',
+                      marginBottom: 2,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) e.currentTarget.style.background = 'transparent';
+                    }}
                   >
-                    <div className="role-floating-arrow" />
-                    <div className="role-floating-header">
-                      <div className="role-floating-title">
-                        <IconComp size={15} style={{ color: 'var(--color-primary)' }} />
-                        <span>{role.name}</span>
-                      </div>
-                      <span className="role-floating-badge">
-                        {isActive ? 'Active Context' : 'Click to Select'}
-                      </span>
+                    <div
+                      style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: 7,
+                        background: isSelected ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        marginTop: 1,
+                      }}
+                    >
+                      <Icon size={14} style={{ color: isSelected ? '#38bdf8' : '#9ca3af' }} />
                     </div>
 
-                    <p className="role-floating-desc">{role.description}</p>
-
-                    {role.features && role.features.length > 0 && (
-                      <div>
-                        <div className="role-floating-features-title">Suggested Inquiries</div>
-                        <div className="role-floating-chips">
-                          {role.features.map((feat, idx) => (
-                            <button
-                              key={idx}
-                              className="role-floating-chip"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (!isActive) onRoleChange(role.roleId);
-                                onFeatureSelect(feat.query);
-                              }}
-                            >
-                              <span>{feat.icon} {feat.label}</span>
-                            </button>
-                          ))}
-                        </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: '0.83rem', fontWeight: 600 }}>{role.name}</span>
+                        {isSelected && <Check size={14} style={{ color: '#38bdf8' }} />}
                       </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          );
-        })}
+                      <span style={{ fontSize: '0.72rem', color: '#9ca3af', lineHeight: 1.3 }}>{role.description}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
 }
+

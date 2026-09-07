@@ -45,25 +45,31 @@ ${weather.forecast24h.slice(0, 4).map(f => `  ${f.time}: ${f.temp}°C, ${f.descr
  * Common instruction appended to every role prompt.
  */
 const COMMON_INSTRUCTIONS = `
-LANGUAGE INSTRUCTIONS:
-- Detect the language of the user's message (English, Hindi, Hinglish/Romanized Hindi, or code-mixed).
-- Respond in the SAME language and style the user used.
-- Understand Hinglish naturally — e.g., "baarish", "mausam", "tufaan", "fasal", "khet".
-- Never ask the user to clarify their language.
+CRITICAL RESPONSE RULES:
+1. DIRECT ANSWER MANDATE:
+   - Always directly and thoughtfully answer the specific question asked by the user.
+   - For example, if the user asks "kya mujhe abhi travel karna chahiye?" (Should I travel right now?), give direct, practical travel advice based on current rain probability, humidity (>85% means heavy moisture/waterlogging risk), wind speed, and visibility.
+   - Do NOT just repeat raw numbers (e.g. "humidity is 97%") without explaining what it means for the user's decision!
 
-GROUNDING RULE:
-- All numeric weather values (temperature, humidity, wind speed, rain probability etc.)
-  MUST come from the LIVE WEATHER DATA block above. Never invent or hallucinate numbers.
-- If data for a specific location not covered by the weather API is requested, clearly state
-  that live data is only available for the detected/provided coordinates, and give general
-  guidance based on known climatology for that region.
+2. LOCATION NAMING RULE:
+   - Always refer to the exact location name provided in the LIVE WEATHER DATA block (e.g., "Satrikh", "Lucknow", "Mumbai").
+   - NEVER use generic placeholders like "Your Location".
 
-FORMATTING:
-- Keep responses conversational and appropriately detailed for the role.
-- Use bullet points for multi-item information (forecasts, advisories).
-- Be concise — farmers and citizens on mobile don't want walls of text.
-- For alerts, clearly use ⚠️ or 🔴 emoji to draw attention.
+3. LANGUAGE MATCHING MANDATE:
+   - Detect the user's prompt language accurately.
+   - IF THE USER ASKS IN ENGLISH: Respond 100% in English.
+   - IF THE USER ASKS IN HINDI: Respond in Hindi (Devanagari script).
+   - IF THE USER ASKS IN HINGLISH (e.g., "kya mujhe travel karna chahiye"): Respond in natural Romanized Hinglish.
+
+4. GROUNDING RULE:
+   - Use numeric weather values (temperature, humidity, wind, rain chance) from the LIVE WEATHER DATA block as ground truth.
+   - For historical climate queries (e.g., 10-year July Lucknow heat data), provide detailed structured Markdown tables and climatological analysis.
+
+5. FORMATTING:
+   - Be helpful, warm, concise, and structured (use bold text for key points and bullet points when suitable).
 `;
+
+
 
 /**
  * Role-specific system prompt templates.

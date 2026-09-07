@@ -139,32 +139,52 @@ export default function AtmosphericCanvas({ condition = 'clear', rainProbability
 
       ctx.clearRect(0, 0, width, height);
 
-      // 1. SKY BASE GRADIENT
-      let skyGrad = ctx.createLinearGradient(0, 0, 0, height);
-      if (condition === 'storm') {
-        skyGrad.addColorStop(0, '#1c2438');
-        skyGrad.addColorStop(0.5, '#25334d');
-        skyGrad.addColorStop(1, '#1b2333');
-      } else if (condition === 'rain') {
-        skyGrad.addColorStop(0, '#2d3b4e');
-        skyGrad.addColorStop(0.6, '#38485e');
-        skyGrad.addColorStop(1, '#2c3746');
-      } else if (condition === 'cloudy') {
-        skyGrad.addColorStop(0, '#3a4b60');
-        skyGrad.addColorStop(0.7, '#4e627d');
-        skyGrad.addColorStop(1, '#3b4756');
-      } else if (condition === 'snow') {
-        skyGrad.addColorStop(0, '#374151');
-        skyGrad.addColorStop(0.7, '#4b5563');
-        skyGrad.addColorStop(1, '#374151');
-      } else {
-        // clear / sunny
-        skyGrad.addColorStop(0, '#1e3a8a');
-        skyGrad.addColorStop(0.4, '#2563eb');
-        skyGrad.addColorStop(1, '#0284c7');
-      }
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, width, height);
+    // Check prefers-reduced-motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Night detection: condition is night or local hour is >= 19 or <= 5
+    const currentHour = new Date().getHours();
+    const isNight = condition === 'night' || (condition === 'clear' && (currentHour >= 19 || currentHour <= 5));
+
+    // Twinkling stars for night
+    const stars = isNight ? Array.from({ length: 60 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * (height * 0.7),
+      radius: 0.8 + Math.random() * 1.8,
+      alpha: Math.random(),
+      speed: 0.01 + Math.random() * 0.03,
+    })) : [];
+
+    // 1. SKY BASE GRADIENT
+    let skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+    if (isNight) {
+      skyGrad.addColorStop(0, '#090d16');
+      skyGrad.addColorStop(0.6, '#0f172a');
+      skyGrad.addColorStop(1, '#1e1b4b');
+    } else if (condition === 'storm') {
+      skyGrad.addColorStop(0, '#1c2438');
+      skyGrad.addColorStop(0.5, '#25334d');
+      skyGrad.addColorStop(1, '#1b2333');
+    } else if (condition === 'rain') {
+      skyGrad.addColorStop(0, '#2d3b4e');
+      skyGrad.addColorStop(0.6, '#38485e');
+      skyGrad.addColorStop(1, '#2c3746');
+    } else if (condition === 'cloudy') {
+      skyGrad.addColorStop(0, '#3a4b60');
+      skyGrad.addColorStop(0.7, '#4e627d');
+      skyGrad.addColorStop(1, '#3b4756');
+    } else if (condition === 'snow') {
+      skyGrad.addColorStop(0, '#374151');
+      skyGrad.addColorStop(0.7, '#4b5563');
+      skyGrad.addColorStop(1, '#374151');
+    } else {
+      // clear / sunny
+      skyGrad.addColorStop(0, '#1e3a8a');
+      skyGrad.addColorStop(0.4, '#2563eb');
+      skyGrad.addColorStop(1, '#0284c7');
+    }
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, width, height);
 
       // 2. SUN RAYS / SOLAR AURA (FOR CLEAR)
       if (condition === 'clear') {

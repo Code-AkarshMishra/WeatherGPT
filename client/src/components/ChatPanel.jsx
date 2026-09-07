@@ -41,9 +41,16 @@ export default function ChatPanel({
 
   const isDev = import.meta.env.DEV;
 
+  const POPUP_PILLS = [
+    { label: '🌾 Crop Spraying', query: 'Is it safe to spray crops today?' },
+    { label: '⛈️ 24h Rain', query: 'What is the 24-hour rain forecast?' },
+    { label: '🚗 Visibility & Fog', query: 'How is visibility for driving today?' },
+    { label: '🌊 Marine Wind', query: 'What is the sea state and coastal wind speed?' },
+  ];
+
   return (
     <div className="chat-container">
-      {/* Front-and-Center Role Dock with Hover Tooltips */}
+      {/* Clean Compact Role Dock Bar */}
       <RoleDock
         selectedRole={selectedRole}
         onRoleChange={onRoleChange}
@@ -63,7 +70,7 @@ export default function ChatPanel({
           ))
         )}
 
-        {/* Typing indicator */}
+        {/* Contextual Progress Typing Indicator */}
         {loading && (
           <motion.div
             className="bubble-row bubble-row--ai"
@@ -73,10 +80,26 @@ export default function ChatPanel({
             <div className="bubble-avatar bubble-avatar--ai" aria-hidden="true">
               <Bot size={18} />
             </div>
-            <div className="typing-indicator" aria-label="AI is typing">
-              <span className="typing-dot" />
-              <span className="typing-dot" />
-              <span className="typing-dot" />
+            <div style={{
+              background: 'rgba(30, 41, 59, 0.7)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: 14,
+              padding: '10px 14px',
+              fontSize: '0.82rem',
+              color: '#cbd5e1',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#38bdf8', fontWeight: 600 }}>
+                <span className="spinner" style={{ width: 12, height: 12, borderWidth: 2 }} />
+                <span>WeatherGPT AI Reasoning Pipeline...</span>
+              </div>
+              <div style={{ fontSize: '0.75rem', opacity: 0.8, display: 'flex', gap: 12 }}>
+                <span style={{ color: '#4ade80' }}>✓ Location identified</span>
+                <span style={{ color: '#4ade80' }}>✓ Weather data retrieved</span>
+                <span style={{ color: '#facc15' }}>⟳ Analyzing risk...</span>
+              </div>
             </div>
           </motion.div>
         )}
@@ -89,6 +112,45 @@ export default function ChatPanel({
           </div>
         )}
       </div>
+
+      {/* Quick Suggestion Pills (Shown when chatting) */}
+      {messages.length > 0 && (
+        <div style={{
+          display: 'flex',
+          gap: 6,
+          padding: '6px 14px',
+          overflowX: 'auto',
+          background: 'rgba(15, 23, 42, 0.4)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+        }}>
+          {POPUP_PILLS.map((pill, idx) => (
+            <button
+              key={idx}
+              onClick={() => onFeatureSelect && onFeatureSelect(pill.query)}
+              style={{
+                background: 'rgba(56, 189, 248, 0.08)',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                borderRadius: 9999,
+                padding: '4px 10px',
+                color: '#38bdf8',
+                fontSize: '0.75rem',
+                fontWeight: 500,
+                whiteSpace: 'nowrap',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(56, 189, 248, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)';
+              }}
+            >
+              {pill.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Role suggestion banner */}
       {suggestedRole && (
@@ -117,3 +179,4 @@ export default function ChatPanel({
     </div>
   );
 }
+

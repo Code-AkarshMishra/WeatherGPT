@@ -70,6 +70,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/weather', require('./routes/weather'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/roles', require('./routes/roles'));
+app.use('/api/system', require('./routes/system'));
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 app.use((req, res) => {

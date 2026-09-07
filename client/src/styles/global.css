@@ -92,12 +92,124 @@ input, textarea, select {
   overflow: hidden;
 }
 
-.main-area {
+.main-split-container {
   display: flex;
   flex: 1;
+  width: 100%;
+  height: calc(100vh - var(--navbar-height));
   overflow: hidden;
-  margin-top: calc(var(--navbar-height) + var(--widget-height));
 }
+
+.left-weather-intelligence-panel {
+  width: 50%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(11, 15, 23, 0.65);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+}
+
+.right-chat-workspace-panel {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(16px);
+}
+
+/* ── Mobile Tab Bar ─────────────────────────────────────────────── */
+.mobile-tab-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: rgba(11, 15, 25, 0.98);
+  backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(56, 189, 248, 0.15);
+  z-index: 60;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: #4b5563;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 6px 0;
+  position: relative;
+}
+
+.mobile-tab-btn.active {
+  color: #38bdf8;
+}
+
+.mobile-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: #38bdf8;
+  border-radius: 0 0 4px 4px;
+}
+
+.mobile-tab-btn .tab-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ── Mobile responsive overrides ────────────────────────────────── */
+@media (max-width: 767px) {
+  .app-shell {
+    padding-bottom: 52px;
+  }
+
+  .main-split-container {
+    flex-direction: column;
+    height: calc(100vh - var(--navbar-height) - 52px);
+    overflow: hidden;
+  }
+
+  .left-weather-intelligence-panel {
+    width: 100%;
+    height: 100%;
+    border-right: none;
+    border-bottom: none;
+  }
+  .right-chat-workspace-panel {
+    width: 100%;
+    height: 100%;
+  }
+  .panel-hidden {
+    display: none !important;
+  }
+  .mobile-tab-bar {
+    display: flex !important;
+  }
+  .navbar-nav {
+    display: none !important;
+  }
+}
+
 
 /* ── Card ──────────────────────────────────────────────────────── */
 .card {

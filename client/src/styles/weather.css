@@ -247,17 +247,17 @@
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
   color: #ffffff;
   border: none;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.35);
+  box-shadow: 0 2px 10px rgba(2, 132, 199, 0.35);
   transition: all var(--transition-fast);
   white-space: nowrap;
 }
 
 .weather-forecast-cta:hover {
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.5);
   transform: translateY(-1px);
 }
 
@@ -373,5 +373,48 @@
   }
   .forecast-btn-text {
     display: none;
+  }
+}
+
+/* ── Weather Intelligence Panel — Responsive Grids ──────────────── */
+.wx-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.wx-gauge-grid {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+
+/* Hero temp responsive */
+.wx-hero-temp {
+  font-size: 44px;
+  font-weight: 900;
+  line-height: 1;
+  color: #f9fafb;
+  letter-spacing: -1px;
+}
+
+@media (max-width: 767px) {
+  .weather-intelligence-panel {
+    padding: 12px 14px 24px !important;
+  }
+
+  .wx-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .wx-gauge-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .wx-hero-temp {
+    font-size: 36px;
   }
 }

@@ -16,7 +16,12 @@ function validateEnv() {
   const missing = [];
 
   for (const { key, description } of REQUIRED_ENV_VARS) {
-    if (!process.env[key] || process.env[key].trim() === '') {
+    if (key === 'GEMINI_API_KEY') {
+      const hasGeminiKey = process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY_1 || process.env.GEMINI_API_KEY_2;
+      if (!hasGeminiKey) {
+        missing.push({ key, description });
+      }
+    } else if (!process.env[key] || process.env[key].trim() === '') {
       missing.push({ key, description });
     }
   }

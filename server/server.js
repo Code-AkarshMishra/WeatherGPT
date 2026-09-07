@@ -8,6 +8,7 @@ const validateEnv = require('./config/validateEnv');
 const connectDB = require('./config/db');
 const logger = require('./config/logger');
 const app = require('./app');
+const socketService = require('./services/socketService');
 
 // Validate environment variables FIRST — fail fast if anything is missing
 validateEnv();
@@ -18,8 +19,9 @@ async function start() {
   // Connect to MongoDB
   await connectDB();
 
-  // Start HTTP server
+  // Start HTTP server & WebSocket
   const server = app.listen(PORT, () => {
+    socketService.init(server);
     logger.info(`
 ╔══════════════════════════════════════════════════════════╗
 ║           WeatherGPT API Server — RUNNING                ║
@@ -27,6 +29,7 @@ async function start() {
 ║  Port:        ${PORT}                                       ║
 ║  Environment: ${process.env.NODE_ENV || 'development'}                            ║
 ║  Health:      http://localhost:${PORT}/health               ║
+║  WebSocket:   ws://localhost:${PORT}                        ║
 ╚══════════════════════════════════════════════════════════╝
     `);
   });

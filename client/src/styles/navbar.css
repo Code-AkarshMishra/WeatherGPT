@@ -97,12 +97,39 @@
 }
 
 /* Mobile */
+@media (max-width: 767px) {
+  .navbar-nav { display: none !important; }
+  .navbar-hamburger { display: flex; }
+  .desktop-only { display: none !important; }
+
+  .navbar-location-picker-btn {
+    max-width: 160px;
+    overflow: hidden;
+  }
+
+  .navbar-location-picker-btn span {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  .navbar {
+    padding: 0 var(--space-3);
+    gap: var(--space-2);
+  }
+}
+
 @media (max-width: 639px) {
   .navbar-nav { display: none; }
   .navbar-hamburger { display: flex; }
-  .navbar-logo span { display: none; } /* show icon only on very small screens */
+  .navbar-logo span { display: none; }
 }
 
 @media (max-width: 380px) {
   .navbar-logo .logo-text { display: none; }
+  .navbar-location-picker-btn span {
+    max-width: 70px;
+  }
 }

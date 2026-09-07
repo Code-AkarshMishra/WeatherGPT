@@ -1,43 +1,40 @@
 /* ================================================================
-   WeatherGPT — Design System CSS Variables
-   All colors, spacing, radii, and typography defined here.
-   Use these variables everywhere — no ad-hoc values in components.
+   WeatherGPT — Design System CSS Variables (Exact Black/Charcoal Theme)
+   Palette: Near-Black (#0b0f17), Charcoal (#111827), Graphite (#1f2937)
+   Semantic Status: Green (#22c55e), Yellow (#eab308), Red (#ef4444)
+   NO PURPLE allowed in design system.
    ================================================================ */
 
 :root {
-  /* ── Brand Colors ──────────────────────────────────────────────── */
-  --color-primary: #1E88E5;
-  --color-primary-dark: #145DA0;
-  --color-primary-light: #42A5F5;
-  --color-accent: #4FC3F7;
-  --color-secondary: #FFB300;    /* Warning / storm amber */
-  --color-danger: #E53935;       /* Flood / red alert */
-  --color-success: #43A047;      /* Safe / all clear */
+  /* ── Core Palette (Dark Charcoal Command Center) ──────────────── */
+  --color-bg: #0b0f17;
+  --color-bg-card: #1f2937;
+  --color-bg-sidebar: #111827;
+  --color-bg-navbar: #111827;
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-text-muted: #9ca3af;
+  --color-border: #374151;
+  --color-border-light: rgba(255, 255, 255, 0.1);
 
-  /* ── Light Mode ────────────────────────────────────────────────── */
-  --color-bg: #F5F9FC;
-  --color-bg-card: #FFFFFF;
-  --color-bg-sidebar: #EEF3F8;
-  --color-bg-navbar: #FFFFFF;
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #6B7280;
-  --color-text-muted: #9CA3AF;
-  --color-border: #E2E8F0;
-  --color-border-light: #F1F5F9;
+  /* ── Brand & Semantic Accent System (NO PURPLE) ────────────────── */
+  --color-primary: #38bdf8;
+  --color-primary-dark: #0284c7;
+  --color-primary-light: #7dd3fc;
+  --color-accent: #38bdf8;
+
+  /* Semantic status colors */
+  --color-success: #22c55e;     /* Green — safe / clear */
+  --color-secondary: #eab308;   /* Yellow — caution / moderate risk */
+  --color-warning: #eab308;     /* Yellow — advisory */
+  --color-danger: #ef4444;      /* Red — severe warning / disaster */
 
   /* ── Chat Bubbles ──────────────────────────────────────────────── */
-  --color-bubble-user-bg: var(--color-primary);
-  --color-bubble-user-text: #FFFFFF;
-  --color-bubble-ai-bg: #FFFFFF;
-  --color-bubble-ai-text: var(--color-text-primary);
-  --color-bubble-ai-border: var(--color-accent);
-
-  /* ── Weather Widget Condition Tints ────────────────────────────── */
-  --color-weather-clear: #EBF5FB;
-  --color-weather-cloudy: #F4F6F7;
-  --color-weather-rain: #EAF2FF;
-  --color-weather-storm: #FFF8E1;  /* soft amber for storm warning */
-  --color-weather-snow: #F0F4F8;
+  --color-bubble-user-bg: #0284c7;
+  --color-bubble-user-text: #ffffff;
+  --color-bubble-ai-bg: #1f2937;
+  --color-bubble-ai-text: #f9fafb;
+  --color-bubble-ai-border: #374151;
 
   /* ── Spacing Scale ─────────────────────────────────────────────── */
   --space-1: 4px;
@@ -72,14 +69,14 @@
 
   /* ── Layout ────────────────────────────────────────────────────── */
   --navbar-height: 60px;
-  --widget-height: 72px;
+  --widget-height: 0px;
   --sidebar-width: 260px;
   --sidebar-rail-width: 64px;
 
   /* ── Shadows ───────────────────────────────────────────────────── */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.10);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
 
   /* ── Transitions ───────────────────────────────────────────────── */
   --transition-fast: 150ms ease;
@@ -92,30 +89,4 @@
   --z-overlay: 200;
   --z-modal: 300;
   --z-toast: 400;
-}
-
-/* ── Dark Mode ────────────────────────────────────────────────────── */
-[data-theme='dark'] {
-  --color-bg: #0F1B26;
-  --color-bg-card: #16232F;
-  --color-bg-sidebar: #0D1821;
-  --color-bg-navbar: #16232F;
-  --color-text-primary: #EAEAEA;
-  --color-text-secondary: #9CA3AF;
-  --color-text-muted: #6B7280;
-  --color-border: #1E3045;
-  --color-border-light: #1A2A3A;
-
-  --color-bubble-ai-bg: #1A2A3A;
-  --color-bubble-ai-text: #EAEAEA;
-
-  --color-weather-clear: #1A2E42;
-  --color-weather-cloudy: #1C2733;
-  --color-weather-rain: #162336;
-  --color-weather-storm: #2A2010;
-  --color-weather-snow: #1A2535;
-
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
