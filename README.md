@@ -1,485 +1,569 @@
-# 🌤️ WeatherGPT — Next-Gen Meteorological Intelligence & AI Advisory
+# 🌤️ WeatherGPT — User Guide & System Manual
 
 <div align="center">
 
-![WeatherGPT Hero Banner](https://img.shields.io/badge/WeatherGPT-v2.5.0-38bdf8?style=for-the-badge&logo=google-cloud&logoColor=white)
-![Build Status](https://img.shields.io/badge/Build-Passing-10b981?style=for-the-badge&logo=githubactions&logoColor=white)
-![Latency](https://img.shields.io/badge/LLM%20Latency-~850ms-0284c7?style=for-the-badge&logo=speedtest&logoColor=white)
-![Uptime](https://img.shields.io/badge/Availability-99.9%25%20Failover-0ea5e9?style=for-the-badge)
-![Languages](https://img.shields.io/badge/Regional%20i18n-11%20Indian%20Languages-f59e0b?style=for-the-badge)
+<!-- Hero Banner Badges -->
+<p align="center">
+  <img src="https://img.shields.io/badge/WeatherGPT-v2.5.0-38bdf8?style=for-the-badge&logo=google-cloud&logoColor=white" alt="WeatherGPT Version" />
+  <img src="https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React 18" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Python_3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11" />
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/Google_Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini" />
+</p>
 
-**Empowering Farmers, Coastal Fishers, Aviators, and Citizens with Real-Time Meteorological Reasoning, Ministry of Earth Sciences (MoES) Disaster Forecasting, and Multilingual Regional Intelligence.**
+### 🇮🇳 India's First Multilingual, Multi-Persona AI Meteorological Platform
+**Empowering Farmers, Coastal Fishers, Aviators, Disaster Response Teams, and Citizens with Real-Time Meteorological Reasoning & Ministry of Earth Sciences (MoES) Forecasting.**
 
-[Explore Live Demo](http://localhost:5173) • [API Documentation](#-api-architecture--endpoint-catalog) • [Architecture Deep-Dive](#-system-architecture--data-flows) • [Quick Start](#-quick-start--installation)
+[✨ Highlights](#-key-features--user-interface) • [⚙️ Environment Setup](#-complete-environment-variables-guide-env) • [🏗️ Colorful Architecture](#-colorful-system-architecture) • [🚀 Quick Start](#-step-by-step-quick-start) • [🎨 Design System](#-ui-design-system--themes)
 
 </div>
 
 ---
 
-## 🧭 Table of Contents
+## 📑 Quick Navigation
 
-- [🌟 Unique Selling Propositions (USPs)](#-unique-selling-propositions-usps)
-- [🧩 Tech Stack Matrix](#-tech-stack-matrix)
-- [🏗️ System Architecture & Data Flows](#️-system-architecture--data-flows)
-  - [High-Level Microservices Topology](#high-level-microservices-topology)
-  - [Dual-Engine AI Reasoning & Failover Sequence](#dual-engine-ai-reasoning--failover-sequence)
-  - [MoES Disaster Prediction Pipeline](#moes-disaster-prediction-pipeline)
-- [🎨 Natural Weather Design System](#-natural-weather-design-system)
-- [🌐 11-Language Indian Regional i18n](#-11-language-indian-regional-i18n)
-- [🧑‍🌾 8 Targeted Persona Roles](#-8-targeted-persona-roles)
-- [⚡ LLM Resilience & 3-Key Rotation Engine](#-llm-resilience--3-key-rotation-engine)
-- [📡 API Architecture & Endpoint Catalog](#-api-architecture--endpoint-catalog)
-- [📊 Climatological Trend & Historical Intelligence](#-climatological-trend--historical-intelligence)
-- [🚀 Quick Start & Installation](#-quick-start--installation)
-- [⚙️ Environment Configuration](#️-environment-configuration)
-- [🛡️ Security, Privacy & Reliability](#️-security-privacy--reliability)
-- [🗺️ Future Engineering Roadmap](#️-future-engineering-roadmap)
+1. [✨ Key Features & User Interface (UI)](#-key-features--user-interface)
+2. [⚙️ Complete Environment Variables Guide (.env)](#-complete-environment-variables-guide-env)
+3. [🏗️ Colorful System Architecture](#-colorful-system-architecture)
+4. [🛠️ Tech Stack with Icons](#️-tech-stack-with-icons)
+5. [🔄 End-to-End Chat & Failover Flowchart](#-end-to-end-chat--failover-flowchart)
+6. [🌪️ MoES 4-Color Disaster Matrix](#️-moes-4-color-disaster-matrix)
+7. [🌐 11 Indian Regional Languages Guide](#-11-indian-regional-languages-guide)
+8. [🧑‍🌾 8 Targeted Persona Roles](#-8-targeted-persona-roles)
+9. [🎨 UI Design System & Themes](#-ui-design-system--themes)
+10. [🚀 Step-by-Step Quick Start](#-step-by-step-quick-start)
+11. [📡 API Reference Summary](#-api-reference-summary)
+12. [❓ Troubleshooting & FAQ](#-troubleshooting--faq)
 
 ---
 
-## 🌟 Unique Selling Propositions (USPs)
+## ✨ Key Features & User Interface (UI)
 
-```
-       ┌─────────────────────────────────────────────────────────────┐
-       │             WHAT MAKES WEATHERGPT UNIQUE?                   │
-       └─────────────────────────────────────────────────────────────┘
-                                      │
-         ┌────────────────────────────┼────────────────────────────┐
-         ▼                            ▼                            ▼
-  [ 🇮🇳 11 Indian Languages ]    [ ⚡ 3-Tier AI Resilience ]   [ 🌪️ MoES Severe Predictor ]
-  Native Devanagari Hindi,      Zero-downtime 3-key pool      ML-2 Random Forest model
-  Bengali, Tamil, Telugu,       with sub-second Google        trained on IMD criteria for
-  Marathi, Punjabi & more with  Gemini 3.5 Flash Lite engine  Flash Floods, Heatwaves,
-  bi-directional voice TTS.     and instant failover.         Gales & Cyclonic Surges.
-         │                            │                            │
-         ▼                            ▼                            ▼
-  [ 🌾 Hyper-Localized Roles ]   [ 🎨 Atmospheric Theme ]      [ 💾 Resilient Data Layer ]
-  Persona prompts tailored for  Natural sky & cloud palette   Dual-mode MongoDB Atlas
-  agri-spraying, marine wave    with high-contrast Light &    with seamless offline
-  safety, flight turbulence &   Dark modes, spline graphs,    in-memory database fallback
-  disaster management.          and glassmorphism cards.      for guaranteed uptime.
-```
+WeatherGPT brings together professional meteorological data and natural human conversation:
 
-1. **Sub-Second Conversational Intelligence (~850ms)**:
-   Powered by the optimized `gemini-3.5-flash-lite` engine, delivering 8x faster response times compared to legacy LLM pipelines, eliminating timeout dropouts on mobile edge networks.
-2. **MoES / IMD 4-Color Disaster Early Warning Matrix**:
-   Automated classification into **GREEN** (Normal), **YELLOW** (Be Updated), **ORANGE** (Be Prepared), and **RED** (Take Action) adhering directly to the guidelines of the Ministry of Earth Sciences and Indian Meteorological Department.
-3. **Dual-Engine Microservice Topology**:
-   Node.js/Express handling WebSocket telemetry and security authentication coupled with a Python FastAPI ML microservice executing real-time scikit-learn models and tool calling.
-4. **Inclusive Regional Voice Accessibility**:
-   Voice-to-text querying via the Web Speech API accompanied by localized Hindi/Regional neural audio alerts.
-
----
-
-## 🧩 Tech Stack Matrix
-
-<div align="center">
-
-| Layer | Technologies & Frameworks | Highlights |
+| Feature & Icon | User Capability | Why It Matters |
 | :--- | :--- | :--- |
-| **Frontend Client** | `React 18`, `Vite 5`, `React Router v6`, `Vanilla CSS3` | Zero-bloat CSS variable design system, responsive grid layouts, SVG spline charts |
-| **Backend Gateway** | `Node.js 20+`, `Express 4`, `Socket.io 4`, `Winston`, `Morgan` | JWT token rotation, rate-limiting, MongoDB sanitize, XSS protection, WebSockets |
-| **ML & AI Microservice** | `Python 3.11`, `FastAPI`, `Uvicorn`, `Scikit-Learn`, `NumPy` | Asynchronous REST endpoints, Random Forest disaster predictor, live meteorological tools |
-| **LLM & Agentic AI** | `Google Gemini 3.5 Flash Lite`, `@google/generative-ai` | JSON-mode entity extraction, 3-key rotating quota pool, role prompt grounding |
-| **Meteorological APIs** | `OpenWeatherMap OneCall / Direct`, `Open-Meteo Historical` | Live weather feeds, 10-year historical climate re-analysis, geocoding |
-| **Database & Cache** | `MongoDB Atlas 8`, `Mongoose ODM`, `In-Memory Fallback` | Auto-reconnect retry backoff, in-memory volatile fallback if database is offline |
-| **Voice & Speech** | `Edge-TTS`, `Web Speech API (SpeechRecognition)` | Multilingual regional speech synthesis and transcription |
-
-</div>
+| **🌦️ Atmospheric Intelligence** | Live temperature, humidity, feels-like, wind speed, pressure, UV index, and precipitation. | Comprehensive real-time weather tracking at a single glance. |
+| **📈 Interactive Hourly Spline** | Smooth SVG spline chart displaying 24-hour temperature and rainfall progression. | Helps users plan outdoor activities, travel, and farming tasks. |
+| **🚨 MoES Disaster Advisories** | Early warning cards aligned with IMD color codes (**Green**, **Yellow**, **Orange**, **Red**). | Crucial safety alerts for storms, flash floods, heatwaves, and cyclones. |
+| **🗣️ Voice Query & Audio TTS** | Hands-free microphone input and neural regional voice audio playback. | Accessible for rural farmers, field operators, and elderly users. |
+| **🌐 11-Language i18n Switcher** | Dynamic switching across 11 Indian languages without page reloads. | Removes language barriers across India's diverse regions. |
+| **🌓 Persistent Theme Switcher** | Seamless toggle between **Sunlight Day Mode** and **Midnight Atmospheric Mode**. | Comfortable viewing in bright outdoor sunlight or at night. |
+| **🧑‍🌾 8-Role Specialization Dock** | Instant persona switching (Farmer, Marine, Aviator, Disaster Team, Citizen, etc.). | Tailors advice specifically for farming, fishing, flying, or daily safety. |
+| **📊 10-Year Climate History** | Historical re-analysis comparing current conditions with a 10-year baseline. | Uncovers long-term monsoon trends and extreme weather shifts. |
 
 ---
 
-## 🏗️ System Architecture & Data Flows
+## ⚙️ Complete Environment Variables Guide (`.env`)
 
-### High-Level Microservices Topology
+WeatherGPT uses environment variables to configure its database, security tokens, API keys, and microservices. 
+
+### 📁 1. Backend Server Configuration (`server/.env`)
+
+Create this file in the `server/` directory:
+
+```bash
+# Location: WeatherGPT/server/.env
+```
+
+```env
+# ==============================================================================
+# 1. SERVER & NETWORK SETTINGS
+# ==============================================================================
+PORT=5001
+NODE_ENV=development
+CLIENT_URL=http://localhost:5173
+ML_SERVICE_URL=http://localhost:8000
+WS_URL=ws://localhost:5001
+
+# ==============================================================================
+# 2. DATABASE PERSISTENCE (MongoDB Atlas or Local)
+# ==============================================================================
+# Format: mongodb+srv://<username>:<password>@<cluster-url>/<database-name>
+# TIP: If MongoDB is unavailable, WeatherGPT automatically switches to
+# safe in-memory mode so the server never crashes!
+MONGO_URI=mongodb+srv://your_user:your_password@cluster.mongodb.net/weathergpt
+
+# ==============================================================================
+# 3. JWT AUTHENTICATION SECRETS (Minimum 32 Characters)
+# ==============================================================================
+JWT_SECRET=weathergpt_dev_jwt_secret_key_minimum_32_characters_long_super_secure
+JWT_REFRESH_SECRET=weathergpt_dev_jwt_refresh_secret_key_minimum_32_characters_long
+JWT_ACCESS_EXPIRES=15m
+JWT_REFRESH_EXPIRES=7d
+
+# ==============================================================================
+# 4. WEATHER SATELLITE API (OpenWeatherMap)
+# ==============================================================================
+# Free API key from: https://openweathermap.org/api
+WEATHER_API_KEY=your_openweathermap_api_key_here
+
+# ==============================================================================
+# 5. GOOGLE GEMINI 3-KEY AUTOMATIC ROTATION POOL
+# ==============================================================================
+# Model: gemini-3.5-flash-lite delivers ~800ms ultra-fast responses!
+GEMINI_MODEL=gemini-3.5-flash-lite
+
+# Three separate keys for automatic failover when daily quotas are reached:
+# Get free API keys from: https://aistudio.google.com/app/apikey
+GEMINI_API_KEY_1=AIzaSyYourFirstGeminiKeyHere
+GEMINI_API_KEY_2=AIzaSyYourSecondGeminiKeyHere
+GEMINI_API_KEY_3=AIzaSyYourThirdGeminiKeyHere
+GEMINI_API_KEY=AIzaSyYourFirstGeminiKeyHere
+
+# ==============================================================================
+# 6. PER-ROLE SPECIALIZED KEYS (Optional - Can point to same key initially)
+# ==============================================================================
+CROP_ADVISORY_API_KEY=AIzaSyYourFirstGeminiKeyHere
+FLOOD_API_KEY=AIzaSyYourFirstGeminiKeyHere
+AVIATION_API_KEY=AIzaSyYourFirstGeminiKeyHere
+MARINE_API_KEY=AIzaSyYourFirstGeminiKeyHere
+CLIMATE_API_KEY=AIzaSyYourFirstGeminiKeyHere
+```
+
+---
+
+### 📁 2. ML Microservice Configuration (`ml-service/.env`)
+
+Create this file in the `ml-service/` directory:
+
+```bash
+# Location: WeatherGPT/ml-service/.env
+```
+
+```env
+# ==============================================================================
+# FASTAPI ML MICROSERVICE CONFIGURATION
+# ==============================================================================
+PORT=8000
+HOST=0.0.0.0
+
+# LLM Engine for Tool Calling & Meteorological Reasoning
+GEMINI_MODEL=gemini-3.5-flash-lite
+
+# Primary API Key for ML Agent
+GEMINI_API_KEY=AIzaSyYourFirstGeminiKeyHere
+```
+
+---
+
+### 🔑 Step-by-Step: Where & How to Get Free API Keys
+
+<details>
+<summary><b>👉 Click to expand step-by-step key registration guide</b></summary>
+
+#### 1. Google Gemini API Keys (Free)
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Sign in with your Google account.
+3. Click **"Create API key"** $\rightarrow$ **"Create key in new project"**.
+4. Copy the generated key (`AIzaSy...`).
+5. Repeat twice in separate projects to generate `GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, and `GEMINI_API_KEY_3` for zero-downtime key rotation!
+
+#### 2. OpenWeatherMap Key (Free)
+1. Visit [OpenWeatherMap Sign Up](https://home.openweathermap.org/users/sign_up).
+2. Create a free account and verify your email.
+3. Navigate to **"API keys"** tab in your profile.
+4. Copy your Default Key and paste it into `WEATHER_API_KEY`.
+
+#### 3. MongoDB Atlas Connection String (Optional Free Tier)
+1. Visit [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register).
+2. Create a free **M0 Sandbox Cluster**.
+3. Under **Database Access**, create a user with username and password.
+4. Under **Network Access**, click **Add IP Address** $\rightarrow$ select **"Allow Access from Anywhere"** (`0.0.0.0/0`).
+5. Click **Connect** $\rightarrow$ **Drivers** $\rightarrow$ Copy the connection string and replace `<password>` with your database user password.
+
+</details>
+
+---
+
+## 🏗️ Colorful System Architecture
+
+Below is the complete microservices topology of WeatherGPT with color-coded operational boundaries:
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#38bdf8', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f1f5f9'}}}%%
 flowchart TB
-    subgraph ClientLayer["🌐 Presentation Layer (React 18 + Vite)"]
-        UI["WeatherGPT Modern SPA<br/>(Dashboard / Chat / Disaster Hub)"]
-        i18n["11-Language i18n Engine<br/>(locales.js)"]
-        Theme["Atmospheric Theme Controller<br/>(Light / Dark Mode)"]
-        STT["Web Speech Recognition<br/>(Voice Input)"]
+    subgraph CLIENT["💻 CLIENT LAYER (React 18 + Vite :5173)"]
+        style CLIENT fill:#f0f9ff,stroke:#0284c7,stroke-width:2px
+        UI["🖥️ Modern Responsive UI<br/>(Cards, Splines, Alert Badges)"]
+        style UI fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e
+        i18n["🌐 11-Language i18n Engine<br/>(locales.js)"]
+        style i18n fill:#fef3c7,stroke:#d97706,color:#78350f
+        Voice["🎙️ Web Speech Recognition<br/>& Audio Output"]
+        style Voice fill:#fce7f3,stroke:#db2777,color:#831843
     end
 
-    subgraph GatewayLayer["🛡️ API Gateway & Security (Node.js :5001)"]
-        Auth["JWT Token Manager<br/>(Access + Refresh)"]
-        Limiter["Express Rate Limiter<br/>& MongoSanitize"]
-        WS["WebSocket Server<br/>(Live Weather Telemetry)"]
-        NLPService["Intent & Entity NLP Extractor<br/>(JSON-Mode LLM)"]
-        GeminiService["Resilient Gemini Service<br/>(3-Key Pool + Flash Lite)"]
+    subgraph GATEWAY["🛡️ API GATEWAY & SECURITY (Node.js + Express :5001)"]
+        style GATEWAY fill:#f8fafc,stroke:#475569,stroke-width:2px
+        Router["🚦 Express Router & Rate Limiter<br/>(/api/chat, /api/weather, /api/auth)"]
+        style Router fill:#f1f5f9,stroke:#334155,color:#0f172a
+        NLP["🔍 Fast NLP Intent Extractor<br/>(JSON Structured Mode)"]
+        style NLP fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
+        Failover["⚡ 3-Key Gemini Pool<br/>(Instant Timeout Failover)"]
+        style Failover fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+        WS["📡 WebSocket Telemetry Server<br/>(Real-Time Stream)"]
+        style WS fill:#ccfbf1,stroke:#0d9488,color:#115e59
     end
 
-    subgraph MLLayer["🧠 Machine Learning Microservice (FastAPI :8000)"]
-        ToolAgent["Conversational Tool-Calling Agent<br/>(gemini_agent.py)"]
-        DisasterRF["MoES Severe Weather Predictor<br/>(Random Forest Classifier)"]
-        TTS["Regional Voice Engine<br/>(Edge-TTS / Fallback)"]
+    subgraph ML_SERVICE["🧠 ML MICROSERVICE (Python + FastAPI :8000)"]
+        style ML_SERVICE fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+        ToolAgent["🤖 Agentic Tool Caller<br/>(Live Ingest & Persona Grounding)"]
+        style ToolAgent fill:#dcfce7,stroke:#15803d,color:#14532d
+        Predictor["🌪️ MoES Severe Weather Predictor<br/>(Random Forest Classifier)"]
+        style Predictor fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+        TTS["🔊 Regional Audio TTS Service<br/>(Edge-TTS Voice Synthesis)"]
+        style TTS fill:#fae8ff,stroke:#a855f7,color:#581c87
     end
 
-    subgraph DataExternal["☁️ External Providers & Persistence"]
-        GeminiAPI["Google Gemini REST API<br/>(Keys 1, 2, 3)"]
-        OWM["OpenWeatherMap API<br/>(Current & Geocoding)"]
-        OpenMeteo["Open-Meteo Archive<br/>(10-Year History)"]
-        Mongo["MongoDB Atlas Cluster<br/>(Optional In-Memory Fallback)"]
+    subgraph EXTERNAL["☁️ EXTERNAL DATA & AI CLOUD"]
+        style EXTERNAL fill:#fffbeb,stroke:#b45309,stroke-width:2px
+        GeminiCloud["✨ Google Gemini AI Cloud<br/>(gemini-3.5-flash-lite)"]
+        style GeminiCloud fill:#dbeafe,stroke:#1d4ed8,color:#1e40af
+        OWM["🛰️ OpenWeatherMap API<br/>(Current Observations & Geocoding)"]
+        style OWM fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+        OpenMeteo["📊 Open-Meteo Archive<br/>(10-Year Historical Climate)"]
+        style OpenMeteo fill:#fef9c3,stroke:#ca8a04,color:#713f12
+        MongoCloud["🍃 MongoDB Atlas / In-Memory<br/>(User Conversations & Cache)"]
+        style MongoCloud fill:#d1fae5,stroke:#059669,color:#064e3b
     end
 
-    UI <--> |HTTP / JSON REST| Auth
+    UI <--> |HTTP / JSON REST| Router
     UI <--> |ws:// Telemetry| WS
-    Auth --> Limiter --> NLPService
-    NLPService --> |Step 1: NLP Intent| GeminiService
-    NLPService --> |Step 2: Geocode| OWM
-    NLPService --> |Step 3: Fast ML Inference| ToolAgent
-    ToolAgent --> DisasterRF
+    Voice <--> UI
+    i18n <--> UI
+
+    Router --> NLP
+    NLP --> |Step 1: Parse Entities| Failover
+    Failover --> GeminiCloud
+    Router --> |Step 2: Microservice Dispatch| ToolAgent
+    ToolAgent --> Predictor
     ToolAgent --> OWM
     ToolAgent --> OpenMeteo
-    ToolAgent --> GeminiAPI
-    GeminiService --> |Fallback Direct Grounding| GeminiAPI
-    Auth --> Mongo
+    ToolAgent --> GeminiCloud
+    ToolAgent --> TTS
+    Router --> MongoCloud
 ```
 
 ---
 
-### Dual-Engine AI Reasoning & Failover Sequence
+## 🛠️ Tech Stack with Icons
 
-Every incoming chat query undergoes a resilient pipeline designed for zero message drops:
+<div align="center">
+
+### 💻 Frontend Architecture
+| Technology | Badge / Icon | Role & Purpose |
+| :--- | :---: | :--- |
+| **React 18** | ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) | Dynamic component tree and reactive chat state |
+| **Vite 5** | ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) | Ultra-fast HMR and optimized production bundling |
+| **React Router v6** | ![Router](https://img.shields.io/badge/React_Router-CA4245?style=flat&logo=react-router&logoColor=white) | Client-side routing across Home, Alerts, Dashboard, About |
+| **Vanilla CSS3** | ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white) | Zero-bloat CSS variable tokens, glassmorphism, responsive grid |
+| **Web Speech API** | ![Speech](https://img.shields.io/badge/Web_Speech-E34F26?style=flat&logo=html5&logoColor=white) | In-browser regional speech recognition (`hi-IN`, `en-IN`, etc.) |
+
+---
+
+### 🛡️ Backend Gateway & Security
+| Technology | Badge / Icon | Role & Purpose |
+| :--- | :---: | :--- |
+| **Node.js 20+** | ![NodeJS](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) | Non-blocking asynchronous event loop runtime |
+| **Express.js** | ![Express](https://img.shields.io/badge/Express.js-000000?style=flat&logo=express&logoColor=white) | RESTful API gateway with modular controller architecture |
+| **Socket.io** | ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat&logo=socketdotio&logoColor=white) | WebSocket server for streaming atmospheric telemetry |
+| **JWT + Bcrypt** | ![JWT](https://img.shields.io/badge/JWT-000000?style=flat&logo=jsonwebtokens&logoColor=white) | Stateless access & refresh token rotation security |
+| **Winston + Morgan** | ![Winston](https://img.shields.io/badge/Winston-2563EB?style=flat&logo=logstash&logoColor=white) | Daily rotating file logging and HTTP telemetry auditing |
+
+---
+
+### 🧠 Machine Learning & Agentic AI
+| Technology | Badge / Icon | Role & Purpose |
+| :--- | :---: | :--- |
+| **Python 3.11** | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white) | Scientific computing environment for ML microservices |
+| **FastAPI** | ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white) | High-concurrency asynchronous REST ML service |
+| **Scikit-Learn** | ![Scikit](https://img.shields.io/badge/scikit_learn-F7931E?style=flat&logo=scikit-learn&logoColor=white) | Random Forest classification for MoES severe weather alerts |
+| **Google Gemini** | ![Gemini](https://img.shields.io/badge/Gemini_3.5_Flash_Lite-4285F4?style=flat&logo=google&logoColor=white) | Sub-second (~850ms) tool-calling LLM reasoning |
+| **Edge-TTS** | ![TTS](https://img.shields.io/badge/Edge_TTS-0078D7?style=flat&logo=microsoft&logoColor=white) | Neural voice synthesis in Hindi, Bengali, and Indian regional voices |
+
+</div>
+
+---
+
+## 🔄 End-to-End Chat & Failover Flowchart
+
+Here is the life cycle of a user request showing how WeatherGPT guarantees zero message dropouts:
 
 ```mermaid
-sequenceDiagram
-    autonumber
-    actor User as 👤 User / Field Operator
-    participant Client as 💻 React Client (useChat)
-    participant Node as 🛡️ Express Gateway (:5001)
-    participant ML as 🧠 FastAPI ML Agent (:8000)
-    participant Gemini as ⚡ Gemini 3-Key Pool
-    participant OWM as 🛰️ OpenWeatherMap
-
-    User->>Client: "क्या आज धान में कीटनाशक छिड़क सकते हैं?"
-    Client->>Node: POST /api/chat { message, role: 'farmer', lang: 'hi' }
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0284c7', 'edgeLabelBackground':'#ffffff'}}}%%
+flowchart TD
+    Start([👤 User sends query in Hindi / English / Regional]) --> Step1[💻 Frontend useChat hook receives input]
     
-    rect rgb(240, 248, 255)
-        Note over Node,Gemini: Step 1: Sub-second NLP Entity Extraction
-        Node->>Gemini: JSON Prompt Extraction (gemini-3.5-flash-lite)
-        Gemini-->>Node: { intent: 'crop_advisory', location: null, lang: 'hi' }
-    end
-
-    Node->>OWM: Fetch live temperature, wind speed, humidity & rain
-    OWM-->>Node: 31.4°C, Wind: 9 km/h, Rain: 15%
-
-    rect rgb(245, 255, 250)
-        Note over Node,ML: Step 2: Primary Dispatch to ML Microservice
-        Node->>ML: POST /chat { message, weatherContext, role }
-        ML->>ML: Run MoES Predictor (IMD Alert = GREEN)
-        ML->>Gemini: Generate Farmer Advisory in Hindi (Key 1)
-        alt Gemini Key 1 Success (~850ms)
-            Gemini-->>ML: Structured Markdown Crop Advisory
-            ML-->>Node: { response, risk: 'GREEN', provider: 'ml-service' }
-        else Key 1 Timeout / 429 Limit
-            ML->>Gemini: Instant Failover to Key 2 (~900ms)
-            Gemini-->>ML: Response
-            ML-->>Node: { response, risk: 'GREEN' }
-        end
-    end
-
-    Node-->>Client: 200 OK with formatted Hindi advisory & risk badge
-    Client->>User: Display response with TTS audio playback option
+    Step1 --> Step2[🛡️ Express Gateway: /api/chat]
+    Step2 --> Step3[🔍 NLP Entity Extractor: Calls Gemini in JSON mode]
+    
+    Step3 --> Step4{City mentioned in query?}
+    Step4 -->|Yes| Step5[🛰️ Geocode place name via OpenWeatherMap API]
+    Step4 -->|No| Step6[📍 Use GPS Coordinates / Default District]
+    
+    Step5 --> Step7[📊 Fetch live weather metrics: Temp, Wind, Rain %, Humidity]
+    Step6 --> Step7
+    
+    Step7 --> Step8[🚀 Dispatch payload to FastAPI ML Service :8000]
+    
+    Step8 --> Step9{FastAPI ML responds within 6s?}
+    Step9 -->|Yes| Step10[🌪️ Execute MoES Random Forest Model + Tool Calling]
+    Step9 -->|No / Timeout| Step11[🛡️ Fallback: Direct Node.js Grounded Gemini Service]
+    
+    Step10 --> Step12{Gemini Key 1 quota available?}
+    Step12 -->|Yes| Step13[⚡ Generate response in ~850ms using Key 1]
+    Step12 -->|429 Quota / Timeout| Step14[🔄 Instant Failover to Key 2]
+    Step14 --> Step13
+    
+    Step11 --> Step15{Gemini Key rotation check}
+    Step15 -->|Active| Step13
+    Step15 -->|All cloud keys exhausted| Step16[💡 Grounded Meteorological Rule Engine Fallback]
+    
+    Step13 --> Step17[💾 Persist conversation to MongoDB Atlas / In-Memory]
+    Step16 --> Step17
+    
+    Step17 --> Step18([✅ Return formatted response with IMD Alert Badge to User])
+    
+    style Start fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a
+    style Step13 fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
+    style Step14 fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
+    style Step16 fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d
+    style Step18 fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
 ```
 
 ---
 
-### MoES Disaster Prediction Pipeline
+## 🌪️ MoES 4-Color Disaster Matrix
 
-The MoES Disaster Predictor evaluates multi-variable atmospheric telemetry using trained decision thresholds:
-
-```mermaid
-graph TD
-    A[Atmospheric Telemetry] --> B{Precipitation mm}
-    A --> C{Wind Velocity km/h}
-    A --> D{Ambient Temp °C}
-
-    B -->|> 100 mm| E[High Flood Hazard]
-    B -->|30 - 100 mm| F[Moderate Flood Caution]
-    B -->|< 30 mm| G[Nominal Precipitation]
-
-    C -->|> 65 km/h| H[Severe Gale / Cyclone]
-    C -->|35 - 65 km/h| I[Squall Warning]
-    C -->|< 35 km/h| J[Gentle to Moderate Breeze]
-
-    D -->|> 42 °C| K[Heatwave Hazard Alert]
-    D -->|< 5 °C| L[Cold Wave Advisory]
-    D -->|15 - 35 °C| M[Thermal Comfort Zone]
-
-    E & H --> RED[🔴 RED ALERT: Severe Threat - Evacuate / Shelter]
-    F & I --> ORANGE[🟠 ORANGE ALERT: High Preparedness Required]
-    K & L --> YELLOW[🟡 YELLOW ALERT: Watch & Stay Informed]
-    G & J & M --> GREEN[🟢 GREEN ALERT: Atmospheric Conditions Normal]
-```
-
----
-
-## 🎨 Natural Weather Design System
-
-WeatherGPT moves away from generic, neon AI templates. Instead, it utilizes a natural palette inspired by the sky, clouds, and terrain.
+Aligned with guidelines from the **Ministry of Earth Sciences (MoES)** and the **India Meteorological Department (IMD)**:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       NATURAL ATMOSPHERIC COLOR SYSTEM                      │
-├──────────────┬──────────────┬──────────────┬──────────────┬─────────────────┤
-│   Sky Blue   │  Cloud White │  Rain Grey   │  Sun Yellow  │ Atmospheric Teal│
-│   #0284c7    │   #f8fafc    │   #64748b    │   #f59e0b    │     #0d9488     │
-│ [var:primary]│ [var:bg-card]│ [var:muted]  │[var:warning] │  [var:accent]   │
-└──────────────┴──────────────┴──────────────┴──────────────┴─────────────────┘
+│                   IMD 4-COLOR CODE EARLY WARNING MATRIX                     │
+├─────────────┬─────────────────┬───────────────────┬─────────────────────────┤
+│ COLOR CODE  │ SEVERITY LEVEL  │ THRESHOLD METRICS │ ACTION REQUIRED         │
+├─────────────┼─────────────────┼───────────────────┼─────────────────────────┤
+│ 🟢 GREEN    │ Normal / Safe   │ Rain < 30 mm/h    │ Normal routine; no      │
+│             │                 │ Wind < 35 km/h    │ precautionary action    │
+│             │                 │ Temp 15°C – 35°C  │ needed.                 │
+├─────────────┼─────────────────┼───────────────────┼─────────────────────────┤
+│ 🟡 YELLOW   │ Be Updated      │ Rain 30–65 mm/h   │ Stay updated with live  │
+│             │ (Watch)         │ Wind 35–50 km/h   │ radar; monitor weather  │
+│             │                 │ Temp 38°C – 42°C  │ bulletins.              │
+├─────────────┼─────────────────┼───────────────────┼─────────────────────────┤
+│ 🟠 ORANGE   │ Be Prepared     │ Rain 65–115 mm/h  │ High preparedness;      │
+│             │ (Alert)         │ Wind 50–65 km/h   │ avoid waterlogged zones;│
+│             │                 │ Heatwave / Squall │ secure small craft.     │
+├─────────────┼─────────────────┼───────────────────┼─────────────────────────┤
+│ 🔴 RED      │ Take Action     │ Rain > 115 mm/h   │ Immediate safety action;│
+│             │ (Warning)       │ Wind > 65 km/h    │ evacuate low-lying      │
+│             │                 │ Gale / Cyclone    │ zones; follow NDRF.     │
+└─────────────┴─────────────────┴───────────────────┴─────────────────────────┘
 ```
-
-### Design Principles
-
-- **Adaptive Dual-Theme Tokens**: Dynamic CSS variables seamlessly swap between **Sunlight Daylight Mode** and **Atmospheric Midnight Mode** while maintaining WCAG AAA contrast ratios.
-- **Glassmorphic Depth**: Subtle backdrop filters (`backdrop-filter: blur(16px)`) mimicking humid atmosphere and rain-slicked glass.
-- **Dynamic Micro-Interactions**: Hover lifts on telemetry cards, pulse ripples on active alerts, and animated SVG forecast splines.
 
 ---
 
-## 🌐 11-Language Indian Regional i18n
+## 🌐 11 Indian Regional Languages Guide
 
-WeatherGPT offers complete localization across all views, controls, and AI responses:
+WeatherGPT provides native scripts, localized navigation, and matching speech-to-text recognition codes:
 
-| Code | Language | Native Script | Primary User Demographic | Voice Recognition |
+| Flag & Code | Language Name | Native Script | Primary Regional Focus | Speech Recognition |
 | :---: | :--- | :--- | :--- | :---: |
-| `en` | English | English | Universal / Aviation / Research | ✅ `en-IN` |
-| `hi` | Hindi | हिन्दी | North & Central India / Indo-Gangetic Belt | ✅ `hi-IN` |
-| `bn` | Bengali | বাংলা | West Bengal, Coastal Deltas & Sundarbans | ✅ `bn-IN` |
-| `te` | Telugu | తెలుగు | Andhra Pradesh & Telangana Agricultural Zones | ✅ `te-IN` |
-| `mr` | Marathi | मराठी | Maharashtra, Western Ghats & Marathwada | ✅ `mr-IN` |
-| `ta` | Tamil | தமிழ் | Tamil Nadu Coastal & Marine Fishers | ✅ `ta-IN` |
-| `gu` | Gujarati | ગુજરાતી | Gujarat Coast, Saurashtra & Kutch Ports | ✅ `gu-IN` |
-| `kn` | Kannada | ಕನ್ನಡ | Karnataka Deccan Plateau & Coastal Malabar | ✅ `kn-IN` |
-| `ml` | Malayalam | മലയാളം | Kerala Monsoon Belt & Arabian Sea Fishers | ✅ `ml-IN` |
-| `or` | Odia | ଓଡ଼ିଆ | Odisha Cyclone Corridor & Bay of Bengal | ✅ `or-IN` |
-| `pa` | Punjabi | ਪੰਜਾਬੀ | Punjab & Haryana Agricultural Breadbasket | ✅ `pa-IN` |
+| 🇮🇳 `en` | **English** | English | Pan-India / Aviation / Research | `en-IN` |
+| 🇮🇳 `hi` | **Hindi** | हिन्दी | Uttar Pradesh, Bihar, MP, Rajasthan | `hi-IN` |
+| 🇮🇳 `bn` | **Bengali** | বাংলা | West Bengal, Coastal Deltas, Sundarbans | `bn-IN` |
+| 🇮🇳 `te` | **Telugu** | తెలుగు | Andhra Pradesh, Telangana | `te-IN` |
+| 🇮🇳 `mr` | **Marathi** | मराठी | Maharashtra, Western Ghats, Vidarbha | `mr-IN` |
+| 🇮🇳 `ta` | **Tamil** | தமிழ் | Tamil Nadu, Coastal Fishermen | `ta-IN` |
+| 🇮🇳 `gu` | **Gujarati** | ગુજરાતી | Gujarat Coast, Saurashtra, Kutch | `gu-IN` |
+| 🇮🇳 `kn` | **Kannada** | ಕನ್ನಡ | Karnataka, Deccan Agricultural Belt | `kn-IN` |
+| 🇮🇳 `ml` | **Malayalam** | മലയാളം | Kerala Coastal & Arabian Sea Fishing | `ml-IN` |
+| 🇮🇳 `or` | **Odia** | ଓଡ଼ିଆ | Odisha Cyclone Corridor, Bay of Bengal | `or-IN` |
+| 🇮🇳 `pa` | **Punjabi** | ਪੰਜਾਬੀ | Punjab, Haryana Agricultural Breadbasket | `pa-IN` |
 
 ---
 
 ## 🧑‍🌾 8 Targeted Persona Roles
 
-WeatherGPT dynamically adjusts its system instruction, tone, safety thresholds, and technical vocabulary based on the selected persona:
+Select your operational role from the bottom dock to tailor the AI's expertise:
 
 ```
-                      ┌───────────────────────────┐
-                      │   ROLE-BASED INTELLIGENCE │
-                      └─────────────┬─────────────┘
-                                    │
-    ┌──────────────┬────────────────┼────────────────┬──────────────┐
-    ▼              ▼                ▼                ▼              ▼
-[ Farmer ]     [ Marine ]      [ Aviator ]     [ Disaster ]    [ Citizen ]
-Agri-spraying, Sea-state,      Turbulence,     Evacuation,     Daily commute,
-sowing dates,  wave height,    visibility,     flood zones,    air quality,
-soil moisture, squall warnings ceiling &       shelter maps &  umbrella & heat
-fertilizers.   for trawlers.   crosswinds.     relief routes.  protection.
-```
-
-1. **🌾 Farmer / Krishi Salahkar**: Advises on pesticide spray windows, harvest protection, heat stress on crops, and monsoon progression.
-2. **⚓ Marine & Coastal Fisherman**: Bulletins on wave heights (meters), sea-state categories, squall alerts, and fishing advisories.
-3. **✈️ Aviation & Pilot Briefing**: METAR/TAF insights, cloud base altitudes, wind shear risk, and runway crosswinds.
-4. **🚨 Disaster Management**: Direct IMD warning alerts, flood drainage risks, cyclone tracks, and emergency contact advisories.
-5. **🔬 Meteorological Researcher**: Atmospheric pressure dynamics, dew point depressions, synoptic weather charts, and anomalies.
-6. **🏙️ Urban Planner & Infrastructure**: Stormwater drain capacity forecasts, urban heat island effects, and transport disruption.
-7. **📈 Climate Trend Analyst**: 10-year historical weather patterns, precipitation changes, and climate resilience tracking.
-8. **👤 Everyday Citizen**: Clear summaries, what-to-wear advice, outdoor exercise recommendations, and UV indices.
-
----
-
-## ⚡ LLM Resilience & 3-Key Rotation Engine
-
-To ensure continuous availability, WeatherGPT implements a multi-tier failover and key rotation mechanism:
-
-```
-Incoming Request
-      │
-      ▼
-[ Key 1: Primary ] ──(Timeout / 429 Quota)──► [ Key 2: Failover ]
-                                                     │
-                                             (Timeout / 429 Quota)
-                                                     │
-                                                     ▼
-[ In-Memory Domain Knowledge ] ◄──(All Fail)─── [ Key 3: Reserve ]
-```
-
-- **Quota Isolation**: Independent keys prevent rate-limit exhaustion from affecting all users simultaneously.
-- **Immediate Circuit Breaker**: If any key encounters a `429 Too Many Requests` or `15s Timeout`, the engine skips remaining models on that key and immediately rotates to the next available key.
-- **Grounded Meteorological Fallback**: In the rare event all cloud AI keys are temporarily unavailable, WeatherGPT falls back to an internal heuristic reasoning engine that provides valid advisories using live sensor telemetry.
-
----
-
-## 📡 API Architecture & Endpoint Catalog
-
-### Core Gateway (`http://localhost:5001/api`)
-
-| Method | Endpoint | Access | Purpose & Features |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/chat` | Public / Guest | Primary conversational interface; executes NLP entity resolution and AI reasoning. |
-| `GET` | `/chat/conversations` | JWT Auth | Retrieves past conversation sessions. |
-| `GET` | `/weather?lat=&lon=` | Public | Returns real-time metrics, air quality, hourly splines, and 7-day outlook. |
-| `GET` | `/roles` | Public | Enumerates available operational roles and active capabilities. |
-| `POST` | `/auth/register` | Public | Creates a user account with hashed credentials. |
-| `POST` | `/auth/login` | Public | Generates JWT access and refresh tokens. |
-| `POST` | `/auth/refresh` | Public | Rotates expired access tokens using a secure refresh token. |
-| `GET` | `/health` | Public | Verifies database connectivity, memory usage, and uptime. |
-
-### ML Microservice (`http://localhost:8000`)
-
-| Method | Endpoint | Purpose & Response Schema |
-| :--- | :--- | :--- |
-| `POST` | `/chat` | Fast tool-calling conversational agent returning `{ response, language, disaster_risk }`. |
-| `POST` | `/disaster-risk` | Executes Random Forest predictor returning IMD alert color and hazard scores. |
-| `POST` | `/tts` | Synthesizes regional voice audio alerts via Edge-TTS. |
-| `GET` | `/system-status` | Returns telemetry on active Gemini keys and cooldown metrics. |
-
----
-
-## 📊 Climatological Trend & Historical Intelligence
-
-WeatherGPT provides historical analysis for long-term planning, such as comparing current July monsoon patterns against a 10-year historical baseline:
-
-```
-Average July Temperature & Precipitation Profile (Example: Central Ganga Basin)
-================================================================================
-Year    Avg Max Temp    Avg Min Temp    Precipitation Profile
---------------------------------------------------------------------------------
-2015    35.2 °C         26.1 °C         Normal Monsoon (~310 mm)
-2016    34.8 °C         25.9 °C         Moderate Rainfall (~290 mm)
-2017    36.0 °C         26.5 °C         High Humidity (~270 mm)
-2018    34.2 °C         25.8 °C         Heavy Rainfall (~380 mm)
-2019    37.1 °C         27.0 °C         Delayed Monsoon Heatwave (~240 mm)
-2020    34.5 °C         26.2 °C         Optimal Rainfall (~350 mm)
-2021    36.5 °C         26.8 °C         Elevated Temperatures (~260 mm)
-2022    37.8 °C         27.4 °C         Record Heatwave Deficit (~210 mm)
-2023    35.8 °C         26.4 °C         Normal Monsoon (~330 mm)
-2024    36.2 °C         26.7 °C         High Humidity & Spells (~295 mm)
-================================================================================
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           OPERATIONAL PERSONA ROLES                         │
+├─────────────┬───────────────────┬───────────────────────────────────────────┤
+│ ROLE ICON   │ PERSONA TITLE     │ SPECIALIZED INTELLIGENCE DOMAIN           │
+├─────────────┼───────────────────┼───────────────────────────────────────────┤
+│ 🌾          │ **Farmer**        │ Pesticide spray windows, sowing guidance, │
+│             │ (कृषि सलाहकार)    │ crop heat stress, soil moisture levels.   │
+├─────────────┼───────────────────┼───────────────────────────────────────────┤
+│ ⚓          │ **Marine**        │ Wave heights (m), swell direction, rough  │
+│             │ (नाविक / तटीय)   │ sea warnings, wind squalls for trawlers.  │
+├─────────────┼───────────────────┼───────────────────────────────────────────┤
+│ ✈️          │ **Aviation**      │ METAR/TAF brief, cloud ceilings, wind     │
+│             │ (विमानन सुरक्षा)  │ shear risk, crosswind runways.            │
+├─────────────┼───────────────────┼───────────────────────────────────────────┤
+│ 🚨          │ **Disaster Team** │ IMD alert levels, flood inundation risk,  │
+│             │ (आपदा प्रबंधन)    │ cyclone tracking, evacuation routes.      │
+├─────────────┼───────────────────┼───────────────────────────────────────────┤
+│ 👤          │ **Citizen**       │ Daily commute, air quality, umbrella      │
+│             │ (नागरिक)          │ guidance, outdoor sports safety.          │
+├─────────────┼───────────────────┼───────────────────────────────────────────┤
+│ 🔬          │ **Researcher**    │ Dew point depression, synoptic charts,    │
+│             │ (मौसम वैज्ञानिक)  │ atmospheric pressure anomaly tracking.    │
+├─────────────┼───────────────────┼───────────────────────────────────────────┤
+│ 🏙️          │ **Urban Planner** │ Stormwater capacity, urban heat islands,  │
+│             │ (शहरी योजनाकार)   │ transport disruption forecasts.           │
+├─────────────┼───────────────────┼───────────────────────────────────────────┤
+│ 📈          │ **Climate Analyst│ 10-year historical climate patterns,     │
+│             │ (जलवायु विश्लेषक)│ monsoon variability, long-term trends.    │
+└─────────────┴───────────────────┴───────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quick Start & Installation
+## 🎨 UI Design System & Themes
 
-### Prerequisites
+WeatherGPT features an atmospheric design system with persistent state:
 
-- **Node.js**: v18.0.0 or higher
-- **Python**: v3.10 or higher
-- **MongoDB**: Local community instance or MongoDB Atlas URI
-- **API Keys**:
-  - OpenWeatherMap API Key ([Sign up free](https://openweathermap.org/api))
-  - Google Gemini API Key ([Get free keys](https://aistudio.google.com/app/apikey))
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ATMOSPHERIC WEATHER PALETTE (CSS TOKENS)                 │
+├──────────────────────┬───────────┬──────────────────────────────────────────┤
+│ COLOR NAME           │ HEX CODE  │ CSS VARIABLE TOKEN & PURPOSE             │
+├──────────────────────┼───────────┼──────────────────────────────────────────┤
+│ 🔵 Atmospheric Blue  │ `#0284c7` │ `var(--color-primary)` (Buttons, icons)  │
+│ 🌊 Ocean Teal        │ `#0d9488` │ `var(--color-accent)` (AI borders)       │
+│ ☁️ Cloud White       │ `#ffffff` │ `var(--color-bg-card)` (Panels in light) │
+│ 🌧️ Rain Slate       │ `#64748b` │ `var(--color-text-muted)` (Subtitles)    │
+│ ☀️ Sun Amber         │ `#f59e0b` │ `var(--color-warning)` (Yellow alerts)   │
+│ 🚨 Hazard Red        │ `#ef4444` │ `var(--color-danger)` (Disaster alerts)  │
+│ 🌿 Agri Green        │ `#10b981` │ `var(--color-success)` (Optimal spraying)│
+└──────────────────────┴───────────┴──────────────────────────────────────────┘
+```
 
-### 1. Clone the Repository
+- **Sunlight Day Mode (`data-theme="light"`)**: Optimized for high daylight visibility with crisp contrast (`#0f172a` text over airy `#f0f7fc` atmospheric backing).
+- **Midnight Dark Mode (`data-theme="dark"`)**: Low-glare dark blue aesthetic (`#0b1520` background) ideal for night shifts and low-light environments.
+- **Glassmorphism**: Soft background blurring (`backdrop-filter: blur(14px)`) creating a modern, clean interface.
 
+---
+
+## 🚀 Step-by-Step Quick Start
+
+### 📋 Prerequisites
+- **Node.js** $\ge$ v18.0.0
+- **Python** $\ge$ v3.10
+- **Git**
+
+### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/Code-AkarshMishra/WeatherGPT.git
 cd WeatherGPT
 ```
 
-### 2. Configure Environment Files
-
-Create your environment configuration in `server/.env`:
-
-```env
-PORT=5001
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
-ML_SERVICE_URL=http://localhost:8000
-
-# Database (Leave blank or fill in MongoDB Atlas URI)
-MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/weathergpt
-
-# JWT Security
-JWT_SECRET=weathergpt_dev_jwt_secret_key_minimum_32_characters_long_super_secure
-JWT_REFRESH_SECRET=weathergpt_dev_jwt_refresh_secret_key_minimum_32_characters_long
-
-# Weather API
-WEATHER_API_KEY=your_openweathermap_api_key
-
-# 3-Key Gemini Pool
-GEMINI_MODEL=gemini-3.5-flash-lite
-GEMINI_API_KEY_1=your_gemini_key_1
-GEMINI_API_KEY_2=your_gemini_key_2
-GEMINI_API_KEY_3=your_gemini_key_3
-GEMINI_API_KEY=your_gemini_key_1
-```
-
-Create your ML service configuration in `ml-service/.env`:
-
-```env
-PORT=8000
-HOST=0.0.0.0
-GEMINI_MODEL=gemini-3.5-flash-lite
-GEMINI_API_KEY=your_gemini_key_1
-```
-
-### 3. Install Dependencies
-
+### 2️⃣ Install Dependencies
 ```bash
-# Install root, backend and frontend dependencies
+# Install root, backend, and frontend packages
 npm run install:all
 
 # Install Python ML dependencies
 cd ml-service
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
 cd ..
 ```
 
-### 4. Run Development Services
+### 3️⃣ Configure Environment Files
+- Copy or create `server/.env` using the [Backend Configuration Guide](#-1-backend-server-configuration-serverenv).
+- Copy or create `ml-service/.env` using the [ML Configuration Guide](#-2-ml-microservice-configuration-ml-serviceenv).
 
-In three separate terminal tabs, start each service:
+### 4️⃣ Start All Services
+Open **three separate terminal windows** and run:
 
 ```bash
-# Tab 1: Start Frontend Client (Vite)
+# Terminal 1: Start React Frontend (Vite)
 cd client
 npm run dev
-
-# Tab 2: Start Backend Server (Node.js)
-cd server
-npm start
-
-# Tab 3: Start Python ML Microservice
-cd ml-service
-python -m uvicorn main:app --host 0.0.0.0 --port 8000
+# ➜ Running at http://localhost:5173
 ```
 
-Access the platform at `http://localhost:5173`.
+```bash
+# Terminal 2: Start Node.js API Gateway
+cd server
+npm start
+# ➜ Running at http://localhost:5001
+```
+
+```bash
+# Terminal 3: Start Python ML Microservice
+cd ml-service
+python -m uvicorn main:app --host 0.0.0.0 --port 8000
+# ➜ Running at http://localhost:8000
+```
+
+Open `http://localhost:5173` in your browser to start using WeatherGPT!
 
 ---
 
-## ⚙️ Environment Configuration
+## 📡 API Reference Summary
 
-| Variable | Default Value | Description |
-| :--- | :--- | :--- |
-| `PORT` | `5001` | Express gateway port. |
-| `ML_SERVICE_URL` | `http://localhost:8000` | Microservice address for ML tools. |
-| `GEMINI_MODEL` | `gemini-3.5-flash-lite` | Active model identifier for sub-second generation. |
-| `GEMINI_API_KEY_1..3`| *(Configured)* | Three distinct Google AI Studio keys for automatic rotation. |
-| `WEATHER_API_KEY` | *(Configured)* | OpenWeatherMap API key for live observations and geocoding. |
-| `MONGO_URI` | *(Atlas URI)* | Primary data store. Falls back to in-memory mode if unreachable. |
-| `JWT_SECRET` | *(Random 32+ char)* | Used to sign session access tokens. |
+### Gateway Server (`http://localhost:5001`)
+
+```http
+POST /api/chat
+Content-Type: application/json
+
+{
+  "message": "क्या आज फसल में कीटनाशक छिड़कना ठीक रहेगा?",
+  "role": "farmer",
+  "lang": "hi",
+  "lat": 26.8467,
+  "lon": 80.9462
+}
+```
+
+**Sample Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "response": "### 🌾 कृषि एवं फसल छिड़काव सलाह: लखनऊ\n\nवर्तमान में हवा की गति 9 km/h और बारिश की संभावना 15% है।\n- **स्थिति:** सुरक्षित (Safe)\n- **अनुकूल समय:** सुबह 7:00 से 10:00 बजे तक।",
+    "provider": "ml-unified-service",
+    "nlp": {
+      "intent": "crop_advisory",
+      "location": "लखनऊ",
+      "language": "hi"
+    }
+  }
+}
+```
 
 ---
 
-## 🛡️ Security, Privacy & Reliability
+## ❓ Troubleshooting & FAQ
 
-- **Input Sanitization**: Every chat input is sanitized using `express-mongo-sanitize` and `xss-clean` to mitigate injection risks.
-- **Strict Rate Limiting**: Protects AI endpoints against quota exhaustion using `express-rate-limit`.
-- **Stateless Authentication**: Token-based architecture utilizing short-lived access tokens alongside rotated refresh tokens.
-- **Graceful Degradation**: If third-party APIs experience downtime, cached observations and rule-based advisories ensure users always receive actionable guidance.
+<details>
+<summary><b>Q1: Port 5001 or 8000 is already in use (EADDRINUSE / Errno 10048)?</b></summary>
+Another process is already using the port. Stop it on Windows PowerShell with:
 
----
+```powershell
+# Find and stop the process on port 5001
+Get-NetTCPConnection -LocalPort 5001 | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
 
-## 🗺️ Future Engineering Roadmap
+# Find and stop the process on port 8000
+Get-NetTCPConnection -LocalPort 8000 | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
+```
+</details>
 
-- [x] Full Indian regional language support (11 Languages)
-- [x] Atmospheric design system with persistent Light & Dark themes
-- [x] Sub-second LLM responses using `gemini-3.5-flash-lite`
-- [x] 3-Key automatic failover mechanism
-- [ ] Direct satellite radar tile overlays via ISRO MOSDAC / Bhuvan
-- [ ] Offline PWA caching with background synchronization
-- [ ] SMS / WhatsApp alert distribution for low-connectivity agricultural areas
+<details>
+<summary><b>Q2: "MongoDB connection failed after retries: Server will continue in in-memory mode"?</b></summary>
+This is an intentional safeguard! If your MongoDB Atlas cluster is offline or your current IP is not whitelisted, WeatherGPT automatically falls back to volatile in-memory storage so you can continue testing the chat, weather, and ML features uninterrupted.
+</details>
+
+<details>
+<summary><b>Q3: How fast does the AI respond?</b></summary>
+With the upgraded <code>gemini-3.5-flash-lite</code> engine, generation typically completes in <b>~800ms to 1.8 seconds</b>, easily handling mobile networks without timeouts.
+</details>
 
 ---
 
