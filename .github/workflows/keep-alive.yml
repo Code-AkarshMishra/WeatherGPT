@@ -1,0 +1,85 @@
+name: Production Keep-Alive & Health Check
+
+on:
+  schedule:
+    # Run every 14 minutes to prevent Render free-tier web services from sleeping (15-min idle timeout)
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
+
+concurrency:
+  group: keep-alive-guard
+  cancel-in-progress: true
+
+jobs:
+  health-check:
+    name: Ping Services & Database
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'server/package.json'
+
+      - name: Install Server Dependencies (for DB Ping)
+        run: |
+          cd server
+          npm ci --omit=dev || npm install --omit=dev
+
+      # ── 1. Backend Service Keep-Alive ─────────────────────────────────────────
+      - name: Ping Backend Health Endpoint
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "⚠️ [BACKEND] Warning: BACKEND_URL secret is not configured. Skipping ping."
+          else
+            CLEAN_URL="${BACKEND_URL%/}"
+            echo "📡 [BACKEND] Pinging $CLEAN_URL/health..."
+            RESPONSE=$(curl -s -S -f --max-time 20 "$CLEAN_URL/health" || true)
+            if [ -n "$RESPONSE" ]; then
+              echo "✅ [BACKEND] Service is ONLINE and healthy:"
+              echo "$RESPONSE"
+            else
+              echo "❌ [BACKEND] Failed to reach $CLEAN_URL/health"
+              exit 1
+            fi
+          fi
+
+      # ── 2. ML Service Keep-Alive ─────────────────────────────────────────────
+      - name: Ping ML Microservice Health Endpoint
+        env:
+          ML_SERVICE_URL: ${{ secrets.ML_SERVICE_URL }}
+        run: |
+          if [ -z "$ML_SERVICE_URL" ]; then
+            echo "⚠️ [ML] Warning: ML_SERVICE_URL secret is not configured. Skipping ping."
+          else
+            CLEAN_URL="${ML_SERVICE_URL%/}"
+            echo "📡 [ML] Pinging $CLEAN_URL/health..."
+            RESPONSE=$(curl -s -S -f --max-time 20 "$CLEAN_URL/health" || true)
+            if [ -n "$RESPONSE" ]; then
+              echo "✅ [ML] Service is ONLINE and healthy:"
+              echo "$RESPONSE"
+            else
+              echo "❌ [ML] Failed to reach $CLEAN_URL/health"
+              exit 1
+            fi
+          fi
+
+      # ── 3. MongoDB Atlas Keep-Alive ───────────────────────────────────────────
+      - name: Ping MongoDB Atlas
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+        run: |
+          if [ -z "$MONGO_URI" ]; then
+            echo "⚠️ [MONGODB] Warning: MONGO_URI secret is not configured. Skipping ping."
+          else
+            echo "📡 [MONGODB] Running zero-I/O ping via server/ping-db.js..."
+            node server/ping-db.js
+          fi

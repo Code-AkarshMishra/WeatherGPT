@@ -70,14 +70,28 @@ app.use(morgan('combined', { stream: logger.morganStream }));
 // ── Health check & Telemetry ──────────────────────────────────────────────────
 app.get('/health', async (req, res) => {
   const isDbConnected = mongoose.connection.readyState === 1;
+  let dbPingMs = null;
+
+  // Optional lightweight DB roundtrip ping if ?db=1 or ?ping_db=true
+  if (isDbConnected && (req.query.db === '1' || req.query.ping_db === 'true')) {
+    try {
+      const t0 = Date.now();
+      await mongoose.connection.db.command({ ping: 1 });
+      dbPingMs = Date.now() - t0;
+    } catch {
+      dbPingMs = -1;
+    }
+  }
+
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     service: 'WeatherGPT API',
     uptime: Math.round(process.uptime()),
     database: isDbConnected ? 'connected' : 'disconnected',
+    dbPingMs,
     mlService: process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000',
-    model: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
+    model: process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite',
   });
 });
 
