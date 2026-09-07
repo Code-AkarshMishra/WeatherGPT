@@ -16,7 +16,7 @@
 ### 🇮🇳 India's First Multilingual, Multi-Persona AI Meteorological Platform
 **Empowering Farmers, Coastal Fishers, Aviators, Disaster Response Teams, and Citizens with Real-Time Meteorological Reasoning & Ministry of Earth Sciences (MoES) Forecasting.**
 
-[✨ Highlights](#-key-features--user-interface) • [⚙️ Environment Setup](#-complete-environment-variables-guide-env) • [🏗️ Colorful Architecture](#-colorful-system-architecture) • [🚀 Quick Start](#-step-by-step-quick-start) • [🎨 Design System](#-ui-design-system--themes)
+[✨ Highlights](#-key-features--user-interface) • [⚙️ Quick Environment Setup](#-quick-environment-setup-env) • [🏗️ System Architecture](#-colorful-system-architecture) • [🚀 Quick Start](#-step-by-step-quick-start) • [🎨 Design System](#-ui-design-system--themes)
 
 </div>
 
@@ -25,7 +25,7 @@
 ## 📑 Quick Navigation
 
 1. [✨ Key Features & User Interface (UI)](#-key-features--user-interface)
-2. [⚙️ Complete Environment Variables Guide (.env)](#-complete-environment-variables-guide-env)
+2. [⚙️ Quick Environment Setup (.env)](#-quick-environment-setup-env)
 3. [🏗️ Colorful System Architecture](#-colorful-system-architecture)
 4. [🛠️ Tech Stack with Icons](#️-tech-stack-with-icons)
 5. [🔄 End-to-End Chat & Failover Flowchart](#-end-to-end-chat--failover-flowchart)
@@ -41,7 +41,7 @@
 
 ## ✨ Key Features & User Interface (UI)
 
-WeatherGPT brings together professional meteorological data and natural human conversation:
+WeatherGPT brings together professional meteorological telemetry and natural human conversation:
 
 | Feature & Icon | User Capability | Why It Matters |
 | :--- | :--- | :--- |
@@ -56,125 +56,25 @@ WeatherGPT brings together professional meteorological data and natural human co
 
 ---
 
-## ⚙️ Complete Environment Variables Guide (`.env`)
+## ⚙️ Quick Environment Setup (`.env`)
 
-WeatherGPT uses environment variables to configure its database, security tokens, API keys, and microservices. 
+WeatherGPT uses simple environment variables configured across two service folders:
 
-### 📁 1. Backend Server Configuration (`server/.env`)
+### 📋 Environment Variables Summary
 
-Create this file in the `server/` directory:
+| Key Name | Service | Status | Purpose & Where to Get Key |
+| :--- | :---: | :---: | :--- |
+| `WEATHER_API_KEY` | `server/.env` | **Required** | Real-time weather observations & geocoding. [Get Free Key from OpenWeatherMap](https://openweathermap.org/api). |
+| `GEMINI_API_KEY_1` | `server/.env` | **Required** | Primary key for sub-second (~850ms) AI generation. [Get Free Key from Google AI Studio](https://aistudio.google.com/app/apikey). |
+| `GEMINI_API_KEY_2` | `server/.env` | **Required** | Automatic backup key if Key 1 reaches its quota limit. |
+| `GEMINI_API_KEY_3` | `server/.env` | **Required** | Secondary reserve key for continuous failover. |
+| `GEMINI_API_KEY` | `ml-service/.env` | **Required** | API key used by the Python ML tool-calling service. |
+| `GEMINI_MODEL` | Both | **Preset** | Default is `gemini-3.5-flash-lite` for high-speed response. |
+| `MONGO_URI` | `server/.env` | *Optional* | MongoDB connection string. Server switches to safe in-memory mode if offline. |
+| `JWT_SECRET` | `server/.env` | **Preset** | 32+ character security secret for session signing. |
+| `ML_SERVICE_URL` | `server/.env` | **Preset** | Address of Python microservice (`http://localhost:8000`). |
 
-```bash
-# Location: WeatherGPT/server/.env
-```
-
-```env
-# ==============================================================================
-# 1. SERVER & NETWORK SETTINGS
-# ==============================================================================
-PORT=5001
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
-ML_SERVICE_URL=http://localhost:8000
-WS_URL=ws://localhost:5001
-
-# ==============================================================================
-# 2. DATABASE PERSISTENCE (MongoDB Atlas or Local)
-# ==============================================================================
-# Format: mongodb+srv://<username>:<password>@<cluster-url>/<database-name>
-# TIP: If MongoDB is unavailable, WeatherGPT automatically switches to
-# safe in-memory mode so the server never crashes!
-MONGO_URI=mongodb+srv://your_user:your_password@cluster.mongodb.net/weathergpt
-
-# ==============================================================================
-# 3. JWT AUTHENTICATION SECRETS (Minimum 32 Characters)
-# ==============================================================================
-JWT_SECRET=weathergpt_dev_jwt_secret_key_minimum_32_characters_long_super_secure
-JWT_REFRESH_SECRET=weathergpt_dev_jwt_refresh_secret_key_minimum_32_characters_long
-JWT_ACCESS_EXPIRES=15m
-JWT_REFRESH_EXPIRES=7d
-
-# ==============================================================================
-# 4. WEATHER SATELLITE API (OpenWeatherMap)
-# ==============================================================================
-# Free API key from: https://openweathermap.org/api
-WEATHER_API_KEY=your_openweathermap_api_key_here
-
-# ==============================================================================
-# 5. GOOGLE GEMINI 3-KEY AUTOMATIC ROTATION POOL
-# ==============================================================================
-# Model: gemini-3.5-flash-lite delivers ~800ms ultra-fast responses!
-GEMINI_MODEL=gemini-3.5-flash-lite
-
-# Three separate keys for automatic failover when daily quotas are reached:
-# Get free API keys from: https://aistudio.google.com/app/apikey
-GEMINI_API_KEY_1=AIzaSyYourFirstGeminiKeyHere
-GEMINI_API_KEY_2=AIzaSyYourSecondGeminiKeyHere
-GEMINI_API_KEY_3=AIzaSyYourThirdGeminiKeyHere
-GEMINI_API_KEY=AIzaSyYourFirstGeminiKeyHere
-
-# ==============================================================================
-# 6. PER-ROLE SPECIALIZED KEYS (Optional - Can point to same key initially)
-# ==============================================================================
-CROP_ADVISORY_API_KEY=AIzaSyYourFirstGeminiKeyHere
-FLOOD_API_KEY=AIzaSyYourFirstGeminiKeyHere
-AVIATION_API_KEY=AIzaSyYourFirstGeminiKeyHere
-MARINE_API_KEY=AIzaSyYourFirstGeminiKeyHere
-CLIMATE_API_KEY=AIzaSyYourFirstGeminiKeyHere
-```
-
----
-
-### 📁 2. ML Microservice Configuration (`ml-service/.env`)
-
-Create this file in the `ml-service/` directory:
-
-```bash
-# Location: WeatherGPT/ml-service/.env
-```
-
-```env
-# ==============================================================================
-# FASTAPI ML MICROSERVICE CONFIGURATION
-# ==============================================================================
-PORT=8000
-HOST=0.0.0.0
-
-# LLM Engine for Tool Calling & Meteorological Reasoning
-GEMINI_MODEL=gemini-3.5-flash-lite
-
-# Primary API Key for ML Agent
-GEMINI_API_KEY=AIzaSyYourFirstGeminiKeyHere
-```
-
----
-
-### 🔑 Step-by-Step: Where & How to Get Free API Keys
-
-<details>
-<summary><b>👉 Click to expand step-by-step key registration guide</b></summary>
-
-#### 1. Google Gemini API Keys (Free)
-1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey).
-2. Sign in with your Google account.
-3. Click **"Create API key"** $\rightarrow$ **"Create key in new project"**.
-4. Copy the generated key (`AIzaSy...`).
-5. Repeat twice in separate projects to generate `GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, and `GEMINI_API_KEY_3` for zero-downtime key rotation!
-
-#### 2. OpenWeatherMap Key (Free)
-1. Visit [OpenWeatherMap Sign Up](https://home.openweathermap.org/users/sign_up).
-2. Create a free account and verify your email.
-3. Navigate to **"API keys"** tab in your profile.
-4. Copy your Default Key and paste it into `WEATHER_API_KEY`.
-
-#### 3. MongoDB Atlas Connection String (Optional Free Tier)
-1. Visit [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register).
-2. Create a free **M0 Sandbox Cluster**.
-3. Under **Database Access**, create a user with username and password.
-4. Under **Network Access**, click **Add IP Address** $\rightarrow$ select **"Allow Access from Anywhere"** (`0.0.0.0/0`).
-5. Click **Connect** $\rightarrow$ **Drivers** $\rightarrow$ Copy the connection string and replace `<password>` with your database user password.
-
-</details>
+> 💡 **Quick Start Tip:** Run `cp .env.example server/.env` from the project root and fill in your free `WEATHER_API_KEY` and `GEMINI_API_KEY_1`. You are ready to launch!
 
 ---
 
@@ -337,31 +237,14 @@ flowchart TD
 
 ## 🌪️ MoES 4-Color Disaster Matrix
 
-Aligned with guidelines from the **Ministry of Earth Sciences (MoES)** and the **India Meteorological Department (IMD)**:
+Aligned directly with guidelines from the **Ministry of Earth Sciences (MoES)** and the **India Meteorological Department (IMD)**:
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                   IMD 4-COLOR CODE EARLY WARNING MATRIX                     │
-├─────────────┬─────────────────┬───────────────────┬─────────────────────────┤
-│ COLOR CODE  │ SEVERITY LEVEL  │ THRESHOLD METRICS │ ACTION REQUIRED         │
-├─────────────┼─────────────────┼───────────────────┼─────────────────────────┤
-│ 🟢 GREEN    │ Normal / Safe   │ Rain < 30 mm/h    │ Normal routine; no      │
-│             │                 │ Wind < 35 km/h    │ precautionary action    │
-│             │                 │ Temp 15°C – 35°C  │ needed.                 │
-├─────────────┼─────────────────┼───────────────────┼─────────────────────────┤
-│ 🟡 YELLOW   │ Be Updated      │ Rain 30–65 mm/h   │ Stay updated with live  │
-│             │ (Watch)         │ Wind 35–50 km/h   │ radar; monitor weather  │
-│             │                 │ Temp 38°C – 42°C  │ bulletins.              │
-├─────────────┼─────────────────┼───────────────────┼─────────────────────────┤
-│ 🟠 ORANGE   │ Be Prepared     │ Rain 65–115 mm/h  │ High preparedness;      │
-│             │ (Alert)         │ Wind 50–65 km/h   │ avoid waterlogged zones;│
-│             │                 │ Heatwave / Squall │ secure small craft.     │
-├─────────────┼─────────────────┼───────────────────┼─────────────────────────┤
-│ 🔴 RED      │ Take Action     │ Rain > 115 mm/h   │ Immediate safety action;│
-│             │ (Warning)       │ Wind > 65 km/h    │ evacuate low-lying      │
-│             │                 │ Gale / Cyclone    │ zones; follow NDRF.     │
-└─────────────┴─────────────────┴───────────────────┴─────────────────────────┘
-```
+| Alert Color | Severity Level | Threshold Metrics | Action Required |
+| :---: | :--- | :--- | :--- |
+| <span style="background-color:#dcfce7;color:#15803d;padding:4px 10px;border-radius:6px;font-weight:bold;display:inline-block;">🟢 GREEN</span> | **Normal / Safe** | • Rain < 30 mm/h<br/>• Wind < 35 km/h<br/>• Temp 15°C – 35°C | Normal routine; no precautionary action needed. Safe for all operations. |
+| <span style="background-color:#fef9c3;color:#a16207;padding:4px 10px;border-radius:6px;font-weight:bold;display:inline-block;">🟡 YELLOW</span> | **Be Updated** *(Watch)* | • Rain 30–65 mm/h<br/>• Wind 35–50 km/h<br/>• Temp 38°C – 42°C | Stay updated with local radar bulletins; monitor changing weather trends. |
+| <span style="background-color:#ffedd5;color:#c2410c;padding:4px 10px;border-radius:6px;font-weight:bold;display:inline-block;">🟠 ORANGE</span> | **Be Prepared** *(Alert)* | • Rain 65–115 mm/h<br/>• Wind 50–65 km/h<br/>• Heatwave / Squalls | High preparedness; avoid flood-prone zones; protect farm harvests & livestock. |
+| <span style="background-color:#fee2e2;color:#b91c1c;padding:4px 10px;border-radius:6px;font-weight:bold;display:inline-block;">🔴 RED</span> | **Take Action** *(Warning)* | • Rain > 115 mm/h<br/>• Wind > 65 km/h<br/>• Cyclone / Gale | Immediate safety action; evacuate low-lying areas; follow NDRF directives. |
 
 ---
 
@@ -389,37 +272,16 @@ WeatherGPT provides native scripts, localized navigation, and matching speech-to
 
 Select your operational role from the bottom dock to tailor the AI's expertise:
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           OPERATIONAL PERSONA ROLES                         │
-├─────────────┬───────────────────┬───────────────────────────────────────────┤
-│ ROLE ICON   │ PERSONA TITLE     │ SPECIALIZED INTELLIGENCE DOMAIN           │
-├─────────────┼───────────────────┼───────────────────────────────────────────┤
-│ 🌾          │ **Farmer**        │ Pesticide spray windows, sowing guidance, │
-│             │ (कृषि सलाहकार)    │ crop heat stress, soil moisture levels.   │
-├─────────────┼───────────────────┼───────────────────────────────────────────┤
-│ ⚓          │ **Marine**        │ Wave heights (m), swell direction, rough  │
-│             │ (नाविक / तटीय)   │ sea warnings, wind squalls for trawlers.  │
-├─────────────┼───────────────────┼───────────────────────────────────────────┤
-│ ✈️          │ **Aviation**      │ METAR/TAF brief, cloud ceilings, wind     │
-│             │ (विमानन सुरक्षा)  │ shear risk, crosswind runways.            │
-├─────────────┼───────────────────┼───────────────────────────────────────────┤
-│ 🚨          │ **Disaster Team** │ IMD alert levels, flood inundation risk,  │
-│             │ (आपदा प्रबंधन)    │ cyclone tracking, evacuation routes.      │
-├─────────────┼───────────────────┼───────────────────────────────────────────┤
-│ 👤          │ **Citizen**       │ Daily commute, air quality, umbrella      │
-│             │ (नागरिक)          │ guidance, outdoor sports safety.          │
-├─────────────┼───────────────────┼───────────────────────────────────────────┤
-│ 🔬          │ **Researcher**    │ Dew point depression, synoptic charts,    │
-│             │ (मौसम वैज्ञानिक)  │ atmospheric pressure anomaly tracking.    │
-├─────────────┼───────────────────┼───────────────────────────────────────────┤
-│ 🏙️          │ **Urban Planner** │ Stormwater capacity, urban heat islands,  │
-│             │ (शहरी योजनाकार)   │ transport disruption forecasts.           │
-├─────────────┼───────────────────┼───────────────────────────────────────────┤
-│ 📈          │ **Climate Analyst│ 10-year historical climate patterns,     │
-│             │ (जलवायु विश्लेषक)│ monsoon variability, long-term trends.    │
-└─────────────┴───────────────────┴───────────────────────────────────────────┘
-```
+| Role Icon | Persona Title | Specialized Intelligence Domain | Practical Query Example |
+| :---: | :--- | :--- | :--- |
+| 🌾 | **Farmer**<br/>*(कृषि सलाहकार)* | Pesticide spray windows, sowing dates, crop heat stress, soil moisture levels. | *"क्या आज धान में कीटनाशक का छिड़काव सुरक्षित है?"* |
+| ⚓ | **Marine**<br/>*(नाविक / तटीय)* | Wave heights (m), swell direction, rough sea warnings, wind squalls for trawlers. | *"क्या आज रात समुद्र में नाव ले जाना सुरक्षित है?"* |
+| ✈️ | **Aviation**<br/>*(विमानन सुरक्षा)* | METAR/TAF briefings, cloud ceilings, wind shear risk, crosswind runways. | *"What is the crosswind and cloud ceiling outlook?"* |
+| 🚨 | **Disaster Team**<br/>*(आपदा प्रबंधन)* | IMD alert levels, flood inundation risk, cyclone tracking, evacuation routes. | *"Check flash flood warning for river catchment"* |
+| 👤 | **Citizen**<br/>*(नागरिक)* | Daily commute, air quality, umbrella guidance, outdoor sports safety. | *"आज शाम को बारिश होगी क्या? छाता ले जाऊं?"* |
+| 🔬 | **Researcher**<br/>*(मौसम वैज्ञानिक)* | Dew point depression, synoptic charts, atmospheric pressure anomaly tracking. | *"Show synoptic pressure gradient trends"* |
+| 🏙️ | **Urban Planner**<br/>*(शहरी योजनाकार)* | Stormwater drain capacity, urban heat islands, transport disruption forecasts. | *"Urban heat island & drainage capacity risk"* |
+| 📈 | **Climate Analyst**<br/>*(जलवायु विश्लेषक)* | 10-year historical climate patterns, monsoon variability, long-term trends. | *"Compare July rainfall with 10-year baseline"* |
 
 ---
 
@@ -427,21 +289,15 @@ Select your operational role from the bottom dock to tailor the AI's expertise:
 
 WeatherGPT features an atmospheric design system with persistent state:
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    ATMOSPHERIC WEATHER PALETTE (CSS TOKENS)                 │
-├──────────────────────┬───────────┬──────────────────────────────────────────┤
-│ COLOR NAME           │ HEX CODE  │ CSS VARIABLE TOKEN & PURPOSE             │
-├──────────────────────┼───────────┼──────────────────────────────────────────┤
-│ 🔵 Atmospheric Blue  │ `#0284c7` │ `var(--color-primary)` (Buttons, icons)  │
-│ 🌊 Ocean Teal        │ `#0d9488` │ `var(--color-accent)` (AI borders)       │
-│ ☁️ Cloud White       │ `#ffffff` │ `var(--color-bg-card)` (Panels in light) │
-│ 🌧️ Rain Slate       │ `#64748b` │ `var(--color-text-muted)` (Subtitles)    │
-│ ☀️ Sun Amber         │ `#f59e0b` │ `var(--color-warning)` (Yellow alerts)   │
-│ 🚨 Hazard Red        │ `#ef4444` │ `var(--color-danger)` (Disaster alerts)  │
-│ 🌿 Agri Green        │ `#10b981` │ `var(--color-success)` (Optimal spraying)│
-└──────────────────────┴───────────┴──────────────────────────────────────────┘
-```
+| Swatch | Color Name | Hex Code | Token | Usage |
+| :---: | :--- | :---: | :--- | :--- |
+| <img src="https://via.placeholder.com/20/0284c7/0284c7.png" width="18" height="18" /> | **Atmospheric Blue** | `#0284c7` | `var(--color-primary)` | Primary action buttons, brand accents, active states |
+| <img src="https://via.placeholder.com/20/0d9488/0d9488.png" width="18" height="18" /> | **Ocean Teal** | `#0d9488` | `var(--color-accent)` | AI chat response borders, telemetry indicators |
+| <img src="https://via.placeholder.com/20/ffffff/ffffff.png" width="18" height="18" /> | **Cloud White** | `#ffffff` | `var(--color-bg-card)` | High-contrast card surfaces in Daylight mode |
+| <img src="https://via.placeholder.com/20/64748b/64748b.png" width="18" height="18" /> | **Rain Slate** | `#64748b` | `var(--color-text-muted)` | Meteorological labels, units, and secondary subtitles |
+| <img src="https://via.placeholder.com/20/f59e0b/f59e0b.png" width="18" height="18" /> | **Sun Amber** | `#f59e0b` | `var(--color-warning)` | Advisory warnings, moderate heat index, Yellow alerts |
+| <img src="https://via.placeholder.com/20/ef4444/ef4444.png" width="18" height="18" /> | **Hazard Red** | `#ef4444` | `var(--color-danger)` | MoES Red alerts, flood warnings, storm hazards |
+| <img src="https://via.placeholder.com/20/10b981/10b981.png" width="18" height="18" /> | **Agri Green** | `#10b981` | `var(--color-success)` | Favorable crop spraying, calm sea conditions |
 
 - **Sunlight Day Mode (`data-theme="light"`)**: Optimized for high daylight visibility with crisp contrast (`#0f172a` text over airy `#f0f7fc` atmospheric backing).
 - **Midnight Dark Mode (`data-theme="dark"`)**: Low-glare dark blue aesthetic (`#0b1520` background) ideal for night shifts and low-light environments.
@@ -474,8 +330,11 @@ cd ..
 ```
 
 ### 3️⃣ Configure Environment Files
-- Copy or create `server/.env` using the [Backend Configuration Guide](#-1-backend-server-configuration-serverenv).
-- Copy or create `ml-service/.env` using the [ML Configuration Guide](#-2-ml-microservice-configuration-ml-serviceenv).
+Copy the example environment template and add your API keys:
+
+```bash
+cp .env.example server/.env
+```
 
 ### 4️⃣ Start All Services
 Open **three separate terminal windows** and run:
