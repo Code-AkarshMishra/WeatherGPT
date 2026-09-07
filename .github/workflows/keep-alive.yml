@@ -35,41 +35,33 @@ jobs:
       # ── 1. Backend Service Keep-Alive ─────────────────────────────────────────
       - name: Ping Backend Health Endpoint
         env:
-          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          BACKEND_URL: ${{ secrets.BACKEND_URL || 'https://weathergpt-t7zu.onrender.com' }}
         run: |
-          if [ -z "$BACKEND_URL" ]; then
-            echo "⚠️ [BACKEND] Warning: BACKEND_URL secret is not configured. Skipping ping."
+          CLEAN_URL="${BACKEND_URL%/}"
+          echo "📡 [BACKEND] Pinging $CLEAN_URL/health..."
+          RESPONSE=$(curl -s -S -f --max-time 20 "$CLEAN_URL/health" || true)
+          if [ -n "$RESPONSE" ]; then
+            echo "✅ [BACKEND] Service is ONLINE and healthy:"
+            echo "$RESPONSE"
           else
-            CLEAN_URL="${BACKEND_URL%/}"
-            echo "📡 [BACKEND] Pinging $CLEAN_URL/health..."
-            RESPONSE=$(curl -s -S -f --max-time 20 "$CLEAN_URL/health" || true)
-            if [ -n "$RESPONSE" ]; then
-              echo "✅ [BACKEND] Service is ONLINE and healthy:"
-              echo "$RESPONSE"
-            else
-              echo "❌ [BACKEND] Failed to reach $CLEAN_URL/health"
-              exit 1
-            fi
+            echo "❌ [BACKEND] Failed to reach $CLEAN_URL/health"
+            exit 1
           fi
 
       # ── 2. ML Service Keep-Alive ─────────────────────────────────────────────
       - name: Ping ML Microservice Health Endpoint
         env:
-          ML_SERVICE_URL: ${{ secrets.ML_SERVICE_URL }}
+          ML_SERVICE_URL: ${{ secrets.ML_SERVICE_URL || 'https://weathergpt-1-ike5.onrender.com' }}
         run: |
-          if [ -z "$ML_SERVICE_URL" ]; then
-            echo "⚠️ [ML] Warning: ML_SERVICE_URL secret is not configured. Skipping ping."
+          CLEAN_URL="${ML_SERVICE_URL%/}"
+          echo "📡 [ML] Pinging $CLEAN_URL/health..."
+          RESPONSE=$(curl -s -S -f --max-time 20 "$CLEAN_URL/health" || true)
+          if [ -n "$RESPONSE" ]; then
+            echo "✅ [ML] Service is ONLINE and healthy:"
+            echo "$RESPONSE"
           else
-            CLEAN_URL="${ML_SERVICE_URL%/}"
-            echo "📡 [ML] Pinging $CLEAN_URL/health..."
-            RESPONSE=$(curl -s -S -f --max-time 20 "$CLEAN_URL/health" || true)
-            if [ -n "$RESPONSE" ]; then
-              echo "✅ [ML] Service is ONLINE and healthy:"
-              echo "$RESPONSE"
-            else
-              echo "❌ [ML] Failed to reach $CLEAN_URL/health"
-              exit 1
-            fi
+            echo "❌ [ML] Failed to reach $CLEAN_URL/health"
+            exit 1
           fi
 
       # ── 3. MongoDB Atlas Keep-Alive ───────────────────────────────────────────

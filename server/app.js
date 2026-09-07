@@ -20,7 +20,7 @@ app.use(helmet());
 // ── CORS ──────────────────────────────────────────────────────────────────────
 const allowedOrigins = process.env.CLIENT_URL
   ? process.env.CLIENT_URL.split(',').map((u) => u.trim().replace(/\/$/, ''))
-  : ['http://localhost:5173'];
+  : ['https://weather-gpt-srmu.vercel.app', 'http://localhost:5173'];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -90,7 +90,7 @@ app.get('/health', async (req, res) => {
     uptime: Math.round(process.uptime()),
     database: isDbConnected ? 'connected' : 'disconnected',
     dbPingMs,
-    mlService: process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000',
+    mlService: process.env.ML_SERVICE_URL || 'https://weathergpt-1-ike5.onrender.com',
     model: process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite',
   });
 });

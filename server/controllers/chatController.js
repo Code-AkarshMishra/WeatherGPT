@@ -197,7 +197,7 @@ exports.chat = async (req, res, next) => {
     let aiResponse = null;
     let usedProvider = 'gemini-grounded-agent';
 
-    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000';
+    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'https://weathergpt-1-ike5.onrender.com';
     
     // Attempt fast local ML microservice tool calling
     try {
