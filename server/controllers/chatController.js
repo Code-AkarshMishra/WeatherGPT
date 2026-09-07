@@ -192,27 +192,27 @@ exports.chat = async (req, res, next) => {
     let aiResponse = null;
     let usedProvider = 'gemini-grounded-agent';
 
-    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || process.env.ML1_URL || 'https://weathergpt-jdqt.onrender.com';
+    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000';
     
-    // Attempt ML microservice tool calling for general queries or if requested
-    if (selectedRole === 'citizen' && (!conversationHistory || conversationHistory.length === 0)) {
+    // Attempt fast local ML microservice tool calling
+    if ((!conversationHistory || conversationHistory.length === 0)) {
       try {
         const mlPayload = { message, role: selectedRole };
         if (resolvedLat !== null && resolvedLon !== null) {
           mlPayload.location = { lat: resolvedLat, lon: resolvedLon };
         }
-        const mlRes = await axios.post(`${ML_SERVICE_URL}/chat`, mlPayload, { timeout: 5000 });
+        const mlRes = await axios.post(`${ML_SERVICE_URL}/chat`, mlPayload, { timeout: 2500 });
         if (
-          ml1Res.data?.response &&
-          !ml1Res.data.response.toLowerCase().includes('temporary service limit') &&
-          !ml1Res.data.response.toLowerCase().includes('unable to fetch')
+          mlRes.data?.response &&
+          !mlRes.data.response.toLowerCase().includes('temporary service limit') &&
+          !mlRes.data.response.toLowerCase().includes('unable to fetch')
         ) {
-          aiResponse = ml1Res.data.response;
-          usedProvider = 'render-ml1-toolcalling';
-          logger.info(`[CHAT] Successfully answered via ML-1 Render tool-calling service`);
+          aiResponse = mlRes.data.response;
+          usedProvider = 'unified-ml-agent';
+          logger.info(`[CHAT] Successfully answered via Unified ML service (${usedProvider})`);
         }
-      } catch (ml1Err) {
-        logger.warn(`[CHAT] ML-1 Render call skipped (${ml1Err.message}), using grounded Gemini LLM`);
+      } catch (mlErr) {
+        logger.info(`[CHAT] ML microservice not reachable (${mlErr.message}), proceeding with grounded Gemini LLM`);
       }
     }
 

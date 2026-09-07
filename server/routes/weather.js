@@ -12,5 +12,7 @@ router.get('/', generalLimiter, weatherController.validate, weatherController.ge
 router.get('/geocode', generalLimiter, geocodeController.geocode);
 router.get('/disaster-risk', generalLimiter, weatherController.getDisasterRisk);
 router.post('/disaster-risk', generalLimiter, weatherController.getDisasterRisk);
+router.get('/tts', generalLimiter, weatherController.getTTS);
+router.post('/tts', generalLimiter, weatherController.getTTS);
 
 module.exports = router;

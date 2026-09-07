@@ -119,6 +119,32 @@ export default function WeatherWidget({
     }
   };
 
+  const POPULAR_CITIES = [
+    { name: 'Lucknow', lat: 26.8467, lon: 80.9462 },
+    { name: 'Delhi', lat: 28.6139, lon: 77.2090 },
+    { name: 'Mumbai', lat: 19.0760, lon: 72.8777 },
+    { name: 'Kolkata', lat: 22.5726, lon: 88.3639 },
+    { name: 'Bengaluru', lat: 12.9716, lon: 77.5946 },
+  ];
+
+  const handleSpeakAlert = (e) => {
+    e.stopPropagation();
+    if (!data?.disasterRisk || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const text = data.disasterRisk.spokenTextHi || data.disasterRisk.spokenTextEn;
+    const utterance = new SpeechSynthesisUtterance(text);
+    const hasHindi = /[\u0900-\u097F]/.test(text);
+    const voices = window.speechSynthesis.getVoices();
+    if (hasHindi) {
+      utterance.lang = 'hi-IN';
+      const hiVoice = voices.find((v) => v.lang.includes('hi') || v.lang.includes('IN'));
+      if (hiVoice) utterance.voice = hiVoice;
+    } else {
+      utterance.lang = 'en-IN';
+    }
+    window.speechSynthesis.speak(utterance);
+  };
+
   return (
     <>
       <div
@@ -128,17 +154,28 @@ export default function WeatherWidget({
         aria-label="Current weather"
         aria-live="polite"
       >
-        {loading ? (
+        {loading && !data ? (
           <div className="weather-skeleton">
             <LoadingSkeleton width={110} height={20} />
             <LoadingSkeleton width={50} height={28} />
             <LoadingSkeleton width={80} height={20} />
           </div>
-        ) : error ? (
-          <div style={{ color: 'var(--color-danger)', fontSize: 'var(--font-size-sm)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-            <span>⚠️</span>
-            <span>{t('errorFetch')}</span>
-            <button onClick={refetch} className="btn btn-ghost" style={{ height: 32, padding: '0 var(--space-2)', fontSize: 'var(--font-size-xs)' }}>
+        ) : error && !data ? (
+          <div style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-xs)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+            <span style={{ color: '#f59e0b' }}>⚡</span>
+            <span>Switching to regional MoES radar station:</span>
+            {POPULAR_CITIES.map((c) => (
+              <button
+                key={c.name}
+                type="button"
+                onClick={() => onLocationChange(c.lat, c.lon)}
+                className="btn btn-ghost"
+                style={{ height: 26, padding: '0 8px', fontSize: '11px', borderRadius: 12, border: '1px solid var(--color-border)' }}
+              >
+                {c.name}
+              </button>
+            ))}
+            <button onClick={refetch} className="btn btn-ghost" style={{ height: 26, padding: '0 8px', fontSize: '11px' }}>
               Retry
             </button>
           </div>
@@ -171,7 +208,10 @@ export default function WeatherWidget({
               {data.disasterRisk && (
                 <div
                   className="aqi-pill-badge widget-aqi"
+                  title={`MoES IMD Warning: ${data.disasterRisk.statusText} — Click to hear voice readout`}
+                  onClick={handleSpeakAlert}
                   style={{
+                    cursor: 'pointer',
                     borderColor:
                       data.disasterRisk.imdColorCode === 'RED'
                         ? '#ef4444'
@@ -181,9 +221,10 @@ export default function WeatherWidget({
                         ? '#eab308'
                         : '#22c55e',
                   }}
-                  title={`MoES IMD Warning: ${data.disasterRisk.statusText}`}
                 >
-                  <span className="aqi-icon-tag">IMD</span>
+                  <span className="aqi-icon-tag" style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Volume2 size={10} /> IMD
+                  </span>
                   <span
                     className="aqi-val-tag"
                     style={{

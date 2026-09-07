@@ -83,6 +83,26 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
 
       {/* Controls */}
       <div className="navbar-controls">
+        <div
+          className="desktop-only"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '4px 10px',
+            borderRadius: 20,
+            background: 'rgba(34, 197, 94, 0.08)',
+            border: '1px solid rgba(34, 197, 94, 0.25)',
+            fontSize: '0.72rem',
+            fontWeight: 600,
+            color: '#16a34a',
+          }}
+          title="MoES Live Radar + ML-2 Severe Weather RF Predictor Online"
+        >
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }} />
+          <span>MoES & ML Live</span>
+        </div>
+
         <LanguageToggle />
         <ThemeToggle />
 

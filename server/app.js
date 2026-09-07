@@ -8,6 +8,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const mongoSanitize = require('express-mongo-sanitize');
+const mongoose = require('mongoose');
 const logger = require('./config/logger');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -31,12 +32,37 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // ── MongoDB injection sanitization ───────────────────────────────────────────
 app.use(mongoSanitize());
 
+// ── Response Time & Performance Tracking ────────────────────────────────────
+app.use((req, res, next) => {
+  const startHrTime = process.hrtime();
+  res.on('finish', () => {
+    const elapsedHrTime = process.hrtime(startHrTime);
+    const elapsedTimeInMs = Math.round((elapsedHrTime[0] * 1000 + elapsedHrTime[1] / 1e6) * 100) / 100;
+    try {
+      res.setHeader('X-Response-Time', `${elapsedTimeInMs}ms`);
+    } catch {}
+    if (elapsedTimeInMs > 1000) {
+      logger.warn(`Slow Request: ${req.method} ${req.originalUrl} took ${elapsedTimeInMs}ms`);
+    }
+  });
+  next();
+});
+
 // ── HTTP request logging (Morgan → Winston) ───────────────────────────────────
 app.use(morgan('combined', { stream: logger.morganStream }));
 
-// ── Health check ──────────────────────────────────────────────────────────────
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString(), service: 'WeatherGPT API' });
+// ── Health check & Telemetry ──────────────────────────────────────────────────
+app.get('/health', async (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    service: 'WeatherGPT API',
+    uptime: Math.round(process.uptime()),
+    database: isDbConnected ? 'connected' : 'disconnected',
+    mlService: process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000',
+    model: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
+  });
 });
 
 // ── API Routes ────────────────────────────────────────────────────────────────

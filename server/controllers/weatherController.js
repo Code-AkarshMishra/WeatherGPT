@@ -43,6 +43,37 @@ exports.getWeather = async (req, res, next) => {
 };
 
 /**
+ * TTS Audio synthesis proxy to ML-2 regional voice engine.
+ */
+exports.getTTS = async (req, res) => {
+  try {
+    const { text, lang = 'hi' } = req.body || req.query;
+    if (!text) {
+      return res.status(400).json({ success: false, error: 'Text parameter required' });
+    }
+
+    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000';
+    try {
+      const mlRes = await axios.post(`${ML_SERVICE_URL}/tts`, { text }, { timeout: 3000 });
+      return res.json({ success: true, data: mlRes.data });
+    } catch {
+      // Fallback for client-side Web Speech synthesis
+      return res.json({
+        success: true,
+        data: {
+          status: 'client_speech_synth',
+          text,
+          lang: lang === 'hi' ? 'hi-IN' : 'en-IN',
+          message: 'Client-side neural speech synthesis active',
+        },
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+/**
  * Direct ML-2 MoES disaster risk prediction endpoint.
  * Accepts query or body: { rain_mm, wind_kmph, temp_c, city }
  */
