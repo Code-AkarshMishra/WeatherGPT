@@ -143,7 +143,7 @@ flowchart TB
     ToolAgent --> OpenMeteo
     ToolAgent --> GeminiCloud
     ToolAgent --> TTS
-    Router --> MongoCloud
+    Router --> MongoCloud Atlas
 ```
 
 ---
