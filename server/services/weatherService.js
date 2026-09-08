@@ -260,12 +260,38 @@ async function getWeather(lat, lon) {
     if (dayIndex === 0) dayName = 'Today';
     else if (dayIndex === 1) dayName = 'Tomorrow';
 
+    // Compute realistic representative daily precipitation probability
+    const pops = items.map((it) => it.pop || 0);
+    const avgPop = Math.round((pops.reduce((a, b) => a + b, 0) / pops.length) * 100);
+
+    const daytimeItems = items.filter((it) => {
+      const h = new Date(it.dt * 1000).getHours();
+      return h >= 6 && h <= 21;
+    });
+    const daytimePops = daytimeItems.map((it) => it.pop || 0);
+    const daytimeAvg = daytimePops.length > 0
+      ? Math.round((daytimePops.reduce((a, b) => a + b, 0) / daytimePops.length) * 100)
+      : avgPop;
+    const daytimeMax = daytimePops.length > 0
+      ? Math.round(Math.max(...daytimePops) * 100)
+      : maxPop;
+
+    // Blend daytime peak with daytime average (avoids 100% on mostly-dry days with one brief night shower)
+    let representativePop = Math.round(daytimeMax * 0.45 + daytimeAvg * 0.55);
+
+    // Contextual guard: clear/cloudy days should never display contradictory 100% rain chance
+    if (bestCond === 'clear') {
+      representativePop = Math.min(representativePop, 10);
+    } else if (bestCond === 'cloudy') {
+      representativePop = Math.min(representativePop, 45);
+    }
+
     dailyForecast.push({
       date: `${month}/${day}`,
       dayName,
       condition: bestCond,
       icon: dominantIcon,
-      rainPop: maxPop,
+      rainPop: representativePop,
       minTemp: Math.round(min),
       maxTemp: Math.round(max),
     });
