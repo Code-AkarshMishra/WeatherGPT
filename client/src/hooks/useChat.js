@@ -47,7 +47,12 @@ export function useChat({ role, lat, lon, lang = 'en' }) {
 
       const res = await api.post('/api/chat', payload);
 
-      const { response, conversationId: cid, nlp, suggestedRole: sr, provider, weather } = res.data.data;
+      const chatData = res.data?.data || res.data || {};
+      const { response, conversationId: cid, nlp, suggestedRole: sr, provider, weather } = chatData;
+
+      if (!response) {
+        throw new Error(res.data?.error || 'Failed to get a response from weather intelligence engine.');
+      }
 
       if (cid && !conversationId) setConversationId(cid);
       if (sr) setSuggestedRole(sr);

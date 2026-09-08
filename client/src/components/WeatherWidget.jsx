@@ -20,6 +20,7 @@ import { useWeather } from '../hooks/useWeather';
 import { useLanguage } from '../contexts/LanguageContext';
 import { weatherAudio } from '../services/weatherAudio';
 import LoadingSkeleton from './LoadingSkeleton';
+import api from '../services/api';
 import '../styles/weather.css';
 
 function renderConditionIcon(condition) {
@@ -90,17 +91,18 @@ export default function WeatherWidget({
 
   const handleGeocode = async (e) => {
     e.preventDefault();
-    if (!searchValue.trim()) return;
+    const city = searchValue.trim();
+    if (!city) return;
     setGeocoding(true);
     try {
-      const res = await fetch(`/api/weather/geocode?city=${encodeURIComponent(searchValue)}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          onLocationChange(json.data.lat, json.data.lon);
-          setShowSearchModal(false);
-          setSearchValue('');
-        }
+      const res = await api.get('/api/weather/geocode', {
+        params: { city },
+      });
+      if (res.data?.data) {
+        const { lat, lon, name } = res.data.data;
+        onLocationChange(lat, lon, name || city);
+        setShowSearchModal(false);
+        setSearchValue('');
       }
     } catch {
       // fallback

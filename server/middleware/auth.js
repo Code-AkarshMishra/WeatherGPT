@@ -23,7 +23,12 @@ const auth = async (req, res, next) => {
 
     let user = null;
     if (isDbReady()) {
-      user = await User.findById(decoded.userId).select('-password -refreshTokens');
+      try {
+        user = await User.findById(decoded.userId).select('-password -refreshTokens');
+      } catch (dbErr) {
+        logger.warn(`Auth User findById error: ${dbErr.message}`);
+        user = await inMemoryAuth.findById(decoded.userId);
+      }
     } else {
       user = await inMemoryAuth.findById(decoded.userId);
     }
@@ -61,7 +66,12 @@ const optionalAuth = async (req, res, next) => {
 
     let user = null;
     if (isDbReady()) {
-      user = await User.findById(decoded.userId).select('-password -refreshTokens');
+      try {
+        user = await User.findById(decoded.userId).select('-password -refreshTokens');
+      } catch (dbErr) {
+        logger.warn(`OptionalAuth User findById error: ${dbErr.message}`);
+        user = await inMemoryAuth.findById(decoded.userId);
+      }
     } else {
       user = await inMemoryAuth.findById(decoded.userId);
     }

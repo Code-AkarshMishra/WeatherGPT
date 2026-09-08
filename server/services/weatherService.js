@@ -19,6 +19,50 @@ function makeCacheKey(lat, lon) {
   return `${parseFloat(lat).toFixed(2)}_${parseFloat(lon).toFixed(2)}`;
 }
 
+const DIVISION_CITY_MAP = {
+  'konkan division': 'Mumbai',
+  'konkan': 'Mumbai',
+  'khetwadi': 'Mumbai',
+  'khetwādi': 'Mumbai',
+  'national capital territory of delhi': 'Delhi',
+  'delhi division': 'Delhi',
+  'bengaluru urban': 'Bengaluru',
+  'bangalore urban': 'Bengaluru',
+  'kolkata district': 'Kolkata',
+  'chennai district': 'Chennai',
+  'hyderabad district': 'Hyderabad',
+  'pune division': 'Pune',
+  'ahmedabad district': 'Ahmedabad',
+};
+
+function formatCityName(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .trim()
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
+function normalizeLocationName(rawName, cityOverride = null) {
+  if (cityOverride && typeof cityOverride === 'string' && cityOverride.trim()) {
+    return formatCityName(cityOverride);
+  }
+  if (!rawName) return 'Your Location';
+  const cleanRaw = rawName.trim();
+  const lower = cleanRaw.toLowerCase();
+  if (DIVISION_CITY_MAP[lower]) {
+    return DIVISION_CITY_MAP[lower];
+  }
+  if (lower.endsWith(' division')) {
+    return cleanRaw.replace(/\s+division$/i, '').trim();
+  }
+  if (lower.endsWith(' district')) {
+    return cleanRaw.replace(/\s+district$/i, '').trim();
+  }
+  return cleanRaw;
+}
+
 /**
  * Maps OWM weather condition to a UI-friendly condition string.
  */
@@ -38,9 +82,10 @@ function mapCondition(weatherMain) {
  *
  * @param {number} lat
  * @param {number} lon
+ * @param {string} [cityOverride] Optional city name to clean and enforce
  * @returns {Object} Enriched weather object
  */
-async function getWeather(lat, lon) {
+async function getWeather(lat, lon, cityOverride = null) {
   const cacheKey = makeCacheKey(lat, lon);
 
   // Check cache first
@@ -49,6 +94,7 @@ async function getWeather(lat, lon) {
       const cached = await WeatherCache.findOne({ cacheKey });
       if (cached) {
         logger.debug(`Weather cache HIT for ${cacheKey}`);
+        cached.data.locationName = normalizeLocationName(cached.data.locationName, cityOverride);
         if (!cached.data.disasterRisk) {
           cached.data.disasterRisk = predictDisasterRisk({
             rain_mm: (cached.data.recentPrecip1h || cached.data.recentPrecip3h || 0),
@@ -108,7 +154,7 @@ async function getWeather(lat, lon) {
     ]);
   } catch (owmErr) {
     logger.warn(`OWM weather fetch failed (${owmErr.message}). Engaging high-reliability Open-Meteo NWP fallback...`);
-    return await fetchFromOpenMeteo(lat, lon, cacheKey);
+    return await fetchFromOpenMeteo(lat, lon, cacheKey, cityOverride);
   }
 
   const current = currentRes.data;
@@ -316,8 +362,10 @@ async function getWeather(lat, lon) {
   // Live real rain probability for current moment
   const liveRainProbability = hourlyForecast.length > 0 ? hourlyForecast[0].rainPop : rainProbability;
 
+  const resolvedCityName = normalizeLocationName(current.name, cityOverride);
+
   const enrichedData = {
-    locationName: current.name || 'Your Location',
+    locationName: resolvedCityName,
     country: current.sys?.country || '',
     lat: current.coord?.lat || lat,
     lon: current.coord?.lon || lon,
@@ -349,7 +397,7 @@ async function getWeather(lat, lon) {
       rain_mm: (recentPrecip1h || recentPrecip3h || 0),
       wind_kmph: Math.round((current.wind?.speed || 0) * 3.6),
       temp_c: current.main?.temp || 25,
-      city: current.name || 'Your Location',
+      city: resolvedCityName,
     }),
     fetchedAt: new Date().toISOString(),
   };
@@ -374,7 +422,7 @@ async function getWeather(lat, lon) {
  * Secondary resilient weather fetcher using Open-Meteo European Centre / GFS numerical models.
  * Zero-API-key requirement ensures 100% availability even under third-party quota exhaustion.
  */
-async function fetchFromOpenMeteo(lat, lon, cacheKey) {
+async function fetchFromOpenMeteo(lat, lon, cacheKey, cityOverride = null) {
   try {
     logger.info(`Fetching Open-Meteo NWP forecast for lat=${lat}, lon=${lon}`);
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_probability_mean,precipitation_sum,sunrise,sunset&timezone=auto`;
@@ -468,8 +516,10 @@ async function fetchFromOpenMeteo(lat, lon, cacheKey) {
     const tempMin = dailyForecast[0]?.minTemp || Math.round(cur.temperature_2m - 3);
     const tempMax = dailyForecast[0]?.maxTemp || Math.round(cur.temperature_2m + 4);
 
+    const fallbackCityName = normalizeLocationName('Local Station (Live NWP)', cityOverride);
+
     const enrichedData = {
-      locationName: 'Local Station (Live NWP)',
+      locationName: fallbackCityName,
       country: 'IN',
       lat: parseFloat(lat),
       lon: parseFloat(lon),
@@ -506,7 +556,7 @@ async function fetchFromOpenMeteo(lat, lon, cacheKey) {
         rain_mm: cur.precipitation || 0,
         wind_kmph: Math.round(cur.wind_speed_10m || 10),
         temp_c: cur.temperature_2m || 25,
-        city: 'Local Region',
+        city: fallbackCityName,
       }),
       fetchedAt: new Date().toISOString(),
       source: 'Open-Meteo NWP ECMWF/GFS',

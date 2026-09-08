@@ -8,7 +8,7 @@ import api from '../services/api';
  * - Transparent 2-stage auto-retry before error display
  * - Zero UI-breaking flashes
  */
-export function useWeather(lat, lon) {
+export function useWeather(lat, lon, cityName = null) {
   const [data, setData] = useState(() => {
     if (!lat || !lon) return null;
     try {
@@ -23,7 +23,7 @@ export function useWeather(lat, lon) {
   const [error, setError] = useState(null);
   const retryCount = useRef(0);
 
-  const fetchWeather = useCallback(async (latitude, longitude, isRetry = false) => {
+  const fetchWeather = useCallback(async (latitude, longitude, targetCity = null, isRetry = false) => {
     if (!latitude || !longitude) return;
     if (!isRetry) {
       setLoading(true);
@@ -31,14 +31,20 @@ export function useWeather(lat, lon) {
     }
     
     try {
-      const res = await api.get('/api/weather', { params: { lat: latitude, lon: longitude }, timeout: 8000 });
+      const params = { lat: latitude, lon: longitude };
+      if (targetCity) params.city = targetCity;
+      const res = await api.get('/api/weather', { params, timeout: 8000 });
       if (res.data?.data) {
-        setData(res.data.data);
+        const enriched = { ...res.data.data };
+        if (targetCity && (!enriched.locationName || enriched.locationName === 'Your Location' || enriched.locationName.includes('Division'))) {
+          enriched.locationName = targetCity;
+        }
+        setData(enriched);
         setError(null);
         retryCount.current = 0;
         try {
           const key = `wgpt_weather_${Number(latitude).toFixed(2)}_${Number(longitude).toFixed(2)}`;
-          sessionStorage.setItem(key, JSON.stringify(res.data.data));
+          sessionStorage.setItem(key, JSON.stringify(enriched));
         } catch {}
       }
     } catch (err) {
@@ -46,7 +52,7 @@ export function useWeather(lat, lon) {
       if (retryCount.current < 2) {
         retryCount.current += 1;
         setTimeout(() => {
-          fetchWeather(latitude, longitude, true);
+          fetchWeather(latitude, longitude, targetCity, true);
         }, 1500);
       } else {
         setError(err.response?.data?.error || 'Weather station unreachable. Retrying...');
@@ -59,9 +65,9 @@ export function useWeather(lat, lon) {
   useEffect(() => {
     if (lat && lon) {
       retryCount.current = 0;
-      fetchWeather(lat, lon);
+      fetchWeather(lat, lon, cityName);
     }
-  }, [lat, lon, fetchWeather]);
+  }, [lat, lon, cityName, fetchWeather]);
 
-  return { data, loading, error, refetch: () => { retryCount.current = 0; fetchWeather(lat, lon); } };
+  return { data, loading, error, refetch: () => { retryCount.current = 0; fetchWeather(lat, lon, cityName); } };
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Search, Navigation, X, Building2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import api from '../services/api';
 
 const POPULAR_CITIES = [
   { name: 'Lucknow', state: 'Uttar Pradesh', lat: 26.8467, lon: 80.9462 },
@@ -9,6 +10,7 @@ const POPULAR_CITIES = [
   { name: 'Kanpur', state: 'Uttar Pradesh', lat: 26.4499, lon: 80.3319 },
   { name: 'Varanasi', state: 'Uttar Pradesh', lat: 25.3176, lon: 82.9739 },
   { name: 'Mumbai', state: 'Maharashtra', lat: 19.0760, lon: 72.8777 },
+  { name: 'Jaipur', state: 'Rajasthan', lat: 26.9124, lon: 75.7873 },
   { name: 'Bengaluru', state: 'Karnataka', lat: 12.9716, lon: 77.5946 },
   { name: 'Kolkata', state: 'West Bengal', lat: 22.5726, lon: 88.3639 },
   { name: 'Chennai', state: 'Tamil Nadu', lat: 13.0827, lon: 80.2707 },
@@ -24,20 +26,21 @@ export default function LocationSelectorModal({ isOpen, onClose, onSelectLocatio
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return;
+    const city = searchQuery.trim();
+    if (!city) return;
     setSearching(true);
     try {
-      const res = await fetch(`/api/weather/geocode?city=${encodeURIComponent(searchQuery.trim())}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          setSearchResults([{
-            name: json.data.name,
-            state: json.data.country || 'India',
-            lat: json.data.lat,
-            lon: json.data.lon,
-          }]);
-        }
+      const res = await api.get('/api/weather/geocode', {
+        params: { city },
+      });
+      if (res.data?.data) {
+        const d = res.data.data;
+        setSearchResults([{
+          name: d.name || city,
+          state: d.country || 'India',
+          lat: d.lat,
+          lon: d.lon,
+        }]);
       }
     } catch {
       // Keep static results

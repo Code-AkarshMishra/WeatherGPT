@@ -14,6 +14,7 @@ import {
   Thermometer,
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import api from '../services/api';
 
 export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimulate }) {
   const { t } = useLanguage();
@@ -97,13 +98,17 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
 
   const runSimulation = async (r, w, t) => {
     try {
-      const res = await fetch(`/api/weather/disaster-risk?rain_mm=${r}&wind_kmph=${w}&temp_c=${t}&city=${encodeURIComponent(currentCity || 'Area')}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          setSimulatedData(json.data);
-          if (onSimulate) onSimulate(json.data);
-        }
+      const res = await api.get('/api/weather/disaster-risk', {
+        params: {
+          rain_mm: r,
+          wind_kmph: w,
+          temp_c: t,
+          city: currentCity || 'Area',
+        },
+      });
+      if (res.data?.data) {
+        setSimulatedData(res.data.data);
+        if (onSimulate) onSimulate(res.data.data);
       }
     } catch (err) {
       console.error('Simulation error:', err);

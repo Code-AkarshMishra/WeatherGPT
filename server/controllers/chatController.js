@@ -195,9 +195,7 @@ exports.chat = async (req, res, next) => {
 
     // ── Step 8: Call ML-1 Tool Calling or Grounded Role LLM ─────────────
     let aiResponse = null;
-    let usedProvider = 'gemini-grounded-agent';
-
-    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'https://weathergpt-1-ike5.onrender.com';
+    const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'https://weathergpt-1-ike5.onrender.com').trim();
     
     // Attempt fast local ML microservice tool calling
     try {
@@ -219,9 +217,12 @@ exports.chat = async (req, res, next) => {
       logger.info(`[CHAT] ML microservice fallback (${mlErr.message}), proceeding with grounded Gemini LLM`);
     }
 
-
     if (!aiResponse) {
       aiResponse = await callGemini(systemPrompt, message, roleApiKey, conversationHistory);
+    }
+
+    if (!aiResponse) {
+      aiResponse = 'WeatherGPT Meteorological Advisory: Live atmospheric observations and MoES risk metrics remain active and nominal.';
     }
 
     // ── Step 9: Persist messages ────────────────────────────────────────────

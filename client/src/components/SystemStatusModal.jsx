@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Cpu, Database, Wifi, Key, X, RefreshCw, Server } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import api from '../services/api';
 
 export default function SystemStatusModal({ isOpen, onClose }) {
   const { t } = useLanguage();
@@ -13,10 +14,9 @@ export default function SystemStatusModal({ isOpen, onClose }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/system/status');
-      if (res.ok) {
-        const json = await res.json();
-        setStatusData(json.data);
+      const res = await api.get('/api/system/status');
+      if (res.data?.data) {
+        setStatusData(res.data.data);
       } else {
         setError('Failed to fetch system health status.');
       }

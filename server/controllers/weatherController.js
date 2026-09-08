@@ -20,10 +20,10 @@ exports.getWeather = async (req, res, next) => {
       return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    const { lat, lon } = req.query;
-    logger.info(`Weather request: lat=${lat}, lon=${lon} from ${req.ip}`);
+    const { lat, lon, city } = req.query;
+    logger.info(`Weather request: lat=${lat}, lon=${lon}, city=${city || 'none'} from ${req.ip}`);
 
-    const weather = await getWeather(parseFloat(lat), parseFloat(lon));
+    const weather = await getWeather(parseFloat(lat), parseFloat(lon), city);
 
     res.json({ success: true, data: weather });
   } catch (err) {
@@ -53,7 +53,7 @@ exports.getTTS = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Text parameter required' });
     }
 
-    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000';
+    const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000').trim();
     try {
       const mlRes = await axios.post(`${ML_SERVICE_URL}/tts`, { text }, { timeout: 3000 });
       return res.json({ success: true, data: mlRes.data });
@@ -86,7 +86,7 @@ exports.getDisasterRisk = async (req, res) => {
     const temp = parseFloat(params.temp_c || params.tempC || params.temp || 25) || 25;
     const city = params.city || 'Your Area';
 
-    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+    const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'http://localhost:8000').trim();
     try {
       const mlRes = await axios.post(`${ML_SERVICE_URL}/disaster-risk?rain_mm=${rain}&wind_kmph=${wind}&temp_c=${temp}&city=${encodeURIComponent(city)}`, {}, { timeout: 3000 });
       if (mlRes.data) {

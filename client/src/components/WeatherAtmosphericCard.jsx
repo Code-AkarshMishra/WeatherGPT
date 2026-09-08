@@ -22,6 +22,7 @@ import HourlyTempSpline from './HourlyTempSpline';
 import DailyForecastCard from './DailyForecastCard';
 import { weatherAudio } from '../services/weatherAudio';
 import { useLanguage } from '../contexts/LanguageContext';
+import api from '../services/api';
 
 export default function WeatherAtmosphericCard({
   data,
@@ -58,17 +59,18 @@ export default function WeatherAtmosphericCard({
 
   const handleGeocode = async (e) => {
     e.preventDefault();
-    if (!searchCity.trim() || !onLocationChange) return;
+    const city = searchCity.trim();
+    if (!city || !onLocationChange) return;
     setGeocoding(true);
     try {
-      const res = await fetch(`/api/weather/geocode?city=${encodeURIComponent(searchCity)}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          onLocationChange(json.data.lat, json.data.lon);
-          setIsSearching(false);
-          setSearchCity('');
-        }
+      const res = await api.get('/api/weather/geocode', {
+        params: { city },
+      });
+      if (res.data?.data) {
+        const { lat, lon, name } = res.data.data;
+        onLocationChange(lat, lon, name || city);
+        setIsSearching(false);
+        setSearchCity('');
       }
     } catch (err) {
       console.error('Geocoding error:', err);

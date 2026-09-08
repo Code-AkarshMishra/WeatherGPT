@@ -10,7 +10,7 @@ const axios = require('axios');
 const { getKeyStatus } = require('../services/geminiService');
 
 router.get('/status', async (req, res) => {
-  const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+  const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'http://localhost:8000').trim();
   let mlServiceStatus = { status: 'offline', details: 'Unable to reach Python ML service' };
 
   try {
