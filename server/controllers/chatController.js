@@ -195,6 +195,7 @@ exports.chat = async (req, res, next) => {
 
     // ── Step 8: Call ML-1 Tool Calling or Grounded Role LLM ─────────────
     let aiResponse = null;
+    let usedProvider = 'gemini-grounded-agent';
     const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'https://weathergpt-1-ike5.onrender.com').trim();
     
     // Attempt fast local ML microservice tool calling
