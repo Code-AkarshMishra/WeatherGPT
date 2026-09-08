@@ -40,7 +40,7 @@ export default function DailyForecastCard({ daily = [] }) {
               <span className="daily-icon-wrapper">
                 {renderConditionIcon(day.condition)}
               </span>
-              {day.rainPop > 0 ? (
+              {day.rainPop >= 20 && day.condition !== 'clear' ? (
                 <span className="daily-pop-badge">{day.rainPop}%</span>
               ) : (
                 <span className="daily-pop-empty" />

@@ -31,44 +31,43 @@ function predictRainProbability({
   clouds = 0,
   weatherMain = '',
 }) {
-  // TEMP_HEURISTIC: rule-based scoring system
   let score = 0;
 
-  // Humidity component (0–35 pts)
-  if (humidity >= 90) score += 35;
-  else if (humidity >= 80) score += 25;
-  else if (humidity >= 70) score += 15;
-  else if (humidity >= 60) score += 8;
-  else score += Math.max(0, (humidity - 40) * 0.2);
+  // Humidity component (0–30 pts)
+  if (humidity >= 95) score += 30;
+  else if (humidity >= 85) score += 22;
+  else if (humidity >= 75) score += 14;
+  else if (humidity >= 65) score += 8;
+  else score += Math.max(0, (humidity - 40) * 0.15);
 
-  // Pressure component — low pressure = higher rain likelihood (0–25 pts)
-  if (pressure < 990) score += 25;
-  else if (pressure < 1000) score += 18;
-  else if (pressure < 1005) score += 10;
-  else if (pressure < 1010) score += 5;
-  // High pressure (> 1015) adds 0
+  // Pressure component — low pressure indicates convective uplift (0–20 pts)
+  if (pressure < 995) score += 20;
+  else if (pressure < 1005) score += 14;
+  else if (pressure < 1010) score += 8;
+  else if (pressure < 1013) score += 4;
 
   // Recent precipitation (0–25 pts)
   if (recentPrecip1h > 5) score += 25;
-  else if (recentPrecip1h > 2) score += 20;
-  else if (recentPrecip1h > 0.5) score += 15;
-  else if (recentPrecip3h > 3) score += 12;
-  else if (recentPrecip3h > 0) score += 8;
+  else if (recentPrecip1h > 2) score += 18;
+  else if (recentPrecip1h > 0.2) score += 12;
+  else if (recentPrecip3h > 3) score += 10;
+  else if (recentPrecip3h > 0) score += 6;
 
   // Cloud cover (0–10 pts)
   if (clouds >= 90) score += 10;
   else if (clouds >= 70) score += 7;
-  else if (clouds >= 50) score += 4;
+  else if (clouds >= 40) score += 3;
 
-  // OWM weather condition override (0–5 pts boost or hard min)
+  // Meteorological condition alignment
   const mainLower = (weatherMain || '').toLowerCase();
-  if (mainLower.includes('thunderstorm')) score = Math.max(score, 80);
-  else if (mainLower.includes('rain') || mainLower.includes('drizzle')) score = Math.max(score, 60);
-  else if (mainLower.includes('snow')) score = Math.max(score, 50);
-  else if (mainLower === 'clear') score = Math.min(score, 20);
+  if (mainLower.includes('thunderstorm')) score = Math.max(score, 75);
+  else if (mainLower.includes('rain') || mainLower.includes('drizzle')) score = Math.max(score, 55);
+  else if (mainLower.includes('snow')) score = Math.max(score, 45);
+  else if (mainLower === 'clear') score = Math.min(score, 10);
+  else if (mainLower.includes('cloud') || mainLower.includes('mist') || mainLower.includes('haze')) score = Math.min(score, 35);
 
-  // Clamp to [0, 100]
-  return Math.min(100, Math.max(0, Math.round(score)));
+  // Realistic bounds [0, 85]
+  return Math.min(85, Math.max(0, Math.round(score)));
 }
 
 module.exports = { predictRainProbability };

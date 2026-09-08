@@ -8,8 +8,8 @@ const logger = require('./logger');
 // Disable buffering globally so queries fail fast rather than hanging requests for 10s when DB is offline
 mongoose.set('bufferCommands', false);
 
-const MAX_RETRIES = 2;
-const RETRY_DELAY_MS = 2000;
+const MAX_RETRIES = 1;
+const RETRY_DELAY_MS = 1000;
 
 async function connectDB(retries = MAX_RETRIES) {
   if (!process.env.MONGO_URI || !process.env.MONGO_URI.trim()) {
@@ -19,9 +19,9 @@ async function connectDB(retries = MAX_RETRIES) {
 
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 10000,
-      connectTimeoutMS: 10000,
-      socketTimeoutMS: 20000,
+      serverSelectionTimeoutMS: 2500,
+      connectTimeoutMS: 2500,
+      socketTimeoutMS: 5000,
     });
     logger.info(`MongoDB connected: ${conn.connection.host} / db: ${conn.connection.name}`);
   } catch (err) {

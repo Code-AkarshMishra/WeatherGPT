@@ -1,3 +1,4 @@
+const axios = require('axios');
 const { query, validationResult } = require('express-validator');
 const { getWeather } = require('../services/weatherService');
 const { predictDisasterRisk } = require('../services/disasterPredictor');
@@ -80,11 +81,42 @@ exports.getTTS = async (req, res) => {
 exports.getDisasterRisk = async (req, res) => {
   try {
     const params = { ...req.query, ...req.body };
+    const rain = parseFloat(params.rain_mm || params.rainMm || 0) || 0;
+    const wind = parseFloat(params.wind_kmph || params.windKmph || params.windSpeed || 0) || 0;
+    const temp = parseFloat(params.temp_c || params.tempC || params.temp || 25) || 25;
+    const city = params.city || 'Your Area';
+
+    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+    try {
+      const mlRes = await axios.post(`${ML_SERVICE_URL}/disaster-risk?rain_mm=${rain}&wind_kmph=${wind}&temp_c=${temp}&city=${encodeURIComponent(city)}`, {}, { timeout: 3000 });
+      if (mlRes.data) {
+        const d = mlRes.data;
+        const normalized = {
+          city: d.city || city,
+          rainMm: d.rain_mm ?? rain,
+          windKmph: d.wind_kmph ?? wind,
+          tempC: d.temp_c ?? temp,
+          imdColorCode: d.imd_color_code || d.imdColorCode || 'GREEN',
+          riskAssessment: d.risk_assessment || d.riskAssessment || 'Low',
+          statusText: d.status_text || d.statusText || 'No Warning / All Clear',
+          statusTextHi: d.status_text_hi || d.statusTextHi || 'कोई चेतावनी नहीं / सामान्य',
+          farmerAdvisory: d.farmer_advisory || d.farmerAdvisory || {},
+          marineAdvisory: d.marine_advisory || d.marineAdvisory || {},
+          actionPoints: d.action_points || d.actionPoints || [],
+          spokenTextHi: d.spoken_text_hi || d.spokenTextHi || '',
+          spokenTextEn: d.spoken_text_en || d.spokenTextEn || '',
+        };
+        return res.json({ success: true, data: normalized });
+      }
+    } catch (mlErr) {
+      logger.debug(`ML service disaster risk fallback: ${mlErr.message}`);
+    }
+
     const prediction = predictDisasterRisk({
-      rain_mm: params.rain_mm || params.rainMm || 0,
-      wind_kmph: params.wind_kmph || params.windKmph || params.windSpeed || 0,
-      temp_c: params.temp_c || params.tempC || params.temp || 25,
-      city: params.city || 'Your Area',
+      rain_mm: rain,
+      wind_kmph: wind,
+      temp_c: temp,
+      city,
     });
     res.json({ success: true, data: prediction });
   } catch (err) {

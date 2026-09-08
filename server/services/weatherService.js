@@ -179,14 +179,24 @@ async function getWeather(lat, lon) {
     const item = forecastList[i];
     const date = new Date(item.dt * 1000);
     const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    const pop = Math.round((item.pop || 0) * 100);
+    const cond = mapCondition(item.weather?.[0]?.main);
+    
+    // Calibrate pop to realistic range based on condition
+    let pop = Math.round((item.pop || 0) * 100);
+    if (cond === 'clear') {
+      pop = Math.min(pop, 10);
+    } else if (cond === 'cloudy') {
+      pop = Math.min(pop, 40);
+    } else if (cond === 'rain' || cond === 'storm') {
+      pop = Math.max(45, Math.min(90, pop));
+    }
 
     hourlyForecast.push({
       time: timeStr,
       timestamp: item.dt,
       temp: Math.round(item.main?.temp),
       feelsLike: Math.round(item.main?.feels_like),
-      condition: mapCondition(item.weather?.[0]?.main),
+      condition: cond,
       weatherMain: item.weather?.[0]?.main || '',
       description: item.weather?.[0]?.description || '',
       icon: item.weather?.[0]?.icon || '01d',
@@ -212,12 +222,13 @@ async function getWeather(lat, lon) {
   yesterday.setDate(yesterday.getDate() - 1);
   const yMonth = String(yesterday.getMonth() + 1).padStart(2, '0');
   const yDay = String(yesterday.getDate()).padStart(2, '0');
+  const yPop = Math.max(0, Math.min(45, rainProbability - 10));
   dailyForecast.push({
     date: `${yMonth}/${yDay}`,
     dayName: 'Yesterday',
     condition: mapCondition(current.weather?.[0]?.main),
     icon: current.weather?.[0]?.icon || '02d',
-    rainPop: Math.max(0, rainProbability - 10),
+    rainPop: yPop,
     minTemp: Math.round((current.main?.temp_min || current.main?.temp) - 2),
     maxTemp: Math.round((current.main?.temp_max || current.main?.temp) + 2),
   });
@@ -230,15 +241,12 @@ async function getWeather(lat, lon) {
 
     let min = Infinity;
     let max = -Infinity;
-    let maxPop = 0;
     const condCounts = {};
     let dominantIcon = items[0]?.weather?.[0]?.icon || '01d';
 
     items.forEach((it) => {
       if (it.main?.temp_min < min) min = it.main.temp_min;
       if (it.main?.temp_max > max) max = it.main.temp_max;
-      const p = Math.round((it.pop || 0) * 100);
-      if (p > maxPop) maxPop = p;
 
       const c = mapCondition(it.weather?.[0]?.main);
       condCounts[c] = (condCounts[c] || 0) + 1;
@@ -260,7 +268,7 @@ async function getWeather(lat, lon) {
     if (dayIndex === 0) dayName = 'Today';
     else if (dayIndex === 1) dayName = 'Tomorrow';
 
-    // Compute realistic representative daily precipitation probability
+    // Compute realistic representative daily precipitation probability from live items
     const pops = items.map((it) => it.pop || 0);
     const avgPop = Math.round((pops.reduce((a, b) => a + b, 0) / pops.length) * 100);
 
@@ -274,16 +282,17 @@ async function getWeather(lat, lon) {
       : avgPop;
     const daytimeMax = daytimePops.length > 0
       ? Math.round(Math.max(...daytimePops) * 100)
-      : maxPop;
+      : (pops.length > 0 ? Math.round(Math.max(...pops) * 100) : 0);
 
-    // Blend daytime peak with daytime average (avoids 100% on mostly-dry days with one brief night shower)
-    let representativePop = Math.round(daytimeMax * 0.45 + daytimeAvg * 0.55);
+    let representativePop = Math.round(daytimeMax * 0.35 + daytimeAvg * 0.65);
 
-    // Contextual guard: clear/cloudy days should never display contradictory 100% rain chance
+    // Realistic bounds based on condition
     if (bestCond === 'clear') {
       representativePop = Math.min(representativePop, 10);
     } else if (bestCond === 'cloudy') {
-      representativePop = Math.min(representativePop, 45);
+      representativePop = Math.min(representativePop, 35);
+    } else if (bestCond === 'rain' || bestCond === 'storm') {
+      representativePop = Math.max(45, Math.min(85, representativePop));
     }
 
     dailyForecast.push({
@@ -303,6 +312,9 @@ async function getWeather(lat, lon) {
   const todayForecast = dailyForecast.find((d) => d.dayName === 'Today');
   const tempMin = todayForecast ? todayForecast.minTemp : Math.round(current.main?.temp_min ?? current.main?.temp);
   const tempMax = todayForecast ? todayForecast.maxTemp : Math.round(current.main?.temp_max ?? current.main?.temp);
+
+  // Live real rain probability for current moment
+  const liveRainProbability = hourlyForecast.length > 0 ? hourlyForecast[0].rainPop : rainProbability;
 
   const enrichedData = {
     locationName: current.name || 'Your Location',
@@ -326,7 +338,7 @@ async function getWeather(lat, lon) {
     sunset: current.sys?.sunset,
     sunriseFormatted,
     sunsetFormatted,
-    rainProbability,
+    rainProbability: liveRainProbability,
     recentPrecip1h,
     recentPrecip3h,
     condition: mapCondition(current.weather?.[0]?.main),
@@ -365,7 +377,7 @@ async function getWeather(lat, lon) {
 async function fetchFromOpenMeteo(lat, lon, cacheKey) {
   try {
     logger.info(`Fetching Open-Meteo NWP forecast for lat=${lat}, lon=${lon}`);
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_probability_mean,precipitation_sum,sunrise,sunset&timezone=auto`;
     
     const omRes = await axios.get(url, { timeout: 6000 });
     const om = omRes.data;
@@ -384,15 +396,23 @@ async function fetchFromOpenMeteo(lat, lon, cacheKey) {
     };
 
     const curCond = wmoMap(cur.weather_code || 0);
-    const rainProb = Math.round(hourly.precipitation_probability?.[0] || (cur.precipitation > 0 ? 80 : 15));
 
-    // Hourly forecast (next 10 intervals)
+    // Hourly forecast (next 10 intervals) with live NWP probabilities
     const hourlyForecast = [];
     const hTimes = hourly.time || [];
     for (let i = 0; i < Math.min(hTimes.length, 10); i++) {
       const dt = new Date(hTimes[i]);
       const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
       const wInfo = wmoMap(hourly.weather_code?.[i] || 0);
+      let rawPop = Math.round(hourly.precipitation_probability?.[i] ?? (cur.precipitation > 0 ? 70 : 20));
+      
+      // Calibrate with condition
+      if (wInfo.condition === 'clear') {
+        rawPop = Math.min(rawPop, 10);
+      } else if (wInfo.condition === 'cloudy') {
+        rawPop = Math.min(rawPop, 40);
+      }
+
       hourlyForecast.push({
         time: timeStr,
         timestamp: Math.floor(dt.getTime() / 1000),
@@ -402,11 +422,13 @@ async function fetchFromOpenMeteo(lat, lon, cacheKey) {
         weatherMain: wInfo.desc,
         description: wInfo.desc,
         icon: wInfo.icon,
-        rainPop: Math.round(hourly.precipitation_probability?.[i] || 0),
+        rainPop: rawPop,
       });
     }
 
-    // Daily forecast (next 6 days)
+    const rainProb = hourlyForecast.length > 0 ? hourlyForecast[0].rainPop : Math.round(hourly.precipitation_probability?.[0] || 25);
+
+    // Daily forecast (next 6 days) using real NWP mean & max probabilities
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const dailyForecast = [];
     const dTimes = daily.time || [];
@@ -420,12 +442,24 @@ async function fetchFromOpenMeteo(lat, lon, cacheKey) {
       if (i === 0) dayName = 'Today';
       else if (i === 1) dayName = 'Tomorrow';
 
+      const meanPop = daily.precipitation_probability_mean?.[i] ?? Math.round((daily.precipitation_probability_max?.[i] || 30) * 0.6);
+      const maxPop = daily.precipitation_probability_max?.[i] || meanPop;
+      let blendedPop = Math.round(meanPop * 0.7 + maxPop * 0.3);
+
+      if (wInfo.condition === 'clear') {
+        blendedPop = Math.min(blendedPop, 10);
+      } else if (wInfo.condition === 'cloudy') {
+        blendedPop = Math.min(blendedPop, 35);
+      } else if (wInfo.condition === 'rain' || wInfo.condition === 'storm') {
+        blendedPop = Math.max(45, Math.min(85, blendedPop));
+      }
+
       dailyForecast.push({
         date: `${month}/${day}`,
         dayName,
         condition: wInfo.condition,
         icon: wInfo.icon,
-        rainPop: Math.round(daily.precipitation_probability_max?.[i] || 0),
+        rainPop: blendedPop,
         minTemp: Math.round(daily.temperature_2m_min?.[i] || 22),
         maxTemp: Math.round(daily.temperature_2m_max?.[i] || 32),
       });

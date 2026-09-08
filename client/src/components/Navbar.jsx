@@ -1,5 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Menu,
+  X,
+  Home as HomeIcon,
+  CloudSun,
+  ShieldAlert,
+  LayoutDashboard,
+  Info,
+  User,
+  LogOut,
+  LogIn,
+  ChevronRight,
+  Radio,
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import ThemeToggle from './ThemeToggle';
@@ -29,7 +44,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
-  // Auto-close mobile drawer on route transition
+  // Close mobile menu on page navigation
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
@@ -39,7 +54,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && mobileMenuOpen) {
         setMobileMenuOpen(false);
-        if (onMenuToggle) onMenuToggle();
+        if (onMenuToggle) onMenuToggle(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -51,13 +66,14 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
     const handleResize = () => {
       if (window.innerWidth >= 768 && mobileMenuOpen) {
         setMobileMenuOpen(false);
+        if (onMenuToggle) onMenuToggle(false);
       }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, onMenuToggle]);
 
-  // Prevent background scroll when mobile drawer is open
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -69,7 +85,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
     };
   }, [mobileMenuOpen]);
 
-  const toggleMobileMenu = useCallback(() => {
+  const handleToggle = useCallback(() => {
     setMobileMenuOpen((prev) => {
       const next = !prev;
       if (onMenuToggle) onMenuToggle(next);
@@ -77,37 +93,41 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
     });
   }, [onMenuToggle]);
 
-  const closeMobileMenu = useCallback(() => {
-    setMobileMenuOpen(false);
-    if (onMenuToggle) onMenuToggle(false);
-  }, [onMenuToggle]);
-
   const handleLogout = async () => {
-    closeMobileMenu();
+    setMobileMenuOpen(false);
     await logout();
     navigate('/login');
   };
 
+  const navLinks = [
+    { to: '/', label: t('home', 'Home'), icon: HomeIcon, exact: true },
+    { to: '/weather', label: t('weather', 'Weather & Atmospheric'), icon: CloudSun },
+    { to: '/alerts', label: t('alerts', 'Alerts & MoES'), icon: ShieldAlert, badge: 'Live' },
+    { to: '/dashboard', label: t('dashboard', 'Dashboard'), icon: LayoutDashboard },
+    { to: '/about', label: t('about', 'About'), icon: Info },
+  ];
+
   return (
     <>
       <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`} role="navigation" aria-label="Main navigation">
-        {/* Hamburger button — mobile only */}
+        {/* Hamburger — mobile only */}
         <button
-          className={`navbar-hamburger${mobileMenuOpen ? ' is-active' : ''}`}
-          onClick={toggleMobileMenu}
-          aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          className={`navbar-hamburger${mobileMenuOpen ? ' open' : ''}`}
+          onClick={handleToggle}
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
-          aria-controls="mobile-nav-drawer"
           id="hamburger-btn"
           type="button"
         >
-          <span className="hamburger-line" />
-          <span className="hamburger-line" />
-          <span className="hamburger-line" />
+          {mobileMenuOpen ? (
+            <X size={22} style={{ color: 'var(--color-primary)' }} />
+          ) : (
+            <Menu size={22} />
+          )}
         </button>
 
         {/* Logo */}
-        <NavLink to="/" className="navbar-logo" aria-label="WeatherGPT Home" onClick={closeMobileMenu}>
+        <NavLink to="/" className="navbar-logo" aria-label="WeatherGPT Home" onClick={() => setMobileMenuOpen(false)}>
           <span className="navbar-logo-icon">🌤️</span>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span className="logo-text">{t('appName')}</span>
@@ -119,36 +139,22 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
 
         <div className="navbar-spacer" />
 
-        {/* Nav links (Desktop) */}
+        {/* Desktop Nav links */}
         <ul className="navbar-nav" role="list">
-          <li>
-            <NavLink to="/" end className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
-              {t('home')}
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/weather" className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
-              {t('weather')}
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/alerts" className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
-              {t('alerts')}
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard" className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
-              {t('dashboard')}
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/about" className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}>
-              {t('about')}
-            </NavLink>
-          </li>
+          {navLinks.map((link) => (
+            <li key={link.to}>
+              <NavLink
+                to={link.to}
+                end={link.exact}
+                className={({ isActive }) => `navbar-nav-link${isActive ? ' active' : ''}`}
+              >
+                {link.label}
+              </NavLink>
+            </li>
+          ))}
         </ul>
 
-        {/* Controls (Desktop) */}
+        {/* Desktop & Header Controls */}
         <div className="navbar-controls">
           <div
             className="desktop-only"
@@ -174,7 +180,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
           <ThemeToggle />
 
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+            <div className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
               <NavLink
                 to="/dashboard"
                 className="btn btn-ghost"
@@ -199,9 +205,9 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
           ) : (
             <NavLink
               to="/login"
-              className="btn btn-primary"
+              className="btn btn-primary desktop-only"
               id="login-btn"
-              style={{ minHeight: 44, padding: 'var(--space-2) var(--space-4)' }}
+              style={{ minHeight: 40, padding: 'var(--space-1) var(--space-3)' }}
             >
               {t('login')}
             </NavLink>
@@ -209,164 +215,200 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
         </div>
       </nav>
 
-      {/* ── Mobile Navigation Drawer & Backdrop ───────────────────────── */}
-      <div
-        className={`navbar-mobile-backdrop${mobileMenuOpen ? ' is-open' : ''}`}
-        onClick={closeMobileMenu}
-        aria-hidden="true"
-      />
-
-      <aside
-        id="mobile-nav-drawer"
-        className={`navbar-mobile-drawer${mobileMenuOpen ? ' is-open' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation Menu"
-      >
-        {/* Drawer Header */}
-        <div className="mobile-drawer-header">
-          <div className="mobile-drawer-brand">
-            <span className="navbar-logo-icon">🌤️</span>
-            <div>
-              <div className="mobile-drawer-title">{t('appName')}</div>
-              <div className="mobile-drawer-subtitle">{t('appSubtitle', 'MoES • IMD')}</div>
-            </div>
-          </div>
-          <button
-            className="mobile-drawer-close"
-            onClick={closeMobileMenu}
-            aria-label="Close menu"
-            type="button"
+      {/* Mobile Navigation Full-Featured Drawer */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            className="mobile-drawer-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              position: 'fixed',
+              top: 'var(--navbar-height, 60px)',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.65)',
+              backdropFilter: 'blur(10px)',
+              zIndex: 'calc(var(--z-navbar, 100) - 1)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
           >
-            ✕
-          </button>
-        </div>
-
-        {/* Live Status Badge */}
-        <div className="mobile-drawer-status">
-          <span className="status-dot" />
-          <span>{t('radarOnline', 'MoES Live Radar & Predictor Online')}</span>
-        </div>
-
-        {/* Navigation Links */}
-        <div className="mobile-drawer-section-title">{t('navigation', 'Navigation')}</div>
-        <ul className="mobile-nav-list" role="list">
-          <li>
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) => `mobile-nav-link${isActive ? ' active' : ''}`}
-              onClick={closeMobileMenu}
+            <motion.div
+              className="mobile-drawer-content"
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: 'var(--color-bg-navbar, #0f172a)',
+                borderBottom: '1px solid var(--color-border)',
+                boxShadow: 'var(--shadow-xl)',
+                padding: '16px 20px 24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+                maxHeight: 'calc(100vh - 80px)',
+                overflowY: 'auto',
+              }}
             >
-              <span className="mobile-nav-icon">🏠</span>
-              <span>{t('home', 'Home AI Assistant')}</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/weather"
-              className={({ isActive }) => `mobile-nav-link${isActive ? ' active' : ''}`}
-              onClick={closeMobileMenu}
-            >
-              <span className="mobile-nav-icon">🌤️</span>
-              <span>{t('weather', 'Live Weather')}</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/alerts"
-              className={({ isActive }) => `mobile-nav-link${isActive ? ' active' : ''}`}
-              onClick={closeMobileMenu}
-            >
-              <span className="mobile-nav-icon">🚨</span>
-              <span>{t('alerts', 'Disaster & Floods')}</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/dashboard"
-              className={({ isActive }) => `mobile-nav-link${isActive ? ' active' : ''}`}
-              onClick={closeMobileMenu}
-            >
-              <span className="mobile-nav-icon">📊</span>
-              <span>{t('dashboard', 'Telemetry Dashboard')}</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/about"
-              className={({ isActive }) => `mobile-nav-link${isActive ? ' active' : ''}`}
-              onClick={closeMobileMenu}
-            >
-              <span className="mobile-nav-icon">🏛️</span>
-              <span>{t('about', 'About MoES / IMD')}</span>
-            </NavLink>
-          </li>
-        </ul>
-
-        {/* Preferences */}
-        <div className="mobile-drawer-section-title">{t('preferences', 'Preferences')}</div>
-        <div className="mobile-drawer-controls">
-          <div className="mobile-control-row">
-            <span className="mobile-control-label">🌐 {t('language', 'Language')}</span>
-            <LanguageToggle />
-          </div>
-          <div className="mobile-control-row">
-            <span className="mobile-control-label">🌓 {t('theme', 'Theme')}</span>
-            <ThemeToggle />
-          </div>
-        </div>
-
-        {/* User Account / Auth Section */}
-        <div className="mobile-drawer-footer">
-          {user ? (
-            <div className="mobile-user-card">
-              <div className="mobile-user-info">
-                <div className="mobile-user-avatar">👤</div>
-                <div className="mobile-user-details">
-                  <div className="mobile-user-name">{user.name}</div>
-                  <div className="mobile-user-role">{user.email || 'Citizen User'}</div>
+              {/* Radar status banner */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px',
+                  borderRadius: 12,
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  border: '1px solid rgba(16, 185, 129, 0.25)',
+                  fontSize: '0.78rem',
+                  color: 'var(--color-success, #10b981)',
+                  fontWeight: 600,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Radio size={14} className="animate-pulse" />
+                  <span>{t('radarOnline', 'MoES Live Radar Online')}</span>
                 </div>
+                <span style={{ fontSize: '0.7rem', opacity: 0.8 }}>IMD ML-2 Active</span>
               </div>
-              <div className="mobile-user-actions">
-                <NavLink
-                  to="/dashboard"
-                  className="btn btn-ghost"
-                  onClick={closeMobileMenu}
-                >
-                  {t('dashboard', 'Dashboard')}
-                </NavLink>
-                <button
-                  className="btn btn-ghost"
-                  onClick={handleLogout}
-                  style={{ color: 'var(--color-danger, #ef4444)' }}
-                >
-                  {t('logout', 'Sign Out')}
-                </button>
+
+              {/* Mobile Navigation Links */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>
+                  Menu Navigation
+                </span>
+
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = link.exact
+                    ? location.pathname === link.to
+                    : location.pathname.startsWith(link.to);
+
+                  return (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      onClick={() => setMobileMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '12px 14px',
+                        borderRadius: 12,
+                        textDecoration: 'none',
+                        color: isActive ? 'var(--color-primary)' : 'var(--color-text-primary)',
+                        background: isActive ? 'var(--color-primary-glow, rgba(56, 189, 248, 0.12))' : 'var(--color-bg-card)',
+                        border: isActive ? '1px solid var(--color-primary)' : '1px solid var(--color-border)',
+                        fontWeight: isActive ? 700 : 500,
+                        fontSize: '0.92rem',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Icon size={18} style={{ color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)' }} />
+                        <span>{link.label}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {link.badge && (
+                          <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '2px 6px', borderRadius: 6, background: 'rgba(239, 68, 68, 0.15)', color: 'var(--color-danger)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                            {link.badge}
+                          </span>
+                        )}
+                        <ChevronRight size={16} style={{ opacity: 0.5 }} />
+                      </div>
+                    </NavLink>
+                  );
+                })}
               </div>
-            </div>
-          ) : (
-            <div className="mobile-auth-actions">
-              <NavLink
-                to="/login"
-                className="btn btn-primary"
-                onClick={closeMobileMenu}
-                style={{ width: '100%', justifyContent: 'center' }}
-              >
-                {t('login', 'Sign In')}
-              </NavLink>
-              <NavLink
-                to="/register"
-                className="btn btn-ghost"
-                onClick={closeMobileMenu}
-                style={{ width: '100%', justifyContent: 'center' }}
-              >
-                {t('register', 'Create Account')}
-              </NavLink>
-            </div>
-          )}
-        </div>
-      </aside>
+
+              {/* User authentication and mobile controls */}
+              <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {user ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--color-bg-card)', padding: '10px 14px', borderRadius: 12, border: '1px solid var(--color-border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--color-primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13 }}>
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{user.name}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{user.email}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        border: '1px solid rgba(239, 68, 68, 0.25)',
+                        color: 'var(--color-danger)',
+                        padding: '6px 12px',
+                        borderRadius: 8,
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <LogOut size={14} />
+                      <span>{t('logout')}</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                    <NavLink
+                      to="/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        padding: '10px',
+                        borderRadius: 10,
+                        background: 'var(--color-primary)',
+                        color: '#ffffff',
+                        fontWeight: 700,
+                        fontSize: '0.88rem',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      <LogIn size={15} />
+                      <span>{t('login')}</span>
+                    </NavLink>
+                    <NavLink
+                      to="/register"
+                      onClick={() => setMobileMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '10px',
+                        borderRadius: 10,
+                        background: 'var(--color-bg-card)',
+                        border: '1px solid var(--color-border)',
+                        color: 'var(--color-text-primary)',
+                        fontWeight: 600,
+                        fontSize: '0.88rem',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      <span>{t('register', 'Sign Up')}</span>
+                    </NavLink>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

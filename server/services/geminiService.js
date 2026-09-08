@@ -29,10 +29,11 @@ function getNextGenAI(overrideKey = null) {
 }
 
 const PRIMARY_MODELS = [
-  process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite',
-  'gemini-3.5-flash-lite',
-  'gemini-flash-lite-latest',
-  'gemini-3.5-flash',
+  process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+  'gemini-1.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-pro',
+  'gemini-2.0-flash-lite',
 ].filter((v, i, a) => v && a.indexOf(v) === i);
 
 /**
