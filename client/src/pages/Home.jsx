@@ -13,7 +13,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 export default function Home() {
   const { lang, t } = useLanguage();
   const [selectedRole, setSelectedRole] = useState('citizen');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [prefillText, setPrefillText] = useState('');
   const [overrideLat, setOverrideLat] = useState(null);
   const [overrideLon, setOverrideLon] = useState(null);
@@ -31,7 +30,6 @@ export default function Home() {
     useChat({ role: selectedRole, lat, lon, lang });
 
   const handleFeatureSelect = useCallback((query) => {
-    setSidebarOpen(false);
     setPrefillText(query);
     setActiveTab('chat'); // switch to chat tab on mobile when a query is selected
   }, []);
@@ -63,8 +61,6 @@ export default function Home() {
       />
 
       <Navbar
-        onMenuToggle={() => setSidebarOpen((o) => !o)}
-        sidebarOpen={sidebarOpen}
         currentLocationName={activeCityName}
         onLocationChange={handleLocationChange}
       />

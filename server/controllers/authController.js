@@ -3,9 +3,13 @@
  * Handles register, login, token refresh, and logout.
  */
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
+const inMemoryAuth = require('../services/inMemoryAuth');
 const logger = require('../config/logger');
+
+const isDbReady = () => mongoose.connection.readyState === 1;
 
 function signAccessToken(userId) {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -28,30 +32,56 @@ exports.register = async (req, res, next) => {
     }
 
     const { name, email, password } = req.body;
+    const cleanEmail = email.toLowerCase().trim();
 
-    const existing = await User.findOne({ email: email.toLowerCase() });
-    if (existing) {
-      return res.status(409).json({ success: false, error: 'An account with this email already exists.' });
+    let user;
+    if (isDbReady()) {
+      const existing = await User.findOne({ email: cleanEmail });
+      if (existing) {
+        return res.status(409).json({ success: false, error: 'An account with this email already exists.' });
+      }
+
+      user = await User.create({ name, email: cleanEmail, password });
+      const accessToken = signAccessToken(user._id);
+      const refreshToken = signRefreshToken(user._id);
+
+      user.refreshTokens.push({ token: refreshToken });
+      await user.save();
+
+      logger.info(`New user registered in MongoDB: ${user.email} (${user._id})`);
+
+      return res.status(201).json({
+        success: true,
+        data: {
+          user: user.toJSON(),
+          accessToken,
+          refreshToken,
+        },
+      });
+    } else {
+      // In-memory fallback mode (MongoDB offline / IP not whitelisted)
+      const existing = await inMemoryAuth.findByEmail(cleanEmail);
+      if (existing) {
+        return res.status(409).json({ success: false, error: 'An account with this email already exists.' });
+      }
+
+      user = await inMemoryAuth.createUser({ name, email: cleanEmail, password });
+      const accessToken = signAccessToken(user._id);
+      const refreshToken = signRefreshToken(user._id);
+      user.refreshTokens.push({ token: refreshToken });
+
+      logger.info(`[AUTH] User registered in in-memory fallback mode: ${user.email}`);
+
+      return res.status(201).json({
+        success: true,
+        data: {
+          user: user.toJSON(),
+          accessToken,
+          refreshToken,
+          mode: 'in-memory',
+        },
+      });
     }
-
-    const user = await User.create({ name, email, password });
-
-    const accessToken = signAccessToken(user._id);
-    const refreshToken = signRefreshToken(user._id);
-
-    user.refreshTokens.push({ token: refreshToken });
-    await user.save();
-
-    logger.info(`New user registered: ${user.email} (${user._id})`);
-
-    res.status(201).json({
-      success: true,
-      data: {
-        user: user.toJSON(),
-        accessToken,
-        refreshToken,
-      },
-    });
   } catch (err) {
     next(err);
   }
@@ -66,35 +96,66 @@ exports.login = async (req, res, next) => {
     }
 
     const { email, password } = req.body;
+    const cleanEmail = email.toLowerCase().trim();
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
-    if (!user) {
-      return res.status(401).json({ success: false, error: 'Invalid email or password.' });
+    if (isDbReady()) {
+      const user = await User.findOne({ email: cleanEmail }).select('+password');
+      if (!user) {
+        return res.status(401).json({ success: false, error: 'Invalid email or password.' });
+      }
+
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({ success: false, error: 'Invalid email or password.' });
+      }
+
+      const accessToken = signAccessToken(user._id);
+      const refreshToken = signRefreshToken(user._id);
+
+      user.refreshTokens = user.refreshTokens.slice(-4);
+      user.refreshTokens.push({ token: refreshToken });
+      await user.save();
+
+      logger.info(`User logged in (MongoDB): ${user.email}`);
+
+      return res.json({
+        success: true,
+        data: {
+          user: user.toJSON(),
+          accessToken,
+          refreshToken,
+        },
+      });
+    } else {
+      // In-memory fallback login
+      const user = await inMemoryAuth.findByEmail(cleanEmail);
+      if (!user) {
+        return res.status(401).json({ success: false, error: 'Invalid email or password.' });
+      }
+
+      const isMatch = await inMemoryAuth.comparePassword(user, password);
+      if (!isMatch) {
+        return res.status(401).json({ success: false, error: 'Invalid email or password.' });
+      }
+
+      const accessToken = signAccessToken(user._id);
+      const refreshToken = signRefreshToken(user._id);
+
+      user.refreshTokens = (user.refreshTokens || []).slice(-4);
+      user.refreshTokens.push({ token: refreshToken });
+
+      logger.info(`[AUTH] User logged in (in-memory mode): ${user.email}`);
+
+      return res.json({
+        success: true,
+        data: {
+          user: user.toJSON(),
+          accessToken,
+          refreshToken,
+          mode: 'in-memory',
+        },
+      });
     }
-
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ success: false, error: 'Invalid email or password.' });
-    }
-
-    const accessToken = signAccessToken(user._id);
-    const refreshToken = signRefreshToken(user._id);
-
-    // Limit stored refresh tokens to last 5 (cleanup old sessions)
-    user.refreshTokens = user.refreshTokens.slice(-4);
-    user.refreshTokens.push({ token: refreshToken });
-    await user.save();
-
-    logger.info(`User logged in: ${user.email}`);
-
-    res.json({
-      success: true,
-      data: {
-        user: user.toJSON(),
-        accessToken,
-        refreshToken,
-      },
-    });
   } catch (err) {
     next(err);
   }
@@ -115,24 +176,30 @@ exports.refresh = async (req, res, next) => {
       return res.status(401).json({ success: false, error: 'Invalid or expired refresh token.' });
     }
 
-    const user = await User.findById(decoded.userId);
+    let user;
+    if (isDbReady()) {
+      user = await User.findById(decoded.userId);
+    } else {
+      user = await inMemoryAuth.findById(decoded.userId);
+    }
+
     if (!user) {
       return res.status(401).json({ success: false, error: 'User not found.' });
     }
 
-    // Check token is in our stored list (revocation support)
-    const storedToken = user.refreshTokens.find((t) => t.token === refreshToken);
+    const storedToken = (user.refreshTokens || []).find((t) => t.token === refreshToken);
     if (!storedToken) {
       return res.status(401).json({ success: false, error: 'Refresh token revoked.' });
     }
 
-    // Rotate refresh token
     const newAccessToken = signAccessToken(user._id);
     const newRefreshToken = signRefreshToken(user._id);
 
     user.refreshTokens = user.refreshTokens.filter((t) => t.token !== refreshToken);
     user.refreshTokens.push({ token: newRefreshToken });
-    await user.save();
+    if (typeof user.save === 'function') {
+      await user.save();
+    }
 
     res.json({
       success: true,
