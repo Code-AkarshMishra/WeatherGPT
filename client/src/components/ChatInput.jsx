@@ -1,29 +1,20 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, Square, Paperclip, SendHorizontal, Sparkles } from 'lucide-react';
+import { Mic, Square, Paperclip, SendHorizontal, Sparkles, Volume2 } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useLanguage } from '../contexts/LanguageContext';
 import RoleChip from './RoleChip';
+import VoiceModal from './VoiceModal';
 import '../styles/chat.css';
 
-const ROLE_LABELS = {
-  farmer: 'Farmer / Crop Advisory',
-  citizen: 'Citizen',
-  researcher: 'Researcher',
-  aviation: 'Aviation',
-  marine: 'Marine',
-  flood_disaster: 'Flood & Disaster',
-  climate_analyst: 'Climate Analyst',
-  urban_planner: 'Urban Planner',
-};
-
-export default function ChatInput({ onSend, loading, selectedRole, initialText }) {
+export default function ChatInput({ onSend, loading, selectedRole, initialText, lastAiResponse }) {
   const [text, setText] = useState('');
+  const [voiceModalOpen, setVoiceModalOpen] = useState(false);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
-  const { t } = useLanguage();
+  const { t, speechLocale } = useLanguage();
 
-  // Handle prefill from sidebar feature chips
+  // Handle prefill from feature chips
   useEffect(() => {
     if (initialText) {
       setText(initialText);
@@ -38,6 +29,7 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
 
   const { isListening, start, stop, isSupported } = useSpeechRecognition({
     onResult: handleSpeechResult,
+    lang: speechLocale,
   });
 
   const handleSubmit = (e) => {
@@ -59,17 +51,11 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
 
   const handleTextChange = (e) => {
     setText(e.target.value);
-    // Auto-resize textarea
     const ta = textareaRef.current;
     if (ta) {
       ta.style.height = 'auto';
       ta.style.height = Math.min(ta.scrollHeight, 140) + 'px';
     }
-  };
-
-  const handleMicClick = () => {
-    if (isListening) stop();
-    else start();
   };
 
   const handleFileClick = () => {
@@ -79,7 +65,7 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setText((prev) => `${prev} [Attached: ${file.name}]`);
+      setText((prev) => `${prev} [${file.name}]`);
     }
     e.target.value = '';
   };
@@ -90,16 +76,16 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
       <div className="chat-input-meta">
         <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
           <Sparkles size={13} style={{ color: 'var(--color-primary)' }} />
-          {t('youAreChattingAs')}
+          {t('personas.selectorTitle')}
         </span>
-        <RoleChip role={selectedRole} label={t(selectedRole, ROLE_LABELS[selectedRole] || selectedRole)} />
+        <RoleChip role={selectedRole} label={t(`personas.${selectedRole}.name`, selectedRole)} />
       </div>
 
       {/* Input form */}
       <form
         className="chat-input-form"
         onSubmit={handleSubmit}
-        aria-label="Chat input"
+        aria-label={t('chat.placeholder')}
         id="chat-form"
       >
         <textarea
@@ -108,30 +94,29 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
           value={text}
           onChange={handleTextChange}
           onKeyDown={handleKeyDown}
-          placeholder={t('typeMessage')}
+          placeholder={t('chat.placeholder')}
           rows={1}
-          aria-label="Message input"
+          aria-label={t('chat.placeholder')}
           aria-multiline="true"
           disabled={loading}
           id="chat-textarea"
         />
 
         <div className="chat-input-actions">
-          {/* Mic button */}
-          {isSupported && (
-            <motion.button
-              type="button"
-              className={`input-action-btn${isListening ? ' recording' : ''}`}
-              onClick={handleMicClick}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              aria-label={isListening ? 'Stop recording' : 'Start voice input'}
-              title={isListening ? 'Stop recording' : 'Voice input'}
-              id="mic-btn"
-            >
-              {isListening ? <Square size={16} /> : <Mic size={16} />}
-            </motion.button>
-          )}
+          {/* Voice-to-Voice AI Modal Trigger Button */}
+          <motion.button
+            type="button"
+            className="input-action-btn"
+            onClick={() => setVoiceModalOpen(true)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label={t('voice.voiceAssist')}
+            title={t('voice.voiceAssist')}
+            style={{ color: 'var(--color-primary)' }}
+            id="voice-ai-modal-btn"
+          >
+            <Mic size={16} />
+          </motion.button>
 
           {/* File upload */}
           <motion.button
@@ -140,8 +125,8 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
             onClick={handleFileClick}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            aria-label="Attach file"
-            title="Attach file"
+            aria-label={t('common.download')}
+            title={t('common.download')}
             id="attach-btn"
           >
             <Paperclip size={16} />
@@ -162,8 +147,8 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
             disabled={!text.trim() || loading}
             whileHover={{ scale: text.trim() && !loading ? 1.05 : 1 }}
             whileTap={{ scale: text.trim() && !loading ? 0.95 : 1 }}
-            aria-label={t('send')}
-            title={t('send')}
+            aria-label={t('chat.send')}
+            title={t('chat.send')}
             id="send-btn"
           >
             {loading ? (
@@ -174,6 +159,18 @@ export default function ChatInput({ onSend, loading, selectedRole, initialText }
           </motion.button>
         </div>
       </form>
+
+      {/* Voice-to-Voice Interaction Modal */}
+      <VoiceModal
+        isOpen={voiceModalOpen}
+        onClose={() => setVoiceModalOpen(false)}
+        onSendMessage={(spokenText) => {
+          onSend(spokenText);
+        }}
+        selectedRole={selectedRole}
+        lastAiResponse={lastAiResponse}
+        loading={loading}
+      />
     </div>
   );
 }

@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
+import { useLanguage } from '../contexts/LanguageContext';
 
 /**
  * RiskGauge Component
  * Renders a compact speedometer-style gauge visualization for Weather Risk Assessment (0–100).
  * Color mapped: GREEN (Low), YELLOW (Moderate), ORANGE (High), RED (Severe).
  */
-export default function RiskGauge({ score = 25, label = 'Risk Assessment', level = 'Low', imdColor = 'GREEN', compact = true }) {
+export default function RiskGauge({ score = 25, label = null, level = 'Low', imdColor = 'GREEN', compact = true }) {
+  const { t } = useLanguage();
   const validScore = Math.max(0, Math.min(100, Math.round(Number(score) || 0)));
   const needleAngle = -90 + (validScore / 100) * 180;
 
@@ -17,6 +19,7 @@ export default function RiskGauge({ score = 25, label = 'Risk Assessment', level
   };
 
   const activeColor = colorMap[imdColor?.toUpperCase()] || colorMap.GREEN;
+  const displayLabel = label || t('riskAssessment', 'Risk Assessment');
 
   const svgWidth = compact ? 150 : 200;
   const svgHeight = compact ? 82 : 110;
@@ -46,7 +49,7 @@ export default function RiskGauge({ score = 25, label = 'Risk Assessment', level
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: 4 }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-          {label}
+          {displayLabel}
         </span>
         <span
           style={{
@@ -122,7 +125,7 @@ export default function RiskGauge({ score = 25, label = 'Risk Assessment', level
           {validScore} <span style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>/ 100</span>
         </div>
         <div style={{ fontSize: 10, fontWeight: 700, color: activeColor.text, marginTop: 2 }}>
-          {level.toUpperCase()} RISK
+          {t(level.toLowerCase(), level)} {t('riskAssessment', 'Risk')}
         </div>
       </div>
     </div>

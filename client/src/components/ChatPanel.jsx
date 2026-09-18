@@ -81,24 +81,25 @@ export default function ChatPanel({
               <Bot size={18} />
             </div>
             <div style={{
-              background: 'rgba(30, 41, 59, 0.7)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'var(--color-bg-card)',
+              border: '1px solid var(--color-border)',
               borderRadius: 14,
               padding: '10px 14px',
               fontSize: '0.82rem',
-              color: '#cbd5e1',
+              color: 'var(--color-text-primary)',
               display: 'flex',
               flexDirection: 'column',
-              gap: 4
+              gap: 4,
+              boxShadow: 'var(--shadow-sm)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-primary)', fontWeight: 600 }}>
                 <span className="spinner" style={{ width: 12, height: 12, borderWidth: 2 }} />
-                <span>{t('aiThinking')}</span>
+                <span>{t('chat.typingIndicator')}</span>
               </div>
-              <div style={{ fontSize: '0.75rem', opacity: 0.8, display: 'flex', gap: 12 }}>
-                <span style={{ color: 'var(--color-success)' }}>✓ {t('locationSelected', 'Location')}</span>
-                <span style={{ color: 'var(--color-success)' }}>✓ {t('weather', 'Weather')}</span>
-                <span style={{ color: 'var(--color-warning)' }}>⟳ {t('alerts', 'Risk')}</span>
+              <div style={{ fontSize: '0.75rem', opacity: 0.9, display: 'flex', gap: 12 }}>
+                <span style={{ color: 'var(--color-success)', fontWeight: 600 }}>✓ {t('weather.activeStation', 'Station')}</span>
+                <span style={{ color: 'var(--color-success)', fontWeight: 600 }}>✓ {t('nav.weather', 'Weather')}</span>
+                <span style={{ color: 'var(--color-warning)', fontWeight: 600 }}>⟳ {t('nav.alerts', 'Disaster & MoES')}</span>
               </div>
             </div>
           </motion.div>

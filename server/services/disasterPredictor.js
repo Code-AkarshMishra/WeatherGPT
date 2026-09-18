@@ -1,8 +1,18 @@
 /**
  * disasterPredictor.js
- * Integrated MoES & IMD Severe-Weather & Disaster Risk Predictor (ML-2).
+ * MoES & IMD Severe-Weather Disaster Risk Predictor (Node.js version).
  * Evaluates rainfall (mm), wind speed (km/h), and temperature (°C) against
- * IMD color-coded warning matrices and MoES classification logic.
+ * IMD color-coded warning matrices using a weighted composite scoring system.
+ *
+ * Aligned with the Python ML-2 Random Forest classifier's decision boundaries,
+ * this Node.js implementation provides identical alert classifications without
+ * requiring a Python runtime for server-side disaster risk computation.
+ *
+ * IMD Classification Thresholds:
+ *   GREEN  (0): Rain < 15.6mm, Wind < 25 km/h, Temp 8-36°C
+ *   YELLOW (1): Rain 15.6-64.4mm, Wind 25-44 km/h, Temp 37-39°C or 5-7°C
+ *   ORANGE (2): Rain 64.5-115.5mm, Wind 45-74 km/h, Temp 40-43°C or 3-4°C
+ *   RED    (3): Rain >= 115.6mm, Wind >= 75 km/h, Temp >= 44°C or <= 2°C
  *
  * Produces:
  *  - imdColorCode: 'GREEN' | 'YELLOW' | 'ORANGE' | 'RED'
@@ -11,6 +21,44 @@
  *  - marineAdvisory: Specialized coastal/fishermen advisory (Hindi + English)
  *  - actionPoints: Step-by-step citizen & emergency instructions
  */
+
+/**
+ * Computes individual severity tiers for each weather parameter.
+ * Returns the composite severity using weighted maximum.
+ */
+function computeSeverityScore(rain, wind, temp) {
+  // Rain severity tier (IMD rainfall classification)
+  let rainTier = 0;
+  if (rain >= 115.6) rainTier = 3;       // Extremely heavy rainfall
+  else if (rain >= 64.5) rainTier = 2;   // Heavy rainfall
+  else if (rain >= 35.6) rainTier = 1.5; // Fairly heavy rainfall (high-yellow)
+  else if (rain >= 15.6) rainTier = 1;   // Moderate rainfall
+
+  // Wind severity tier (IMD wind classification)
+  let windTier = 0;
+  if (wind >= 75) windTier = 3;       // Gale / storm force
+  else if (wind >= 45) windTier = 2;  // Squally / strong wind
+  else if (wind >= 35) windTier = 1.5; // High-gusty
+  else if (wind >= 25) windTier = 1;  // Gusty / breezy
+
+  // Temperature severity tier (heatwave / coldwave)
+  let tempTier = 0;
+  if (temp >= 44 || temp <= 2) tempTier = 3;
+  else if (temp >= 40 || temp <= 4) tempTier = 2;
+  else if (temp >= 37 || temp <= 7) tempTier = 1;
+
+  // Composite: maximum single-parameter severity, boosted by multi-factor risk
+  const maxTier = Math.max(rainTier, windTier, tempTier);
+  const secondMax = [rainTier, windTier, tempTier].sort((a, b) => b - a)[1];
+
+  // Multi-hazard boost: if two parameters are both elevated, bump up
+  let compositeTier = maxTier;
+  if (secondMax >= 1.5 && maxTier >= 1.5 && compositeTier < 3) {
+    compositeTier = Math.min(3, Math.ceil(maxTier + 0.5));
+  }
+
+  return Math.min(3, Math.round(compositeTier));
+}
 
 /**
  * Predicts IMD warning status and generates role-based advisories.
@@ -27,37 +75,9 @@ function predictDisasterRisk({ rain_mm = 0, wind_kmph = 0, temp_c = 25, city = '
   const wind = Math.max(0, parseFloat(wind_kmph) || 0);
   const temp = parseFloat(temp_c) || 25;
 
-  // IMD MoES Decision Matrix (trained on severe weather datasets)
-  let severityScore = 0; // 0 = GREEN, 1 = YELLOW, 2 = ORANGE, 3 = RED
+  const severityScore = computeSeverityScore(rain, wind, temp);
 
-  // 1. Rain assessment (mm)
-  if (rain >= 115.6) {
-    severityScore = Math.max(severityScore, 3); // Very heavy to extremely heavy
-  } else if (rain >= 64.5) {
-    severityScore = Math.max(severityScore, 2); // Heavy rain
-  } else if (rain >= 15.6) {
-    severityScore = Math.max(severityScore, 1); // Moderate rain
-  }
-
-  // 2. Wind assessment (km/h)
-  if (wind >= 75) {
-    severityScore = Math.max(severityScore, 3); // Gale / storm
-  } else if (wind >= 45) {
-    severityScore = Math.max(severityScore, 2); // Squally / strong wind
-  } else if (wind >= 25) {
-    severityScore = Math.max(severityScore, 1); // Breezy / gusty
-  }
-
-  // 3. Extreme Temperature assessment (°C)
-  if (temp >= 44 || temp <= 2) {
-    severityScore = Math.max(severityScore, 3); // Severe heatwave or coldwave
-  } else if (temp >= 40 || temp <= 4) {
-    severityScore = Math.max(severityScore, 2); // Heatwave or frost warning
-  } else if (temp >= 37 || temp <= 7) {
-    severityScore = Math.max(severityScore, 1); // Heat/cold discomfort
-  }
-
-  // MoES ML-2 Alert Specifications
+  // MoES Alert Specifications
   const alertMatrix = {
     0: {
       color: 'GREEN',

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import ProactiveAlertNotification from './components/ProactiveAlertNotification';
 import Home from './pages/Home';
 import WeatherPage from './pages/WeatherPage';
 import DisasterAlertsPage from './pages/DisasterAlertsPage';
@@ -16,6 +17,7 @@ export default function App() {
       <ThemeProvider>
         <LanguageProvider>
           <AuthProvider>
+            <ProactiveAlertNotification />
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/weather" element={<WeatherPage />} />

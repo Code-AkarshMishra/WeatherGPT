@@ -5,6 +5,7 @@ import {
   CloudLightning,
   Snowflake,
 } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 function renderConditionIcon(condition) {
   switch (condition) {
@@ -22,39 +23,45 @@ function renderConditionIcon(condition) {
 }
 
 export default function DailyForecastCard({ daily = [] }) {
+  const { t } = useLanguage();
   if (!daily || daily.length === 0) return null;
 
   return (
     <div className="daily-forecast-card">
       <div className="daily-forecast-list">
-        {daily.map((day, idx) => (
-          <div key={idx} className="daily-row">
-            {/* Date column (MM/DD) */}
-            <span className="daily-date">{day.date}</span>
+        {daily.map((day, idx) => {
+          const rawName = String(day.dayName || '').toLowerCase().trim();
+          const translatedDay = t(rawName, t(`days.${rawName}`, day.dayName));
 
-            {/* Day name column (Yesterday, Today, Tomorrow, Tue, etc.) */}
-            <span className="daily-name">{day.dayName}</span>
+          return (
+            <div key={idx} className="daily-row">
+              {/* Date column (MM/DD) */}
+              <span className="daily-date">{day.date}</span>
 
-            {/* Condition Icon + Rain Probability % */}
-            <div className="daily-condition">
-              <span className="daily-icon-wrapper">
-                {renderConditionIcon(day.condition)}
-              </span>
-              {day.rainPop >= 20 && day.condition !== 'clear' ? (
-                <span className="daily-pop-badge">{day.rainPop}%</span>
-              ) : (
-                <span className="daily-pop-empty" />
-              )}
+              {/* Day name column (Yesterday, Today, Tomorrow, Tue, etc.) */}
+              <span className="daily-name">{translatedDay}</span>
+
+              {/* Condition Icon + Rain Probability % */}
+              <div className="daily-condition">
+                <span className="daily-icon-wrapper">
+                  {renderConditionIcon(day.condition)}
+                </span>
+                {day.rainPop >= 20 && day.condition !== 'clear' ? (
+                  <span className="daily-pop-badge">{day.rainPop}%</span>
+                ) : (
+                  <span className="daily-pop-empty" />
+                )}
+              </div>
+
+              {/* Min and Max Temperatures */}
+              <div className="daily-temps">
+                <span className="daily-temp-min">{day.minTemp}°</span>
+                <span className="daily-temp-bar-mini" />
+                <span className="daily-temp-max">{day.maxTemp}°</span>
+              </div>
             </div>
-
-            {/* Min and Max Temperatures */}
-            <div className="daily-temps">
-              <span className="daily-temp-min">{day.minTemp}°</span>
-              <span className="daily-temp-bar-mini" />
-              <span className="daily-temp-max">{day.maxTemp}°</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

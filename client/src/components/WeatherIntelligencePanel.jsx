@@ -144,6 +144,7 @@ function generateWeatherUpdates(weatherData, imdColor, imdRisk) {
 
 /** Live scrolling Early Weather Updates ticker */
 function EarlyWeatherUpdates({ weatherData, imdColor, imdRisk }) {
+  const { t } = useLanguage();
   const updates = generateWeatherUpdates(weatherData, imdColor, imdRisk);
   const [activeIdx, setActiveIdx] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -187,7 +188,7 @@ function EarlyWeatherUpdates({ weatherData, imdColor, imdRisk }) {
             style={{ width: 7, height: 7, borderRadius: '50%', background: alertColor, boxShadow: `0 0 8px ${alertColor}` }}
           />
           <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1, color: '#94a3b8', textTransform: 'uppercase' }}>
-            Early Weather Updates
+            {t('earlyWeatherUpdates', 'Early Weather Updates')}
           </span>
         </div>
         {imdColor !== 'GREEN' && (

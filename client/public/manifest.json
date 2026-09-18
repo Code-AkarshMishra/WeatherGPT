@@ -1,0 +1,19 @@
+{
+  "name": "WeatherGPT — AI Meteorological & Disaster Intelligence",
+  "short_name": "WeatherGPT",
+  "description": "Multilingual AI weather forecasting, IMD severe alerts, crop advisories, and disaster response intelligence.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1d",
+  "theme_color": "#0284c7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/og-image.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["weather", "productivity", "utilities"]
+}

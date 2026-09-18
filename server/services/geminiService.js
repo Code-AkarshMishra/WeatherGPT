@@ -159,4 +159,13 @@ async function callGeminiJSON(systemPrompt, userMessage) {
   };
 }
 
-module.exports = { callGemini, callGeminiJSON };
+function getKeyStatus() {
+  const keys = getApiKeys();
+  return {
+    total: keys.length,
+    active: keys.length > 0,
+    models: PRIMARY_MODELS,
+  };
+}
+
+module.exports = { callGemini, callGeminiJSON, getKeyStatus, getApiKeys };

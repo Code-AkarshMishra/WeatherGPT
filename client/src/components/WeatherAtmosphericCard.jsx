@@ -105,7 +105,7 @@ export default function WeatherAtmosphericCard({
   const tempMin = data.tempMin ?? 25;
   const tempMax = data.tempMax ?? 31;
   const feelsLike = data.feelsLike ?? 31;
-  const weatherTitle = data.weatherMain || (condition === 'storm' ? 'Thunderstorm' : condition.toUpperCase());
+  const weatherTitle = t(condition.toLowerCase(), data.weatherMain || (condition === 'storm' ? 'Thunderstorm' : condition.toUpperCase()));
 
   return (
     <div className="atmospheric-dashboard-wrapper">
@@ -221,7 +221,7 @@ export default function WeatherAtmosphericCard({
                   <span className="aqi-val-tag">{aqi.pm2_5}</span>
                 </div>
                 <span className="aqi-status-text" style={{ color: aqi.color }}>
-                  {aqi.label} {t('airQuality', 'Air Quality')}
+                  {t(String(aqi.label || '').toLowerCase(), aqi.label)} {t('airQuality', 'Air Quality')}
                 </span>
               </div>
 

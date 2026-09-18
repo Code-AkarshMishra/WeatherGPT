@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { useWeather } from '../hooks/useWeather';
 import { useChat } from '../hooks/useChat';
@@ -8,15 +8,24 @@ import ChatInput from '../components/ChatInput';
 import Navbar from '../components/Navbar';
 import AtmosphericCanvas from '../components/AtmosphericCanvas';
 import LocationSelectorModal from '../components/LocationSelectorModal';
+import PWAInstallBanner from '../components/PWAInstallBanner';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function Home() {
   const { lang, t } = useLanguage();
   const [selectedRole, setSelectedRole] = useState('citizen');
   const [prefillText, setPrefillText] = useState('');
-  const [overrideLat, setOverrideLat] = useState(null);
-  const [overrideLon, setOverrideLon] = useState(null);
-  const [locationName, setLocationName] = useState('Lucknow, Uttar Pradesh');
+  const [overrideLat, setOverrideLat] = useState(() => {
+    const saved = localStorage.getItem('weathergpt_saved_lat');
+    return saved ? parseFloat(saved) : null;
+  });
+  const [overrideLon, setOverrideLon] = useState(() => {
+    const saved = localStorage.getItem('weathergpt_saved_lon');
+    return saved ? parseFloat(saved) : null;
+  });
+  const [locationName, setLocationName] = useState(() => {
+    return localStorage.getItem('weathergpt_saved_city') || 'Lucknow, Uttar Pradesh';
+  });
   const [locationModalOpen, setLocationModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('weather'); // mobile tab: 'weather' | 'chat'
 
@@ -29,20 +38,35 @@ export default function Home() {
   const { messages, loading, error, suggestedRole, sendMessage, clearConversation, setSuggestedRole } =
     useChat({ role: selectedRole, lat, lon, lang });
 
+  const lastAiMessage = useMemo(() => {
+    const aiMsgs = messages.filter((m) => m.role === 'assistant' || m.sender === 'ai' || m.sender === 'bot');
+    if (aiMsgs.length === 0) return null;
+    const last = aiMsgs[aiMsgs.length - 1];
+    return last.content || last.text || null;
+  }, [messages]);
+
   const handleFeatureSelect = useCallback((query) => {
     setPrefillText(query);
-    setActiveTab('chat'); // switch to chat tab on mobile when a query is selected
+    setActiveTab('chat');
   }, []);
 
-  const handleSend = useCallback((text) => {
-    setPrefillText('');
-    sendMessage(text);
-  }, [sendMessage]);
+  const handleSend = useCallback(
+    (text) => {
+      setPrefillText('');
+      sendMessage(text);
+    },
+    [sendMessage]
+  );
 
   const handleLocationChange = useCallback((newLat, newLon, newName) => {
     setOverrideLat(newLat);
     setOverrideLon(newLon);
     if (newName) setLocationName(newName);
+    try {
+      localStorage.setItem('weathergpt_saved_lat', String(newLat));
+      localStorage.setItem('weathergpt_saved_lon', String(newLon));
+      if (newName) localStorage.setItem('weathergpt_saved_city', newName);
+    } catch {}
   }, []);
 
   const activeCondition = weatherData?.condition || 'clear';
@@ -89,7 +113,10 @@ export default function Home() {
             }}
             onFeatureSelect={handleFeatureSelect}
             suggestedRole={suggestedRole}
-            onRoleSwitch={(role) => { setSelectedRole(role); clearConversation(); }}
+            onRoleSwitch={(role) => {
+              setSelectedRole(role);
+              clearConversation();
+            }}
             onDismissSuggestion={() => setSuggestedRole(null)}
           />
           <ChatInput
@@ -97,31 +124,32 @@ export default function Home() {
             loading={loading}
             selectedRole={selectedRole}
             initialText={prefillText}
+            lastAiResponse={lastAiMessage}
           />
         </div>
       </div>
 
       {/* Mobile Bottom Tab Bar */}
-      <nav className="mobile-tab-bar" role="tablist" aria-label="Main navigation tabs">
+      <nav className="mobile-tab-bar" role="tablist" aria-label={t('nav.menu')}>
         <button
           className={`mobile-tab-btn${activeTab === 'weather' ? ' active' : ''}`}
           onClick={() => setActiveTab('weather')}
           role="tab"
           aria-selected={activeTab === 'weather'}
-          aria-label={t('weather', 'Weather')}
+          aria-label={t('nav.weather')}
         >
           <span className="tab-icon">🌤️</span>
-          <span>{t('weather', 'Weather')}</span>
+          <span>{t('nav.weather')}</span>
         </button>
         <button
           className={`mobile-tab-btn${activeTab === 'chat' ? ' active' : ''}`}
           onClick={() => setActiveTab('chat')}
           role="tab"
           aria-selected={activeTab === 'chat'}
-          aria-label={t('aiChat', 'AI Chat')}
+          aria-label={t('chat.title')}
         >
           <span className="tab-icon">💬</span>
-          <span>{t('aiChat', 'AI Chat')}</span>
+          <span>{t('personas.citizen.name')}</span>
         </button>
       </nav>
 
@@ -131,7 +159,9 @@ export default function Home() {
         onSelectLocation={handleLocationChange}
         currentLocationName={activeCityName}
       />
+
+      {/* Localized PWA Install Prompt */}
+      <PWAInstallBanner />
     </div>
   );
 }
-

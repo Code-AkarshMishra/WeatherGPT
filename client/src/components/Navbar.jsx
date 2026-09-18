@@ -100,21 +100,21 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
   };
 
   const navLinks = [
-    { to: '/', label: t('home', 'Home'), icon: HomeIcon, exact: true },
-    { to: '/weather', label: t('weather', 'Weather & Atmospheric'), icon: CloudSun },
-    { to: '/alerts', label: t('alerts', 'Alerts & MoES'), icon: ShieldAlert, badge: 'Live' },
-    { to: '/dashboard', label: t('dashboard', 'Dashboard'), icon: LayoutDashboard },
-    { to: '/about', label: t('about', 'About'), icon: Info },
+    { to: '/', label: t('nav.home'), icon: HomeIcon, exact: true },
+    { to: '/weather', label: t('nav.weather'), icon: CloudSun },
+    { to: '/alerts', label: t('nav.alerts'), icon: ShieldAlert, badge: t('common.active') },
+    { to: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/about', label: t('nav.about'), icon: Info },
   ];
 
   return (
     <>
-      <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`} role="navigation" aria-label="Main navigation">
+      <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`} role="navigation" aria-label={t('nav.menu')}>
         {/* Hamburger — mobile only */}
         <button
           className={`navbar-hamburger${mobileMenuOpen ? ' open' : ''}`}
           onClick={handleToggle}
-          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-label={mobileMenuOpen ? t('common.close') : t('nav.menu')}
           aria-expanded={mobileMenuOpen}
           id="hamburger-btn"
           type="button"
@@ -127,12 +127,12 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
         </button>
 
         {/* Logo */}
-        <NavLink to="/" className="navbar-logo" aria-label="WeatherGPT Home" onClick={() => setMobileMenuOpen(false)}>
+        <NavLink to="/" className="navbar-logo" aria-label={t('nav.appName')} onClick={() => setMobileMenuOpen(false)}>
           <span className="navbar-logo-icon">🌤️</span>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className="logo-text">{t('appName')}</span>
+            <span className="logo-text">{t('nav.appName')}</span>
             <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--color-primary, #0284c7)', letterSpacing: '0.05em', lineHeight: 1 }}>
-              {t('appSubtitle', 'MoES • IMD')}
+              {t('nav.appSubtitle')}
             </span>
           </div>
         </NavLink>
@@ -170,10 +170,10 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
               fontWeight: 600,
               color: 'var(--color-success, #10b981)',
             }}
-            title="MoES Live Radar + ML-2 Severe Weather RF Predictor Online"
+            title={t('nav.radarOnline')}
           >
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-success, #10b981)', display: 'inline-block', boxShadow: '0 0 6px var(--color-success, #10b981)' }} />
-            <span>{t('radarOnline', 'MoES Live Radar')}</span>
+            <span>{t('nav.radarOnline')}</span>
           </div>
 
           <LanguageToggle />
@@ -199,7 +199,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
                 id="logout-btn"
                 style={{ padding: 'var(--space-1) var(--space-3)', minHeight: 44 }}
               >
-                {t('logout')}
+                {t('nav.logout')}
               </button>
             </div>
           ) : (
@@ -209,7 +209,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
               id="login-btn"
               style={{ minHeight: 40, padding: 'var(--space-1) var(--space-3)' }}
             >
-              {t('login')}
+              {t('nav.login')}
             </NavLink>
           )}
         </div>
@@ -274,15 +274,15 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <Radio size={14} className="animate-pulse" />
-                  <span>{t('radarOnline', 'MoES Live Radar Online')}</span>
+                  <span>{t('nav.radarOnline')}</span>
                 </div>
-                <span style={{ fontSize: '0.7rem', opacity: 0.8 }}>IMD ML-2 Active</span>
+                <span style={{ fontSize: '0.7rem', opacity: 0.8 }}>{t('nav.liveTelemetry')}</span>
               </div>
 
               {/* Mobile Navigation Links */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>
-                  Menu Navigation
+                  {t('nav.menu')}
                 </span>
 
                 {navLinks.map((link) => {
@@ -358,7 +358,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
                       }}
                     >
                       <LogOut size={14} />
-                      <span>{t('logout')}</span>
+                      <span>{t('nav.logout')}</span>
                     </button>
                   </div>
                 ) : (
@@ -381,7 +381,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
                       }}
                     >
                       <LogIn size={15} />
-                      <span>{t('login')}</span>
+                      <span>{t('nav.login')}</span>
                     </NavLink>
                     <NavLink
                       to="/register"
@@ -400,7 +400,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
                         textDecoration: 'none',
                       }}
                     >
-                      <span>{t('register', 'Sign Up')}</span>
+                      <span>{t('nav.register')}</span>
                     </NavLink>
                   </div>
                 )}

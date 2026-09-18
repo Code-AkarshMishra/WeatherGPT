@@ -8,33 +8,33 @@ export default function MoESWelcomeHub({ selectedRole, onRoleChange, onSelectQue
   const SUGGESTED_POPUP_QUESTIONS = [
     {
       icon: '🌾',
-      category: t('farmer', 'Crop Advisory'),
-      query: 'Is it safe to spray crops or apply fertilizer in my location today?',
+      category: t('personas.kisan.name', 'Crop Advisory'),
+      query: t('chat.suggestions.sprayPesticide', 'Is it safe to spray crops or apply fertilizer in my location today?'),
     },
     {
       icon: '⛈️',
-      category: t('hourlyForecast', 'Forecast'),
-      query: 'What is the 24-hour rain and thunderstorm outlook for my location?',
+      category: t('forecast.hourly', 'Forecast'),
+      query: t('chat.suggestions.rainTomorrow', 'What is the 24-hour rain and thunderstorm outlook for my location?'),
     },
     {
       icon: '🚗',
-      category: t('visibility', 'Travel & Visibility'),
-      query: 'How is the visibility, fog risk, and road driving condition today?',
+      category: t('weather.visibility', 'Travel & Visibility'),
+      query: t('chat.suggestions.visibilityTrip', 'How is the visibility, fog risk, and road driving condition today?'),
     },
     {
       icon: '🌊',
-      category: t('marine', 'Marine Safety'),
-      query: 'What is the sea state, wave swell, and coastal wind speed for small boats?',
+      category: t('personas.marine.name', 'Marine Safety'),
+      query: t('chat.suggestions.marineSafety', 'What is the sea state, wave swell, and coastal wind speed for small boats?'),
     },
     {
       icon: '⚡',
-      category: t('alertsTitle', 'IMD Disaster Alert'),
-      query: 'Are there any active IMD severe weather or cyclone warnings nearby?',
+      category: t('alerts.title', 'IMD Disaster Alert'),
+      query: t('chat.suggestions.cycloneTrack', 'Are there any active IMD severe weather or cyclone warnings nearby?'),
     },
     {
       icon: '💧',
-      category: t('feelsLike', 'Comfort & Heat'),
-      query: 'What is the humidity level and real-feel heat index right now?',
+      category: t('weather.feelsLike', 'Comfort & Heat'),
+      query: t('chat.suggestions.heatAlert', 'What is the humidity level and real-feel heat index right now?'),
     },
   ];
 
@@ -74,17 +74,17 @@ export default function MoESWelcomeHub({ selectedRole, onRoleChange, onSelectQue
           🌤️
         </div>
         <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0, color: 'var(--color-text-primary)', letterSpacing: -0.5 }}>
-          {t('appName')} {t('aboutSubtitle', 'Meteorological Assistant')}
+          {t('nav.appName')} {t('chat.title')}
         </h2>
         <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', maxWidth: 460, margin: 0, lineHeight: 1.5 }}>
-          {t('typeMessage')}
+          {t('chat.subtitle')}
         </p>
       </div>
 
-      {/* Suggested Popup Question Pills Grid */}
+      {/* Suggested Question Pills Grid */}
       <div style={{ width: '100%', maxWidth: 540, display: 'flex', flexDirection: 'column', gap: 10 }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-          {t('quickAccess')}
+          {t('chat.suggestedQueries')}
         </span>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
