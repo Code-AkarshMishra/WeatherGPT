@@ -2,108 +2,108 @@ import { useState } from 'react';
 import { Sprout, Calendar, AlertCircle, Droplets, Sun, CheckCircle, ShieldAlert } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
-const AGROMET_SEASONS = [
-  {
-    id: 'kharif',
-    name: 'Kharif Season (Monsoon)',
-    hindiName: 'खरीफ मौसम (मानसून)',
-    period: 'June – October',
-    majorCrops: ['Paddy (Rice)', 'Maize', 'Cotton', 'Soybean', 'Groundnut', 'Pulses (Arhar)'],
-    criticalWeatherFactors: 'SW Monsoon onset, break-monsoon spells, waterlogging risk',
-    crops: [
-      {
-        name: 'Paddy / Rice (धान)',
-        stage: 'Tillering / Vegetative',
-        waterRequirement: 'High (5–7 cm standing water)',
-        pestAlert: 'Stem borer & blast risk under high humidity (>85%)',
-        advisory: 'Ensure drainage during torrential downpours. Maintain water level during tillering phase.',
-        status: 'Optimal',
-      },
-      {
-        name: 'Cotton (कपास)',
-        stage: 'Square formation / Flowering',
-        waterRequirement: 'Moderate (Avoid water stagnation)',
-        pestAlert: 'Whitefly & pink bollworm watch in humid spells',
-        advisory: 'Provide field drainage channels to prevent root rot after heavy showers.',
-        status: 'Caution',
-      },
-      {
-        name: 'Soybean (सोयाबीन)',
-        stage: 'Pod development',
-        waterRequirement: 'Moderate',
-        pestAlert: 'Girdle beetle and semilooper monitoring',
-        advisory: 'Foliar spray of 2% DAP or urea if dry spell exceeds 10 days.',
-        status: 'Optimal',
-      },
-    ],
-  },
-  {
-    id: 'rabi',
-    name: 'Rabi Season (Winter)',
-    hindiName: 'रबी मौसम (सर्दियां)',
-    period: 'October – March',
-    majorCrops: ['Wheat', 'Mustard', 'Gram (Chickpea)', 'Barley', 'Potato'],
-    criticalWeatherFactors: 'Western Disturbances, frost/coldwave alerts, terminal heat in March',
-    crops: [
-      {
-        name: 'Wheat (गेहूं)',
-        stage: 'Crown root initiation / Grain filling',
-        waterRequirement: 'Critical CRI irrigation at 21 days',
-        pestAlert: 'Yellow rust watch if cloudy and cool conditions persist',
-        advisory: 'Apply light irrigation prior to severe cold wave/frost forecast to prevent freezing injury.',
-        status: 'Optimal',
-      },
-      {
-        name: 'Mustard (सरसों)',
-        stage: 'Pod formation / Siliqua',
-        waterRequirement: 'Low to moderate',
-        pestAlert: 'Aphid attack probability rises if temp is 15-20°C with overcast skies',
-        advisory: 'Spray Dimethoate 30 EC @ 1ml/litre if aphid count exceeds economic threshold level.',
-        status: 'Warning',
-      },
-      {
-        name: 'Gram / Chickpea (चना)',
-        stage: 'Pod filling',
-        waterRequirement: 'Low (sensitive to excess moisture)',
-        pestAlert: 'Pod borer (Helicoverpa armigera)',
-        advisory: 'Install pheromone traps @ 5/ha for pest population monitoring.',
-        status: 'Optimal',
-      },
-    ],
-  },
-  {
-    id: 'zaid',
-    name: 'Zaid Season (Summer)',
-    hindiName: 'जायद मौसम (गर्मी)',
-    period: 'March – June',
-    majorCrops: ['Watermelon', 'Muskmelon', 'Cucumber', 'Fodder Maize', 'Moong Dal'],
-    criticalWeatherFactors: 'Heatwaves (Loo), high evapotranspiration rate, dust storms',
-    crops: [
-      {
-        name: 'Moong Dal (ग्रीष्म मूंग)',
-        stage: 'Flowering & pod setting',
-        waterRequirement: 'Frequent light irrigations',
-        pestAlert: 'Thrips and yellow mosaic virus (transmitted by whitefly)',
-        advisory: 'Irrigate during morning or evening hours to minimize evapotranspiration losses.',
-        status: 'Optimal',
-      },
-      {
-        name: 'Cucurbits / Melons (तरबूज/खरबूजा)',
-        stage: 'Fruiting & ripening',
-        waterRequirement: 'Drip irrigation recommended',
-        pestAlert: 'Fruit fly & powdery mildew under rising heat',
-        advisory: 'Cover fruits with dry straw to prevent soil rot and sun scald.',
-        status: 'Caution',
-      },
-    ],
-  },
-];
-
 export default function CropCalendar({ currentTemp = 28, currentRainProb = 30 }) {
   const { t, lang } = useLanguage();
   const [selectedSeason, setSelectedSeason] = useState('kharif');
 
-  const currentSeasonData = AGROMET_SEASONS.find((s) => s.id === selectedSeason) || AGROMET_SEASONS[0];
+  const seasons = [
+    {
+      id: 'kharif',
+      tabLabel: t('agri.seasons.kharif', 'Kharif').split(' ')[0],
+      name: t('agri.seasons.kharif', 'Kharif Season (Monsoon)'),
+      period: t('agri.periods.kharif', 'June – October'),
+      majorCrops: t('agri.cropsList.kharif', 'Paddy (Rice), Maize, Cotton, Soybean, Groundnut, Pulses'),
+      criticalWeatherFactors: t('agri.critical.kharif', 'SW Monsoon onset, break-monsoon spells, waterlogging risk'),
+      crops: [
+        {
+          name: t('agri.cropNames.paddy', 'Paddy / Rice (धान)'),
+          stage: t('agri.cropStages.paddy', 'Tillering / Vegetative'),
+          waterRequirement: t('agri.cropWater.paddy', 'High (5–7 cm standing water)'),
+          pestAlert: t('agri.cropPest.paddy', 'Stem borer & blast risk under high humidity (>85%)'),
+          advisory: t('agri.cropAdvisory.paddy', 'Ensure drainage during torrential downpours. Maintain water level during tillering phase.'),
+          status: 'Optimal',
+        },
+        {
+          name: t('agri.cropNames.cotton', 'Cotton (कपास)'),
+          stage: t('agri.cropStages.cotton', 'Square formation / Flowering'),
+          waterRequirement: t('agri.cropWater.cotton', 'Moderate (Avoid water stagnation)'),
+          pestAlert: t('agri.cropPest.cotton', 'Whitefly & pink bollworm watch in humid spells'),
+          advisory: t('agri.cropAdvisory.cotton', 'Provide field drainage channels to prevent root rot after heavy showers.'),
+          status: 'Caution',
+        },
+        {
+          name: t('agri.cropNames.soybean', 'Soybean (सोयाबीन)'),
+          stage: t('agri.cropStages.soybean', 'Pod development'),
+          waterRequirement: t('agri.cropWater.soybean', 'Moderate'),
+          pestAlert: t('agri.cropPest.soybean', 'Girdle beetle and semilooper monitoring'),
+          advisory: t('agri.cropAdvisory.soybean', 'Foliar spray of 2% DAP or urea if dry spell exceeds 10 days.'),
+          status: 'Optimal',
+        },
+      ],
+    },
+    {
+      id: 'rabi',
+      tabLabel: t('agri.seasons.rabi', 'Rabi').split(' ')[0],
+      name: t('agri.seasons.rabi', 'Rabi Season (Winter)'),
+      period: t('agri.periods.rabi', 'October – March'),
+      majorCrops: t('agri.cropsList.rabi', 'Wheat, Mustard, Gram (Chickpea), Barley, Potato'),
+      criticalWeatherFactors: t('agri.critical.rabi', 'Western Disturbances, frost/coldwave alerts, terminal heat in March'),
+      crops: [
+        {
+          name: t('agri.cropNames.wheat', 'Wheat (गेहूं)'),
+          stage: t('agri.cropStages.wheat', 'Crown root initiation / Grain filling'),
+          waterRequirement: t('agri.cropWater.wheat', 'Critical CRI irrigation at 21 days'),
+          pestAlert: t('agri.cropPest.wheat', 'Yellow rust watch if cloudy and cool conditions persist'),
+          advisory: t('agri.cropAdvisory.wheat', 'Apply light irrigation prior to severe cold wave/frost forecast to prevent freezing injury.'),
+          status: 'Optimal',
+        },
+        {
+          name: t('agri.cropNames.mustard', 'Mustard (सरसों)'),
+          stage: t('agri.cropStages.mustard', 'Pod formation / Siliqua'),
+          waterRequirement: t('agri.cropWater.mustard', 'Low to moderate'),
+          pestAlert: t('agri.cropPest.mustard', 'Aphid attack probability rises if temp is 15-20°C with overcast skies'),
+          advisory: t('agri.cropAdvisory.mustard', 'Spray Dimethoate 30 EC @ 1ml/litre if aphid count exceeds economic threshold level.'),
+          status: 'Warning',
+        },
+        {
+          name: t('agri.cropNames.gram', 'Gram / Chickpea (चना)'),
+          stage: t('agri.cropStages.gram', 'Pod filling'),
+          waterRequirement: t('agri.cropWater.gram', 'Low (sensitive to excess moisture)'),
+          pestAlert: t('agri.cropPest.gram', 'Pod borer (Helicoverpa armigera)'),
+          advisory: t('agri.cropAdvisory.gram', 'Install pheromone traps @ 5/ha for pest population monitoring.'),
+          status: 'Optimal',
+        },
+      ],
+    },
+    {
+      id: 'zaid',
+      tabLabel: t('agri.seasons.zaid', 'Zaid').split(' ')[0],
+      name: t('agri.seasons.zaid', 'Zaid Season (Summer)'),
+      period: t('agri.periods.zaid', 'March – June'),
+      majorCrops: t('agri.cropsList.zaid', 'Watermelon, Muskmelon, Cucumber, Fodder Maize, Moong Dal'),
+      criticalWeatherFactors: t('agri.critical.zaid', 'Heatwaves (Loo), high evapotranspiration rate, dust storms'),
+      crops: [
+        {
+          name: t('agri.cropNames.moong', 'Moong Dal (ग्रीष्म मूंग)'),
+          stage: t('agri.cropStages.moong', 'Flowering & pod setting'),
+          waterRequirement: t('agri.cropWater.moong', 'Frequent light irrigations'),
+          pestAlert: t('agri.cropPest.moong', 'Thrips and yellow mosaic virus (transmitted by whitefly)'),
+          advisory: t('agri.cropAdvisory.moong', 'Irrigate during morning or evening hours to minimize evapotranspiration losses.'),
+          status: 'Optimal',
+        },
+        {
+          name: t('agri.cropNames.cucurbits', 'Cucurbits / Melons (तरबूज/खरबूजा)'),
+          stage: t('agri.cropStages.cucurbits', 'Fruiting & ripening'),
+          waterRequirement: t('agri.cropWater.cucurbits', 'Drip irrigation recommended'),
+          pestAlert: t('agri.cropPest.cucurbits', 'Fruit fly & powdery mildew under rising heat'),
+          advisory: t('agri.cropAdvisory.cucurbits', 'Cover fruits with dry straw to prevent soil rot and sun scald.'),
+          status: 'Caution',
+        },
+      ],
+    },
+  ];
+
+  const currentSeasonData = seasons.find((s) => s.id === selectedSeason) || seasons[0];
 
   return (
     <div
@@ -158,7 +158,7 @@ export default function CropCalendar({ currentTemp = 28, currentRainProb = 30 })
             border: '1px solid var(--color-border)',
           }}
         >
-          {AGROMET_SEASONS.map((season) => (
+          {seasons.map((season) => (
             <button
               key={season.id}
               onClick={() => setSelectedSeason(season.id)}
@@ -174,7 +174,7 @@ export default function CropCalendar({ currentTemp = 28, currentRainProb = 30 })
                 transition: 'all 0.15s ease',
               }}
             >
-              {lang === 'hi' ? season.hindiName.split(' ')[0] : season.name.split(' ')[0]}
+              {season.tabLabel}
             </button>
           ))}
         </div>
@@ -198,15 +198,15 @@ export default function CropCalendar({ currentTemp = 28, currentRainProb = 30 })
           <Calendar size={18} style={{ color: 'var(--color-success)' }} />
           <div>
             <strong style={{ fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>
-              {lang === 'hi' ? currentSeasonData.hindiName : currentSeasonData.name} ({currentSeasonData.period})
+              {currentSeasonData.name} ({currentSeasonData.period})
             </strong>
             <div style={{ fontSize: '0.76rem', color: 'var(--color-text-secondary)', marginTop: 2 }}>
-              Critical Factors: {currentSeasonData.criticalWeatherFactors}
+              {t('agri.criticalFactors', 'Critical Factors')}: {currentSeasonData.criticalWeatherFactors}
             </div>
           </div>
         </div>
         <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-success)' }}>
-          Major Crops: {currentSeasonData.majorCrops.slice(0, 3).join(', ')}...
+          {t('agri.majorCrops', 'Major Crops')}: {currentSeasonData.majorCrops}
         </div>
       </div>
 
@@ -247,22 +247,26 @@ export default function CropCalendar({ currentTemp = 28, currentRainProb = 30 })
                       : 'var(--color-success)',
                 }}
               >
-                {crop.status}
+                {crop.status === 'Warning'
+                  ? t('common.warning', 'Warning')
+                  : crop.status === 'Caution'
+                  ? t('common.caution', 'Caution')
+                  : t('common.optimal', 'Optimal')}
               </span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: '0.78rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)' }}>
                 <Sun size={13} style={{ color: '#f59e0b' }} />
-                <span>Stage: <strong>{crop.stage}</strong></span>
+                <span>{t('agri.stage', 'Stage')}: <strong>{crop.stage}</strong></span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)' }}>
                 <Droplets size={13} style={{ color: '#38bdf8' }} />
-                <span>Water: {crop.waterRequirement}</span>
+                <span>{t('agri.water', 'Water')}: {crop.waterRequirement}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, color: 'var(--color-text-secondary)' }}>
                 <AlertCircle size={13} style={{ color: '#ef4444', flexShrink: 0, marginTop: 2 }} />
-                <span>Pest Watch: {crop.pestAlert}</span>
+                <span>{t('agri.pestWatch', 'Pest Watch')}: {crop.pestAlert}</span>
               </div>
             </div>
 
@@ -278,7 +282,7 @@ export default function CropCalendar({ currentTemp = 28, currentRainProb = 30 })
                 lineHeight: 1.4,
               }}
             >
-              <strong>Advisory:</strong> {crop.advisory}
+              <strong>{t('agri.advisory', 'Advisory')}:</strong> {crop.advisory}
             </div>
           </div>
         ))}

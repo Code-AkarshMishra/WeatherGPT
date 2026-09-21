@@ -193,33 +193,35 @@ exports.chat = async (req, res, next) => {
       }
     }
 
-    // ── Step 8: Call ML-1 Tool Calling or Grounded Role LLM ─────────────
+    // ── Step 8: Call Deployed WeatherGPT 2.0 AI Service or Grounded Role LLM ──
     let aiResponse = null;
     let usedProvider = 'gemini-grounded-agent';
-    const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'https://weathergpt-1-ike5.onrender.com').trim();
-    
-    // Attempt fast local ML microservice tool calling
+    const mlClient = require('../services/mlClient');
+
     try {
-      const mlPayload = { message, role: selectedRole };
-      if (resolvedLat !== null && resolvedLon !== null) {
-        mlPayload.location = { lat: resolvedLat, lon: resolvedLon };
-      }
-      const mlRes = await axios.post(`${ML_SERVICE_URL}/chat`, mlPayload, { timeout: 6000 });
+      const mlRes = await mlClient.sendChat({
+        message,
+        role: selectedRole,
+        location: resolvedLat !== null && resolvedLon !== null ? { lat: resolvedLat, lon: resolvedLon, name: locationOverride || weatherData?.locationName } : null,
+        lang,
+        history: conversationHistory,
+      });
+
       if (
-        mlRes.data?.response &&
-        !mlRes.data.response.toLowerCase().includes('temporary service limit') &&
-        !mlRes.data.response.toLowerCase().includes('unable to fetch')
+        mlRes?.response &&
+        !mlRes.response.toLowerCase().includes('temporary service limit') &&
+        !mlRes.response.toLowerCase().includes('unable to fetch')
       ) {
-        aiResponse = mlRes.data.response;
-        usedProvider = mlRes.data.provider || 'unified-ml-agent';
-        logger.info(`[CHAT] Successfully answered via Unified ML service (${usedProvider})`);
+        aiResponse = mlRes.response;
+        usedProvider = mlRes.provider || 'weathergpt-2.0-cloud-agent';
+        logger.info(`[CHAT] Successfully answered via WeatherGPT 2.0 Cloud (${usedProvider})`);
       }
     } catch (mlErr) {
-      logger.info(`[CHAT] ML microservice fallback (${mlErr.message}), proceeding with grounded Gemini LLM`);
+      logger.info(`[CHAT] Cloud ML agent fallback (${mlErr.message}), proceeding with grounded Gemini LLM`);
     }
 
     if (!aiResponse) {
-      aiResponse = await callGemini(systemPrompt, message, roleApiKey, conversationHistory);
+      aiResponse = await callGemini(systemPrompt, message, roleApiKey, conversationHistory, weatherData, selectedRole, lang);
     }
 
     if (!aiResponse) {

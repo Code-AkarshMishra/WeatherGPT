@@ -260,20 +260,38 @@ input, textarea, select {
   transition: all var(--transition-fast);
   cursor: pointer;
   border: none;
+  text-decoration: none;
 }
 
-.btn-primary {
+.btn-primary,
+a.btn-primary,
+button.btn-primary {
   background-color: var(--color-primary);
-  color: #fff;
+  color: #ffffff !important;
+  border: 1px solid transparent;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+a.btn-primary:hover,
+a.btn-primary:focus,
+a.btn-primary:active,
+button.btn-primary:hover,
+button.btn-primary:focus,
+button.btn-primary:active {
   background-color: var(--color-primary-dark);
+  color: #ffffff !important;
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 14px var(--color-primary-glow, rgba(56, 189, 248, 0.4));
+  text-decoration: none;
 }
 
-.btn-primary:active { transform: translateY(0); }
+.btn-primary:active,
+a.btn-primary:active,
+button.btn-primary:active {
+  transform: translateY(0);
+}
 
 .btn-ghost {
   background: transparent;

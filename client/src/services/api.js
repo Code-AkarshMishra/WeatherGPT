@@ -76,4 +76,18 @@ api.interceptors.response.use(
   }
 );
 
+// Intelligence API Helpers (Connected to WeatherGPT 2.0 Cloud Engine)
+export const intelligenceApi = {
+  getHealth: () => api.get('/api/intelligence/health'),
+  getModelInfo: () => api.get('/api/intelligence/model-info'),
+  getRiskScore: (payload) => api.post('/api/intelligence/risk-score', payload),
+  getRiskExplain: (payload) => api.post('/api/intelligence/risk-explain', payload),
+  getAdvisory: (payload) => api.post('/api/intelligence/advisory', payload),
+  getAnomaly: (payload) => api.post('/api/intelligence/anomaly', payload),
+  getClimateAnalysis: (payload) => api.post('/api/intelligence/climate-analyze', payload),
+  getNWPHazard: (payload) => api.post('/api/intelligence/nwp-hazard', payload),
+  getHistoricalAnalysis: (payload) => api.post('/api/intelligence/historical-analysis', payload),
+  getNWPVerification: (payload) => api.post('/api/intelligence/nwp-verification', payload),
+};
+
 export default api;

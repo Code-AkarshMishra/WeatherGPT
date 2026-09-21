@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
-import { Cpu, Activity, Wind, CloudRain, Gauge, Layers, CheckCircle2, ChevronRight, BarChart3, Zap, ShieldCheck } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Cpu, Activity, Wind, CloudRain, Gauge, Layers, CheckCircle2, ChevronRight, BarChart3, Zap, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { intelligenceApi } from '../services/api';
 
 const NWP_MODELS = [
   {
@@ -53,12 +54,41 @@ export default function NWPEnsemblePanel({
   currentRainProb = 40,
 }) {
   const { t } = useLanguage();
-  const [selectedModel, setSelectedModel] = useState('ncum');
+  const [selectedModel, setSelectedModel] = useState('ecmwf');
   const [isobaricLevel, setIsobaricLevel] = useState('850'); // '850' | '500' | '200'
+  const [liveNwp, setLiveNwp] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Model-specific synthetic deterministic variations
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchLiveNWP() {
+      if (!lat || !lon) return;
+      setLoading(true);
+      try {
+        const res = await intelligenceApi.getNWPHazard({
+          location: { name: city, lat: Number(lat), lon: Number(lon) },
+          role: 'citizen',
+          hours: 48,
+        });
+        if (isMounted && res.data?.data) {
+          setLiveNwp(res.data.data);
+        }
+      } catch (err) {
+        console.warn('Live NWP fetch fallback:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchLiveNWP();
+    return () => { isMounted = false; };
+  }, [city, lat, lon]);
+
+  // Model-specific deterministic variations merged with live cloud ML assessment
   const modelProjections = useMemo(() => {
     const base = Number(currentTemp) || 28;
+    const gfsStats = liveNwp?.model_stats?.gfs || liveNwp?.models?.gfs;
+    const ecmwfStats = liveNwp?.model_stats?.ecmwf || liveNwp?.models?.ecmwf;
+
     return {
       ncum: {
         tempMax24h: Math.round(base + 4.2),
@@ -68,27 +98,27 @@ export default function NWPEnsemblePanel({
         capeIndex: 1650, // J/kg
         liftedIndex: -3.8,
         confidence: 94,
-        synopticSummary: 'Active low-level monsoonal trough with moist easterlies feeding convective cells over central Gangetic plains.',
+        synopticSummary: liveNwp?.advisory || 'Active low-level monsoonal trough with moist easterlies feeding convective cells over central Gangetic plains.',
       },
       ecmwf: {
-        tempMax24h: Math.round(base + 3.8),
-        tempMin24h: Math.round(base - 5.8),
-        precipAccum24h: 22.0,
-        windGusts: 48,
+        tempMax24h: ecmwfStats?.temp_max ?? Math.round(base + 3.8),
+        tempMin24h: ecmwfStats?.temp_min ?? Math.round(base - 5.8),
+        precipAccum24h: ecmwfStats?.precip_sum ?? 22.0,
+        windGusts: ecmwfStats?.max_wind ?? 48,
         capeIndex: 1820,
         liftedIndex: -4.2,
-        confidence: 96,
-        synopticSummary: 'Deep cyclonic shear vorticity anomaly at 850 hPa indicating squall line propagation from north-west.',
+        confidence: liveNwp?.model_agreement ? 96 : 92,
+        synopticSummary: liveNwp?.advisory || 'Deep cyclonic shear vorticity anomaly at 850 hPa indicating squall line propagation.',
       },
       gfs: {
-        tempMax24h: Math.round(base + 4.9),
-        tempMin24h: Math.round(base - 5.2),
-        precipAccum24h: 14.8,
-        windGusts: 38,
+        tempMax24h: gfsStats?.temp_max ?? Math.round(base + 4.9),
+        tempMin24h: gfsStats?.temp_min ?? Math.round(base - 5.2),
+        precipAccum24h: gfsStats?.precip_sum ?? 14.8,
+        windGusts: gfsStats?.max_wind ?? 38,
         capeIndex: 2100,
         liftedIndex: -5.1,
-        confidence: 91,
-        synopticSummary: 'High thermodynamic instability with strong solar insolation followed by evening thunderstorm development.',
+        confidence: liveNwp?.model_agreement ? 93 : 89,
+        synopticSummary: liveNwp?.advisory || 'High thermodynamic instability with strong solar insolation followed by convective development.',
       },
       icon: {
         tempMax24h: Math.round(base + 4.0),
@@ -101,7 +131,7 @@ export default function NWPEnsemblePanel({
         synopticSummary: 'Consistent boundary layer moisture flux convergence supporting scattered moderate rainfall episodes.',
       },
     };
-  }, [currentTemp]);
+  }, [currentTemp, liveNwp]);
 
   const activeData = modelProjections[selectedModel] || modelProjections.ncum;
   const activeModelMeta = NWP_MODELS.find((m) => m.id === selectedModel) || NWP_MODELS[0];
@@ -147,24 +177,24 @@ export default function NWPEnsemblePanel({
               }}
             >
               <Cpu size={13} />
-              NWP NUMERICAL WEATHER PREDICTION MATRIX
+              {t('nwp.badge', 'NWP NUMERICAL WEATHER PREDICTION MATRIX')}
             </span>
             <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)' }}>
-              MoES NCMRWF &bull; Global Ensemble Suite
+              {t('nwp.ensembleSuite', 'MoES NCMRWF • Global Ensemble Suite')}
             </span>
           </div>
           <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>
-            High-Resolution Multi-Model Synoptic Forecasting &bull; {city}
+            {t('nwp.highResTitle', 'High-Resolution Multi-Model Synoptic Forecasting')} &bull; {city}
           </h3>
         </div>
 
         {/* Isobaric Level Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.04)', padding: 4, borderRadius: 12, border: '1px solid var(--color-border)' }}>
-          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', paddingLeft: 8 }}>Isobaric:</span>
+          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', paddingLeft: 8 }}>{t('nwp.isobaric', 'Isobaric')}:</span>
           {[
-            { id: '850', label: '850 hPa (Low-Level Jet)' },
-            { id: '500', label: '500 hPa (Mid-Steering)' },
-            { id: '200', label: '200 hPa (Upper Jet)' },
+            { id: '850', label: t('nwp.isobaricLevels.lvl850', '850 hPa (Low-Level Jet)') },
+            { id: '500', label: t('nwp.isobaricLevels.lvl500', '500 hPa (Mid-Steering)') },
+            { id: '200', label: t('nwp.isobaricLevels.lvl200', '200 hPa (Upper Jet)') },
           ].map((lvl) => (
             <button
               key={lvl.id}
@@ -229,42 +259,42 @@ export default function NWPEnsemblePanel({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
         <div style={{ background: 'rgba(255,255,255,0.03)', padding: 16, borderRadius: 14, border: '1px solid var(--color-border)' }}>
           <div style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <CloudRain size={14} style={{ color: '#38bdf8' }} /> 24h Accumulated Precip
+            <CloudRain size={14} style={{ color: '#38bdf8' }} /> {t('nwp.accumPrecip24h', '24h Accumulated Precip')}
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#38bdf8', marginTop: 4 }}>
             {activeData.precipAccum24h} <span style={{ fontSize: '0.85rem' }}>mm</span>
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 2 }}>Ensemble Range: 12 - 26 mm</div>
+          <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 2 }}>{t('nwp.ensembleRange', 'Ensemble Range')}: 12 - 26 mm</div>
         </div>
 
         <div style={{ background: 'rgba(255,255,255,0.03)', padding: 16, borderRadius: 14, border: '1px solid var(--color-border)' }}>
           <div style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Zap size={14} style={{ color: '#f59e0b' }} /> Convective CAPE Index
+            <Zap size={14} style={{ color: '#f59e0b' }} /> {t('nwp.capeIndex', 'Convective CAPE Index')}
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f59e0b', marginTop: 4 }}>
             {activeData.capeIndex} <span style={{ fontSize: '0.85rem' }}>J/kg</span>
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 2 }}>Lifted Index: {activeData.liftedIndex}°C (Severe Risk)</div>
+          <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 2 }}>Lifted Index: {activeData.liftedIndex}°C ({t('nwp.severeRisk', 'Severe Risk')})</div>
         </div>
 
         <div style={{ background: 'rgba(255,255,255,0.03)', padding: 16, borderRadius: 14, border: '1px solid var(--color-border)' }}>
           <div style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Wind size={14} style={{ color: '#a78bfa' }} /> Peak Wind Gusts (Surface)
+            <Wind size={14} style={{ color: '#a78bfa' }} /> {t('nwp.windGusts', 'Peak Wind Gusts (Surface)')}
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#a78bfa', marginTop: 4 }}>
             {activeData.windGusts} <span style={{ fontSize: '0.85rem' }}>km/h</span>
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 2 }}>Direction: 285° WNW &bull; Gale alert</div>
+          <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 2 }}>{t('weather.direction', 'Direction')}: 285° WNW &bull; {t('nwp.galeAlert', 'Gale alert')}</div>
         </div>
 
         <div style={{ background: 'rgba(255,255,255,0.03)', padding: 16, borderRadius: 14, border: '1px solid var(--color-border)' }}>
           <div style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <ShieldCheck size={14} style={{ color: '#10b981' }} /> Consensus Confidence
+            <ShieldCheck size={14} style={{ color: '#10b981' }} /> {t('nwp.consensusConfidence', 'Consensus Confidence')}
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#10b981', marginTop: 4 }}>
             {activeData.confidence}%
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 2 }}>Validated via 50-member GEFS</div>
+          <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 2 }}>{t('nwp.validatedGefs', 'Validated via 50-member GEFS')}</div>
         </div>
       </div>
 
@@ -292,13 +322,13 @@ export default function NWPEnsemblePanel({
       {/* Multi-Model Comparison Table */}
       <div>
         <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: 8 }}>
-          Deterministic Multi-Model Timeline Comparison (48-Hour Run)
+          {t('nwp.timelineTitle', 'Deterministic Multi-Model Timeline Comparison (48-Hour Run)')}
         </div>
         <div style={{ overflowX: 'auto', borderRadius: 12, border: '1px solid var(--color-border)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid var(--color-border)' }}>
-                <th style={{ padding: '10px 14px', color: '#94a3b8' }}>Forecast Step</th>
+                <th style={{ padding: '10px 14px', color: '#94a3b8' }}>{t('nwp.forecastStep', 'Forecast Step')}</th>
                 <th style={{ padding: '10px 14px', color: '#0284c7' }}>NCUM (MoES/IMD)</th>
                 <th style={{ padding: '10px 14px', color: '#8b5cf6' }}>ECMWF IFS</th>
                 <th style={{ padding: '10px 14px', color: '#10b981' }}>NOAA GFS</th>

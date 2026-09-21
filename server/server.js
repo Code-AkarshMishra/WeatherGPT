@@ -3,6 +3,8 @@
  * Application entry point.
  * Validates env → connects DB → starts HTTP server.
  */
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 require('dotenv').config();
 const validateEnv = require('./config/validateEnv');
 const connectDB = require('./config/db');

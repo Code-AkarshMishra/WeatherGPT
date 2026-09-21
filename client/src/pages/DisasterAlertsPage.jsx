@@ -45,6 +45,80 @@ const QUICK_CITIES = [
   { name: 'Guwahati', lat: 26.1445, lon: 91.7362 },
 ];
 
+function formatLocalizedBulletin(b, t) {
+  if (!b) return { regionName: '', statusBadge: '', title: '', desc: '', time: '' };
+
+  // 1. Region name
+  const regionRaw = (b.region || '').toLowerCase();
+  let regionName = b.region;
+  if (regionRaw.includes('north-west') || regionRaw.includes('himalayan')) {
+    regionName = t('regions.northwest', b.region);
+  } else if (regionRaw.includes('gangetic') || regionRaw.includes('indo-gangetic')) {
+    regionName = t('regions.indogangetic', b.region);
+  } else if (regionRaw.includes('western')) {
+    regionName = t('regions.western', b.region);
+  } else if (regionRaw.includes('southern')) {
+    regionName = t('regions.southern', b.region);
+  } else if (regionRaw.includes('north-east') || regionRaw.includes('northeast')) {
+    regionName = t('regions.northeast', b.region);
+  } else if (regionRaw.includes('eastern')) {
+    regionName = t('regions.eastern', b.region);
+  } else if (regionRaw.includes('bengal')) {
+    regionName = t('regions.bayofbengal', b.region);
+  } else if (regionRaw.includes('arabian')) {
+    regionName = t('regions.arabiansea', b.region);
+  }
+
+  // 2. Status badge
+  const statusKey = (b.status || 'GREEN').toLowerCase();
+  const statusBadge = t(`alerts.tierBadges.${statusKey}`, b.status);
+
+  // 3. Title localization
+  let title = b.title;
+  if (statusKey === 'green') {
+    const lowerTitle = (b.title || '').toLowerCase();
+    let condition = '';
+    if (lowerTitle.includes('clear')) condition = t('clear', 'Clear Sky');
+    else if (lowerTitle.includes('cloud')) condition = t('clouds', 'Clouds');
+    else if (lowerTitle.includes('rain')) condition = t('rain', 'Rain');
+    else if (lowerTitle.includes('drizzle')) condition = t('drizzle', 'Drizzle');
+    else if (lowerTitle.includes('thunder')) condition = t('thunderstorm', 'Thunderstorm');
+    else if (lowerTitle.includes('fog') || lowerTitle.includes('mist')) condition = t('fog', 'Fog');
+
+    title = condition
+      ? `${t('alerts.normalConditions', 'Normal Conditions')} — ${condition}`
+      : t('alerts.normalConditions', 'Normal Conditions');
+  } else if (statusKey === 'yellow') {
+    title = t('alerts.watchActive', 'Watch Active');
+  } else if (statusKey === 'orange') {
+    title = t('alerts.alertActive', 'Alert — Heavy Weather Activity');
+  } else if (statusKey === 'red') {
+    title = t('alerts.severeWarning', 'SEVERE WARNING — Extreme Conditions');
+  }
+
+  // 4. Description localization
+  let desc = b.desc;
+  const tempMatch = b.desc?.match(/Temperature\s*(\d+)°C/i);
+  const windMatch = b.desc?.match(/Wind\s*(\d+)\s*km\/h/i);
+  const rainMatch = b.desc?.match(/Rain probability\s*(\d+)%/i);
+  if (tempMatch && windMatch && rainMatch) {
+    const temp = tempMatch[1];
+    const wind = windMatch[1];
+    const rain = rainMatch[1];
+    const statusText = statusKey === 'green' ? t('alerts.noWarningClear', 'No Warning / All Clear') : '';
+    desc = `${t('weather.temperature', 'Temperature')} ${temp}°C, ${t('weather.wind', 'Wind')} ${wind} km/h, ${t('weather.rainProbability', 'Rain probability')} ${rain}%. ${statusText}`.trim();
+  }
+
+  // 5. Time localization
+  let time = b.time;
+  if (b.time && b.time.toLowerCase().includes('updated')) {
+    const timeVal = b.time.replace(/updated\s*/i, '');
+    time = `${t('alerts.updatedAt', 'Updated')} ${timeVal}`;
+  }
+
+  return { regionName, statusBadge, title, desc, time };
+}
+
 export default function DisasterAlertsPage() {
   const { t, lang } = useLanguage();
   const { lat: geoLat, lon: geoLon } = useGeolocation();
@@ -253,7 +327,7 @@ export default function DisasterAlertsPage() {
                   type="text"
                   value={searchCity}
                   onChange={(e) => setSearchCity(e.target.value)}
-                  placeholder={t('weather.searchCity')}
+                  placeholder={t('searchCity', 'Search city or district...')}
                   style={{ width: 140, color: 'var(--color-text-primary)' }}
                 />
                 <button
@@ -359,47 +433,50 @@ export default function DisasterAlertsPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
               {bulletins.length > 0
-                ? bulletins.map((b, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        background: 'var(--color-bg-alt, rgba(15, 23, 42, 0.4))',
-                        border: `1px solid var(--color-border)`,
-                        borderLeft: `4px solid ${b.color || '#22c55e'}`,
-                        borderRadius: 12,
-                        padding: '14px 16px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 6,
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
-                          {b.region}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: '0.68rem',
-                            fontWeight: 800,
-                            padding: '2px 6px',
-                            borderRadius: 6,
-                            background: `${b.color || '#22c55e'}22`,
-                            color: b.color || '#22c55e',
-                          }}
-                        >
-                          {b.status}
-                        </span>
+                ? bulletins.map((b, idx) => {
+                    const { regionName, statusBadge, title, desc, time } = formatLocalizedBulletin(b, t);
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          background: 'var(--color-bg-alt, rgba(15, 23, 42, 0.4))',
+                          border: `1px solid var(--color-border)`,
+                          borderLeft: `4px solid ${b.color || '#22c55e'}`,
+                          borderRadius: 12,
+                          padding: '14px 16px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 6,
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
+                            {regionName}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '0.68rem',
+                              fontWeight: 800,
+                              padding: '2px 6px',
+                              borderRadius: 6,
+                              background: `${b.color || '#22c55e'}22`,
+                              color: b.color || '#22c55e',
+                            }}
+                          >
+                            {statusBadge}
+                          </span>
+                        </div>
+                        <strong style={{ fontSize: '0.88rem', color: 'var(--color-text-primary)' }}>{title}</strong>
+                        <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                          {desc}
+                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>{time}</span>
+                          <SpeakButton text={`${title}. ${desc}`} size="small" />
+                        </div>
                       </div>
-                      <strong style={{ fontSize: '0.88rem', color: 'var(--color-text-primary)' }}>{b.title}</strong>
-                      <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
-                        {b.desc}
-                      </p>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
-                        <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>{b.time}</span>
-                        <SpeakButton text={`${b.title}. ${b.desc}`} size="small" />
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 : (
                     <div style={{ padding: 20, textAlign: 'center', color: 'var(--color-text-muted)' }}>
                       {t('common.loading')}
@@ -452,19 +529,19 @@ export default function DisasterAlertsPage() {
               </div>
 
               <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase' }}>IMD Mausam</span>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase' }}>{t('alerts.imdMausamTitle', 'IMD Mausam')}</span>
                 <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-primary)', marginTop: 2 }}>1800-180-1717</div>
                 <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{t('alerts.imdMausam')}</span>
               </div>
 
               <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(234, 179, 8, 0.08)', border: '1px solid rgba(234, 179, 8, 0.25)' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#eab308', textTransform: 'uppercase' }}>State Control</span>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#eab308', textTransform: 'uppercase' }}>{t('alerts.stateControlTitle', 'State Control')}</span>
                 <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-primary)', marginTop: 2 }}>1070</div>
                 <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{t('alerts.stateControl')}</span>
               </div>
 
               <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.25)' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-success)', textTransform: 'uppercase' }}>Emergency</span>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-success)', textTransform: 'uppercase' }}>{t('alerts.emergencyTitle', 'Emergency')}</span>
                 <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-primary)', marginTop: 2 }}>112</div>
                 <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{t('alerts.nationalEmergency')}</span>
               </div>

@@ -11,6 +11,8 @@
  * Gracefully handles missing MONGO_URI and connection timeouts.
  */
 
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 require('dotenv').config();
 const mongoose = require('mongoose');
 

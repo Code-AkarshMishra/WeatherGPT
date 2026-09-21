@@ -168,7 +168,7 @@ export default function Sidebar({ selectedRole, onRoleChange, onFeatureSelect, i
           </ul>
         ) : (
           <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginTop: 'var(--space-2)' }}>
-            {loading ? 'Loading features...' : 'Select a role to see quick access features.'}
+            {loading ? t('common.loading', 'Loading features...') : t('selectRole', 'Select a role to see quick access features.')}
           </p>
         )}
       </div>
@@ -178,11 +178,11 @@ export default function Sidebar({ selectedRole, onRoleChange, onFeatureSelect, i
         <button
           className="btn btn-ghost"
           onClick={onToggleExpand}
-          aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          aria-label={isExpanded ? t('common.collapse', 'Collapse sidebar') : t('common.expand', 'Expand sidebar')}
           style={{ width: '100%', fontSize: 'var(--font-size-xs)', minHeight: 44 }}
           id="sidebar-toggle-btn"
         >
-          {isExpanded ? '← Collapse' : '→'}
+          {isExpanded ? `← ${t('common.collapse', 'Collapse')}` : '→'}
         </button>
       </div>
     </aside>

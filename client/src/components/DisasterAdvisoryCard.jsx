@@ -17,7 +17,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import api from '../services/api';
 
 export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimulate }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [activeTab, setActiveTab] = useState('farmer'); // 'farmer' | 'marine' | 'action'
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
@@ -38,7 +38,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
       text: '#16a34a',
       badgeBg: '#16a34a',
       badgeColor: '#ffffff',
-      label: 'GREEN (All Clear)',
+      label: t('alerts.tierBadges.green', 'GREEN (All Clear)'),
     },
     YELLOW: {
       bg: 'rgba(234, 179, 8, 0.14)',
@@ -46,7 +46,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
       text: '#d97706',
       badgeBg: '#eab308',
       badgeColor: '#000000',
-      label: 'YELLOW (Watch & Update)',
+      label: t('alerts.tierBadges.yellow', 'YELLOW (Watch & Update)'),
     },
     ORANGE: {
       bg: 'rgba(249, 115, 22, 0.15)',
@@ -54,7 +54,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
       text: '#ea580c',
       badgeBg: '#f97316',
       badgeColor: '#ffffff',
-      label: 'ORANGE (Alert & Prepare)',
+      label: t('alerts.tierBadges.orange', 'ORANGE (Alert & Prepare)'),
     },
     RED: {
       bg: 'rgba(239, 68, 68, 0.16)',
@@ -62,7 +62,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
       text: '#dc2626',
       badgeBg: '#ef4444',
       badgeColor: '#ffffff',
-      label: 'RED (Warning & Action)',
+      label: t('alerts.tierBadges.red', 'RED (Warning & Action)'),
     },
   }[imdColor] || {
     bg: 'rgba(34, 197, 94, 0.12)',
@@ -70,7 +70,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
     text: '#16a34a',
     badgeBg: '#16a34a',
     badgeColor: '#ffffff',
-    label: 'GREEN',
+    label: t('alerts.tierBadges.green', 'GREEN (All Clear)'),
   };
 
   const handleSpeak = () => {
@@ -150,7 +150,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
             }}
           >
             <ShieldAlert size={15} />
-            IMD {colorStyles.label}
+            {colorStyles.label}
           </span>
           <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
             {t('riskAssessment', 'MoES Severe-Weather Risk')}: <strong style={{ color: colorStyles.text }}>{activeRisk?.riskAssessment || 'Low'}</strong>
@@ -177,10 +177,10 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
               boxShadow: 'var(--shadow-sm)',
               transition: 'all 0.2s ease',
             }}
-            title={isSpeaking ? t('stopSpeaking') : t('playAudioAlert')}
+            title={isSpeaking ? t('stopSpeaking', 'Stop Audio') : t('playAudioAlert', 'Play Audio Alert')}
           >
             <Volume2 size={14} style={{ color: isSpeaking ? '#ffffff' : 'var(--color-primary)' }} />
-            <span>{isSpeaking ? t('stopSpeaking') : t('playAudioAlert')}</span>
+            <span>{isSpeaking ? t('stopSpeaking', 'Stop Audio') : t('playAudioAlert', 'Play Audio Alert')}</span>
           </button>
 
           {/* Simulator Toggle */}
@@ -200,10 +200,10 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
               cursor: 'pointer',
               boxShadow: 'var(--shadow-sm)',
             }}
-            title="Simulate ML-2 Severe Weather Scenarios"
+            title={t('alerts.simulatorTooltip', 'Simulate ML-2 Severe Weather Scenarios')}
           >
             <Sliders size={13} style={{ color: isSimulatorOpen ? '#ffffff' : 'var(--color-primary)' }} />
-            <span>MoES Simulator</span>
+            <span>{t('alerts.moesSimulator', 'MoES Simulator')}</span>
           </button>
         </div>
       </div>
@@ -276,22 +276,26 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
         {activeTab === 'farmer' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
-              🇮🇳 <strong>{activeRisk?.farmerAdvisory?.hi}</strong>
+              🌾 {lang === 'en' ? (activeRisk?.farmerAdvisory?.en || activeRisk?.farmerAdvisory?.hi) : (activeRisk?.farmerAdvisory?.hi || activeRisk?.farmerAdvisory?.en)}
             </p>
-            <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
-              🌐 <em>{activeRisk?.farmerAdvisory?.en}</em>
-            </p>
+            {lang !== 'en' && lang !== 'hi' && activeRisk?.farmerAdvisory?.en && (
+              <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
+                🌐 <em>{activeRisk?.farmerAdvisory?.en}</em>
+              </p>
+            )}
           </div>
         )}
 
         {activeTab === 'marine' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
-              🌊 <strong>{activeRisk?.marineAdvisory?.hi}</strong>
+              🌊 {lang === 'en' ? (activeRisk?.marineAdvisory?.en || activeRisk?.marineAdvisory?.hi) : (activeRisk?.marineAdvisory?.hi || activeRisk?.marineAdvisory?.en)}
             </p>
-            <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
-              🌐 <em>{activeRisk?.marineAdvisory?.en}</em>
-            </p>
+            {lang !== 'en' && lang !== 'hi' && activeRisk?.marineAdvisory?.en && (
+              <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
+                🌐 <em>{activeRisk?.marineAdvisory?.en}</em>
+              </p>
+            )}
           </div>
         )}
 
@@ -302,7 +306,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
                 <CheckCircle size={14} style={{ color: colorStyles.text, flexShrink: 0 }} />
                 <span>{pt}</span>
               </div>
-            )) || <span style={{ color: 'var(--color-text-secondary)' }}>Standard safety protocol in effect.</span>}
+            )) || <span style={{ color: 'var(--color-text-secondary)' }}>{t('alerts.standardSafety', 'Standard safety protocol in effect.')}</span>}
           </div>
         )}
       </div>
@@ -328,7 +332,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontWeight: 700, fontSize: '0.82rem', color: '#818cf8', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Sliders size={14} />
-                MoES Disaster Random Forest Model Simulator (Test Different Weather Scenarios)
+                {t('alerts.simulatorTitle', 'MoES Disaster Random Forest Model Simulator (Test Different Weather Scenarios)')}
               </span>
               <button
                 onClick={() => {
@@ -345,7 +349,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
               {/* Rain Slider */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <label style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)', display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CloudRain size={12} /> Rainfall</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CloudRain size={12} /> {t('weather.precipitation', 'Rainfall')}</span>
                   <strong style={{ color: '#38bdf8' }}>{simRain} mm</strong>
                 </label>
                 <input
@@ -366,7 +370,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
               {/* Wind Slider */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <label style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)', display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Wind size={12} /> Wind Speed</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Wind size={12} /> {t('weather.windSpeed', 'Wind Speed')}</span>
                   <strong style={{ color: '#facc15' }}>{simWind} km/h</strong>
                 </label>
                 <input
@@ -387,7 +391,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
               {/* Temperature Slider */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <label style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)', display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Thermometer size={12} /> Temperature</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Thermometer size={12} /> {t('weather.temperature', 'Temperature')}</span>
                   <strong style={{ color: '#f87171' }}>{simTemp} °C</strong>
                 </label>
                 <input
@@ -409,7 +413,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
             {simulatedData && (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 8, fontSize: '0.75rem' }}>
                 <span style={{ color: colorStyles.text, fontWeight: 700 }}>
-                  Active Scenario: {simulatedData.imdColorCode} Alert ({simulatedData.riskAssessment} Risk)
+                  {t('alerts.activeScenario', 'Active Scenario')}: {simulatedData.imdColorCode} ({simulatedData.riskAssessment} {t('alerts.risk', 'Risk')})
                 </span>
                 <button
                   onClick={() => setSimulatedData(null)}
@@ -422,7 +426,7 @@ export default function DisasterAdvisoryCard({ disasterRisk, currentCity, onSimu
                     cursor: 'pointer',
                   }}
                 >
-                  Reset to Live Data
+                  {t('alerts.resetLive', 'Reset to Live Data')}
                 </button>
               </div>
             )}

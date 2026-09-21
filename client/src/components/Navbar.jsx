@@ -207,7 +207,7 @@ export default function Navbar({ onMenuToggle, sidebarOpen }) {
               to="/login"
               className="btn btn-primary desktop-only"
               id="login-btn"
-              style={{ minHeight: 40, padding: 'var(--space-1) var(--space-3)' }}
+              style={{ minHeight: 40, padding: 'var(--space-1) var(--space-3)', color: '#ffffff' }}
             >
               {t('nav.login')}
             </NavLink>

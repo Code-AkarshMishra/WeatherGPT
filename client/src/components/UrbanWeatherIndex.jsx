@@ -48,10 +48,10 @@ export default function UrbanWeatherIndex({
                 gap: 5,
               }}
             >
-              <Building2 size={13} /> SMART CITY INTEL
+              <Building2 size={13} /> {t('urban.smartCityIntel', 'SMART CITY INTEL')}
             </span>
             <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-              Urban Meteorological Analytics &bull; {currentCity}
+              {t('urban.metAnalytics', 'Urban Meteorological Analytics')} &bull; {currentCity}
             </span>
           </div>
           <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>
@@ -108,12 +108,12 @@ export default function UrbanWeatherIndex({
           <div style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>
             {uhiAnomaly}{' '}
             <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>
-              Concrete Urban Anomaly vs Rural Baseline
+              {t('urban.concreteAnomaly', 'Concrete Urban Anomaly vs Rural Baseline')}
             </span>
           </div>
 
           <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
-            Dense built-up clusters retain nocturnal thermal radiation. Heat mitigation green zones recommended.
+            {t('urban.uhiDescription', 'Dense built-up clusters retain nocturnal thermal radiation. Heat mitigation green zones recommended.')}
           </p>
         </div>
 
@@ -159,7 +159,7 @@ export default function UrbanWeatherIndex({
           <div style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>
             {rainProb}%{' '}
             <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>
-              Stormwater Runoff Pressure Index
+              {t('urban.stormwaterIndex', 'Stormwater Runoff Pressure Index')}
             </span>
           </div>
 

@@ -42,10 +42,10 @@ export default function ChatPanel({
   const isDev = import.meta.env.DEV;
 
   const POPUP_PILLS = [
-    { label: '🌾 Crop Spraying', query: 'Is it safe to spray crops today?' },
-    { label: '⛈️ 24h Rain', query: 'What is the 24-hour rain forecast?' },
-    { label: '🚗 Visibility & Fog', query: 'How is visibility for driving today?' },
-    { label: '🌊 Marine Wind', query: 'What is the sea state and coastal wind speed?' },
+    { label: t('chat.pills.cropSpraying', '🌾 Crop Spraying'), query: t('chat.suggestions.sprayPesticide', 'Is it safe to spray crops today?') },
+    { label: t('chat.pills.rain24h', '⛈️ 24h Rain'), query: t('chat.suggestions.rainTomorrow', 'What is the 24-hour rain forecast?') },
+    { label: t('chat.pills.visibilityFog', '🚗 Visibility & Fog'), query: t('chat.suggestions.visibilityTrip', 'How is visibility for driving today?') },
+    { label: t('chat.pills.marineWind', '🌊 Marine Wind'), query: t('chat.suggestions.marineSafety', 'What is the sea state and coastal wind speed?') },
   ];
 
   return (

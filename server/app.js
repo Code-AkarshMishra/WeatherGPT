@@ -2,6 +2,8 @@
  * app.js
  * Express application setup — middleware, routes, error handling.
  */
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -90,7 +92,7 @@ app.get('/health', async (req, res) => {
     uptime: Math.round(process.uptime()),
     database: isDbConnected ? 'connected' : 'disconnected',
     dbPingMs,
-    mlService: process.env.ML_SERVICE_URL || 'https://weathergpt-1-ike5.onrender.com',
+    mlService: process.env.ML_SERVICE_URL || 'https://weathergpt2-0.onrender.com',
     model: process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite',
   });
 });
@@ -98,6 +100,8 @@ app.get('/health', async (req, res) => {
 // ── API Routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/weather', require('./routes/weather'));
+app.use('/api/intelligence', require('./routes/intelligence'));
+app.use('/api/weather/intelligence', require('./routes/intelligence'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/roles', require('./routes/roles'));
 app.use('/api/system', require('./routes/system'));

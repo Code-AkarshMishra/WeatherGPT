@@ -227,14 +227,24 @@ async function getWeather(lat, lon, cityOverride = null) {
     const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const cond = mapCondition(item.weather?.[0]?.main);
     
-    // Calibrate pop to realistic range based on condition
-    let pop = Math.round((item.pop || 0) * 100);
+    // Calibrate pop with atmospheric thermodynamic predictor & condition
+    const itemAtmosphericPop = predictRainProbability({
+      humidity: item.main?.humidity ?? current.main?.humidity ?? 60,
+      pressure: item.main?.pressure ?? current.main?.pressure ?? 1013,
+      clouds: item.clouds?.all ?? current.clouds?.all ?? 40,
+      recentPrecip1h: item.rain?.['3h'] ? item.rain['3h'] / 3 : 0,
+      weatherMain: item.weather?.[0]?.main || current.weather?.[0]?.main,
+    });
+
+    let rawPop = item.pop !== undefined && item.pop > 0 ? Math.round(item.pop * 100) : itemAtmosphericPop;
+    let pop = Math.max(rawPop, Math.round(itemAtmosphericPop * 0.75));
+
     if (cond === 'clear') {
       pop = Math.min(pop, 10);
     } else if (cond === 'cloudy') {
-      pop = Math.min(pop, 40);
+      pop = Math.max(15, Math.min(45, pop));
     } else if (cond === 'rain' || cond === 'storm') {
-      pop = Math.max(45, Math.min(90, pop));
+      pop = Math.max(50, Math.min(95, pop));
     }
 
     hourlyForecast.push({
@@ -336,9 +346,9 @@ async function getWeather(lat, lon, cityOverride = null) {
     if (bestCond === 'clear') {
       representativePop = Math.min(representativePop, 10);
     } else if (bestCond === 'cloudy') {
-      representativePop = Math.min(representativePop, 35);
+      representativePop = Math.max(15, Math.min(representativePop || 25, 40));
     } else if (bestCond === 'rain' || bestCond === 'storm') {
-      representativePop = Math.max(45, Math.min(85, representativePop));
+      representativePop = Math.max(50, Math.min(85, representativePop));
     }
 
     dailyForecast.push({
@@ -359,8 +369,11 @@ async function getWeather(lat, lon, cityOverride = null) {
   const tempMin = todayForecast ? todayForecast.minTemp : Math.round(current.main?.temp_min ?? current.main?.temp);
   const tempMax = todayForecast ? todayForecast.maxTemp : Math.round(current.main?.temp_max ?? current.main?.temp);
 
-  // Live real rain probability for current moment
-  const liveRainProbability = hourlyForecast.length > 0 ? hourlyForecast[0].rainPop : rainProbability;
+  // Live real rain probability for current moment (atmospheric moisture blended)
+  const liveRainProbability = Math.max(
+    rainProbability,
+    hourlyForecast.length > 0 ? hourlyForecast[0].rainPop : 0
+  );
 
   const resolvedCityName = normalizeLocationName(current.name, cityOverride);
 
@@ -389,6 +402,7 @@ async function getWeather(lat, lon, cityOverride = null) {
     rainProbability: liveRainProbability,
     recentPrecip1h,
     recentPrecip3h,
+    rainMm: recentPrecip1h || recentPrecip3h || 0,
     condition: mapCondition(current.weather?.[0]?.main),
     airQuality,
     hourlyForecast,

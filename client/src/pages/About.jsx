@@ -20,11 +20,11 @@ export default function About() {
     {
       icon: '🌐',
       title: t('featureMultilingual', 'Pan-Indian Multilingual'),
-      desc: t('featureMultilingualDesc', 'Full dynamic translation across 11 Indian regional languages with Hinglish support.'),
+      desc: t('featureMultilingualDesc', 'Full dynamic translation across all 22 Indian regional languages with neural voice synthesis.'),
     },
     {
       icon: '📍',
-      title: t('featureGps', 'Precision Geolocation Engine'),
+      title: t('featureGps', 'Precision Geolocation Telemetry'),
       desc: t('featureGpsDesc', 'Auto-detects coordinates for hyper-local observations and farm-level advice.'),
     },
     {
@@ -39,13 +39,13 @@ export default function About() {
     },
     {
       icon: '🌙',
-      title: t('theme', 'Dark & Light Mode'),
-      desc: t('darkMode', 'Persistent dual-theme visual design optimized for outdoor and night viewing.'),
+      title: t('featureTheme', 'Dark & Light Mode'),
+      desc: t('featureThemeDesc', 'Persistent dual-theme visual design optimized for outdoor and night viewing.'),
     },
     {
       icon: '📡',
-      title: t('radarOnline', 'Doppler Radar Network'),
-      desc: t('nominal', 'Ministry of Earth Sciences live telemetry integrated with grounded AI models.'),
+      title: t('featureRadar', 'Doppler Radar Network'),
+      desc: t('featureRadarDesc', 'Ministry of Earth Sciences live telemetry integrated with grounded AI models.'),
     },
   ];
 

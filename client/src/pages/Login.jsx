@@ -89,7 +89,7 @@ export default function Login() {
             <button
               type="submit"
               className="btn btn-primary"
-              style={{ width: '100%' }}
+              style={{ width: '100%', color: '#ffffff' }}
               disabled={loading}
               id="login-submit-btn"
             >

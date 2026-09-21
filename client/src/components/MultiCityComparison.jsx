@@ -347,10 +347,10 @@ export default function MultiCityComparison({ onSelectCity = null }) {
                   >
                     IMD WMO STATION #{Math.floor(42000 + (inspectedStation.lat || 20) * 100)}
                   </span>
-                  <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Live AWS Telemetry</span>
+                  <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>{t('weather.liveTelemetry', 'Live AWS Telemetry')}</span>
                 </div>
                 <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc' }}>
-                  {inspectedStation.city} Weather Telemetry
+                  {inspectedStation.city} {t('weather.stationTelemetry', 'Weather Telemetry')}
                 </h3>
                 <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
                   <MapPin size={12} style={{ color: '#38bdf8' }} />
@@ -390,7 +390,7 @@ export default function MultiCityComparison({ onSelectCity = null }) {
               <ShieldAlert size={20} />
               <div>
                 <div style={{ fontSize: '0.84rem', fontWeight: 800 }}>
-                  IMD {inspectedStation.imdColor || 'GREEN'} ALERT TIER
+                  IMD {inspectedStation.imdColor || 'GREEN'} {t('alerts.riskAssessment', 'Alert Tier')}
                 </div>
                 <div style={{ fontSize: '0.74rem', opacity: 0.9 }}>
                   {inspectedStation.riskAssessment || 'Atmospheric parameters within seasonal baseline limits.'}
@@ -402,32 +402,32 @@ export default function MultiCityComparison({ onSelectCity = null }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 18 }}>
               <div style={{ background: 'rgba(255,255,255,0.04)', padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Thermometer size={12} style={{ color: '#f97316' }} /> Temperature
+                  <Thermometer size={12} style={{ color: '#f97316' }} /> {t('weather.temperature', 'Temperature')}
                 </div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
                   {inspectedStation.temp ?? '--'}°C
                 </div>
-                <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: 2 }}>Feels like {(inspectedStation.temp ? inspectedStation.temp + 2 : 30)}°C</div>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: 2 }}>{t('weather.feelsLike', 'Feels like')} {(inspectedStation.temp ? inspectedStation.temp + 2 : 30)}°C</div>
               </div>
 
               <div style={{ background: 'rgba(255,255,255,0.04)', padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Droplets size={12} style={{ color: '#38bdf8' }} /> Rain / Humidity
+                  <Droplets size={12} style={{ color: '#38bdf8' }} /> {t('weather.rainProbability', 'Rain')} / {t('weather.humidity', 'Humidity')}
                 </div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#38bdf8', marginTop: 4 }}>
                   {inspectedStation.rainProb ?? inspectedStation.humidity ?? 20}%
                 </div>
-                <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: 2 }}>Humidity: {inspectedStation.humidity ?? 65}%</div>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: 2 }}>{t('weather.humidity', 'Humidity')}: {inspectedStation.humidity ?? 65}%</div>
               </div>
 
               <div style={{ background: 'rgba(255,255,255,0.04)', padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Wind size={12} style={{ color: '#a78bfa' }} /> Surface Wind
+                  <Wind size={12} style={{ color: '#a78bfa' }} /> {t('weather.wind', 'Surface Wind')}
                 </div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#a78bfa', marginTop: 4 }}>
                   {inspectedStation.windSpeed ?? 12} <span style={{ fontSize: '0.75rem' }}>km/h</span>
                 </div>
-                <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: 2 }}>Direction: 270° WNW</div>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: 2 }}>{t('weather.direction', 'Direction')}: 270° WNW</div>
               </div>
             </div>
 
@@ -446,7 +446,7 @@ export default function MultiCityComparison({ onSelectCity = null }) {
                   cursor: 'pointer',
                 }}
               >
-                Close
+                {t('common.close', 'Close')}
               </button>
 
               {onSelectCity && (
@@ -471,7 +471,7 @@ export default function MultiCityComparison({ onSelectCity = null }) {
                   }}
                 >
                   <Check size={14} />
-                  <span>Set as Active Location</span>
+                  <span>{t('locationSelector.setActiveLocation', 'Set as Active Location')}</span>
                 </button>
               )}
             </div>

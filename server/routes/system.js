@@ -9,14 +9,23 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 const { getKeyStatus } = require('../services/geminiService');
 
+const mlClient = require('../services/mlClient');
+
 router.get('/status', async (req, res) => {
-  const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'http://localhost:8000').trim();
-  let mlServiceStatus = { status: 'offline', details: 'Unable to reach Python ML service' };
+  let mlServiceStatus = { status: 'offline', details: 'Unable to reach WeatherGPT 2.0 Cloud ML service' };
 
   try {
-    const mlRes = await axios.get(`${ML_SERVICE_URL}/system-status`, { timeout: 3000 });
-    if (mlRes.data) {
-      mlServiceStatus = { status: 'online', details: mlRes.data };
+    const health = await mlClient.checkHealth();
+    if (health.online) {
+      const modelInfo = await mlClient.getModelInfo();
+      mlServiceStatus = {
+        status: 'online',
+        details: {
+          ...health.data,
+          ...modelInfo,
+          serviceUrl: mlClient.getBaseUrl(),
+        },
+      };
     }
   } catch {
     // Keep offline state

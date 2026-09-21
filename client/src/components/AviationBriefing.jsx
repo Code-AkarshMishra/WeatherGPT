@@ -119,10 +119,10 @@ export default function AviationBriefing() {
                 gap: 5,
               }}
             >
-              <Plane size={13} /> ICAO & IMD AVIATION INTEL
+              <Plane size={13} /> {t('aviation.icaoBadge', 'ICAO & IMD AVIATION INTEL')}
             </span>
             <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-              Aviation Meteorological Services (AMS)
+              {t('aviation.amsSubtitle', 'Aviation Meteorological Services (AMS)')}
             </span>
           </div>
           <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>
@@ -192,7 +192,7 @@ export default function AviationBriefing() {
             {airport.windDir}° @ {airport.windSpeedKt} KT
           </div>
           <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
-            Magnetic Heading
+            {t('aviation.magneticHeading', 'Magnetic Heading')}
           </span>
         </div>
 
@@ -202,10 +202,10 @@ export default function AviationBriefing() {
             {t('weather.visibility')}
           </span>
           <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)', marginTop: 2 }}>
-            {airport.visibilityM} meters
+            {airport.visibilityM} {t('common.meters', 'meters')}
           </div>
           <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
-            Runway Visual Range Nominal
+            {t('aviation.rvrNominal', 'Runway Visual Range Nominal')}
           </span>
         </div>
 
@@ -260,11 +260,11 @@ export default function AviationBriefing() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Compass size={18} style={{ color: 'var(--color-warning)' }} />
             <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
-              {t('aviation.runwayCalculator')} (Runway {airport.rwy})
+              {t('aviation.runwayCalculator')} ({t('aviation.runway', 'Runway')} {airport.rwy})
             </strong>
           </div>
           <span style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)' }}>
-            Vector Decomposition Formula: $V_c = V \times \sin(\Delta\theta)$
+            {t('aviation.vectorFormula', 'Vector Decomposition Formula: Vc = V × sin(Δθ)')}
           </span>
         </div>
 

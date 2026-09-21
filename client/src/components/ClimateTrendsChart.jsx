@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -12,9 +12,11 @@ import {
   ReferenceLine,
   Legend,
 } from 'recharts';
-import { TrendingUp, Thermometer, CloudRain, Info, ShieldCheck } from 'lucide-react';
+import { TrendingUp, Thermometer, CloudRain, Info, ShieldCheck, Sparkles } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
+import { intelligenceApi } from '../services/api';
 
-// IMD 30-Year Climatological Baseline & Historic Departure Data (India 2015-2025)
+// Baseline fallback data
 const ANNUAL_TEMP_ANOMALY_DATA = [
   { year: '2015', anomaly: 0.67, normal: 24.0, observed: 24.67, baseline: 0 },
   { year: '2016', anomaly: 0.91, normal: 24.0, observed: 24.91, baseline: 0 },
@@ -57,8 +59,32 @@ const MONTHLY_NORMALS_SAMPLE = [
   { month: 'Dec', normalTemp: 18.6, normalRain: 8 },
 ];
 
-export default function ClimateTrendsChart({ city = 'National (All-India)' }) {
+export default function ClimateTrendsChart({ city = 'National (All-India)', lat = null, lon = null }) {
+  const { t } = useLanguage();
   const [activeMetric, setActiveMetric] = useState('temp_anomaly'); // 'temp_anomaly' | 'monsoon_rain' | 'monthly_normals'
+  const [liveClimate, setLiveClimate] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchClimate() {
+      try {
+        const res = await intelligenceApi.getClimateAnalysis({
+          location: {
+            name: city,
+            lat: lat ? Number(lat) : undefined,
+            lon: lon ? Number(lon) : undefined,
+          },
+        });
+        if (isMounted && res.data?.data) {
+          setLiveClimate(res.data.data);
+        }
+      } catch (e) {
+        console.warn('Climate trend live fetch fallback:', e);
+      }
+    }
+    fetchClimate();
+    return () => { isMounted = false; };
+  }, [city, lat, lon]);
 
   return (
     <div
@@ -91,14 +117,14 @@ export default function ClimateTrendsChart({ city = 'National (All-India)' }) {
                 gap: 5,
               }}
             >
-              <TrendingUp size={13} /> IMD CLIMATE INTEL
+              <TrendingUp size={13} /> {t('climate.badge', 'IMD CLIMATE INTEL')}
             </span>
             <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-              1991–2020 Long Period Average (LPA) Baseline
+              {t('climate.lpaBaseline', '1991–2020 Long Period Average (LPA) Baseline')}
             </span>
           </div>
           <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>
-            Decadal Climate Trends & Departure Analytics
+            {t('climate.decadalTrends', 'Decadal Climate Trends & Departure Analytics')}
           </h3>
         </div>
 
@@ -130,7 +156,7 @@ export default function ClimateTrendsChart({ city = 'National (All-India)' }) {
               transition: 'all 0.15s ease',
             }}
           >
-            <Thermometer size={14} /> Temp Anomaly
+            <Thermometer size={14} /> {t('climate.tempAnomaly', 'Temp Anomaly')}
           </button>
           <button
             onClick={() => setActiveMetric('monsoon_rain')}
@@ -149,7 +175,7 @@ export default function ClimateTrendsChart({ city = 'National (All-India)' }) {
               transition: 'all 0.15s ease',
             }}
           >
-            <CloudRain size={14} /> Monsoon LPA Departure
+            <CloudRain size={14} /> {t('climate.monsoonLpa', 'Monsoon LPA Departure')}
           </button>
           <button
             onClick={() => setActiveMetric('monthly_normals')}
@@ -168,7 +194,7 @@ export default function ClimateTrendsChart({ city = 'National (All-India)' }) {
               transition: 'all 0.15s ease',
             }}
           >
-            <ShieldCheck size={14} /> 12-Month Climatology
+            <ShieldCheck size={14} /> {t('climate.climatology12m', '12-Month Climatology')}
           </button>
         </div>
       </div>
@@ -195,7 +221,7 @@ export default function ClimateTrendsChart({ city = 'National (All-India)' }) {
                   fontSize: '0.8rem',
                   color: 'var(--color-text-primary)',
                 }}
-                formatter={(val) => [`+${val}°C above LPA normal`, 'Temp Anomaly']}
+                formatter={(val) => [`+${val}°C above LPA normal`, t('climate.tempAnomaly', 'Temp Anomaly')]}
               />
               <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" />
               <ReferenceLine y={1.0} stroke="#ef4444" strokeDasharray="4 4" label={{ value: '1.0°C Warming Threshold', fill: '#ef4444', fontSize: 10 }} />
@@ -291,7 +317,7 @@ export default function ClimateTrendsChart({ city = 'National (All-India)' }) {
       >
         <Info size={16} style={{ color: 'var(--color-primary)', marginTop: 2, flexShrink: 0 }} />
         <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
-          <strong>MoES Climate Normals Reference:</strong> India&apos;s all-India mean annual temperature anomaly has risen by <strong>+0.7°C</strong> over the last 30-year period (1991–2020 baseline vs 1901–1930). 2023 and 2024 ranked among the warmest on record according to IMD Annual Climate Summaries.
+          <strong>{t('climate.normalsReference', 'MoES Climate Normals Reference')}:</strong> {t('climate.referenceNote', "India's all-India mean annual temperature anomaly has risen by +0.7°C over the last 30-year period (1991–2020 baseline vs 1901–1930). 2023 and 2024 ranked among the warmest on record according to IMD Annual Climate Summaries.")}
         </p>
       </div>
     </div>

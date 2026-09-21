@@ -52,91 +52,181 @@ function getWeatherConditionGraphic(condition) {
 }
 
 /** Generates a list of early weather update bulletins from live weather data */
-function generateWeatherUpdates(weatherData, imdColor, imdRisk) {
+function generateWeatherUpdates(weatherData, imdColor, imdRisk, t, lang = 'en') {
   const updates = [];
   const rain = Number(weatherData?.rainProbability ?? weatherData?.rain_probability ?? 40);
   const wind = Number(weatherData?.windSpeed ?? weatherData?.wind_speed ?? 10);
   const temp = Number(weatherData?.temperature ?? 28);
   const humidity = Number(weatherData?.humidity ?? 70);
   const visibility = Number(weatherData?.visibility ?? 10);
-  const city = weatherData?.locationName || 'your area';
+  const city = weatherData?.locationName || (lang === 'hi' ? 'आपके क्षेत्र' : 'your area');
   const now = new Date();
   const hour = now.getHours();
+  const isHi = lang === 'hi';
 
   // Time-based morning/evening advisory
   if (hour >= 5 && hour < 10) {
-    updates.push({ icon: '🌅', text: `Morning update for ${city}: ${temp}°C with ${rain}% rain chance. ${rain > 60 ? 'Carry an umbrella today.' : 'Conditions look pleasant for morning activities.'}`, color: '#38bdf8' });
+    updates.push({
+      icon: '🌅',
+      text: isHi
+        ? `${city} सुबह का मौसम: ${temp}°C एवं ${rain}% बारिश की संभावना। ${rain > 50 ? 'बाहर निकलते समय छाता साथ रखें।' : 'सुबह के कार्यों के लिए मौसम अनुकूल है।'}`
+        : `Morning update for ${city}: ${temp}°C with ${rain}% rain chance. ${rain > 50 ? 'Carry an umbrella today.' : 'Conditions look pleasant for morning activities.'}`,
+      color: '#38bdf8',
+    });
   } else if (hour >= 17 && hour < 21) {
-    updates.push({ icon: '🌆', text: `Evening advisory: Temperatures easing to ${temp}°C. ${wind > 30 ? 'Gusty winds expected — secure loose items.' : 'Calm evening conditions expected.'}`, color: '#f59e0b' });
+    updates.push({
+      icon: '🌆',
+      text: isHi
+        ? `${city} शाम का परामर्श: तापमान ${temp}°C। ${wind > 30 ? 'तेज़ हवाएं चल सकती हैं — सतर्क रहें।' : 'शाम का मौसम शांत एवं सुहाना रहेगा।'}`
+        : `Evening advisory: Temperatures easing to ${temp}°C. ${wind > 30 ? 'Gusty winds expected — secure loose items.' : 'Calm evening conditions expected.'}`,
+      color: '#f59e0b',
+    });
   } else {
-    updates.push({ icon: '🕐', text: `Current conditions in ${city}: ${temp}°C, ${humidity}% humidity, ${wind} km/h winds.`, color: '#94a3b8' });
+    updates.push({
+      icon: '🕐',
+      text: isHi
+        ? `${city} में वर्तमान स्थिति: ${temp}°C तापमान, ${humidity}% आर्द्रता, ${wind} km/h हवा की गति।`
+        : `Current conditions in ${city}: ${temp}°C, ${humidity}% humidity, ${wind} km/h winds.`,
+      color: '#94a3b8',
+    });
   }
 
   // Rain probability
   if (rain >= 75) {
-    updates.push({ icon: '🌧️', text: `HIGH rain probability (${rain}%) — heavy showers likely in ${city}. Avoid low-lying areas and waterlogged roads.`, color: '#38bdf8' });
+    updates.push({
+      icon: '🌧️',
+      text: isHi
+        ? `भारी वर्षा की उच्च संभावना (${rain}%) — ${city} में भारी बारिश का अलर्ट। निचले इलाकों और जलभराव वाले रास्तों से बचें।`
+        : `HIGH rain probability (${rain}%) — heavy showers likely in ${city}. Avoid low-lying areas and waterlogged roads.`,
+      color: '#38bdf8',
+    });
   } else if (rain >= 50) {
-    updates.push({ icon: '🌦️', text: `Moderate rain expected (${rain}% probability). Light to moderate showers likely in ${city} — carry rain gear.`, color: '#60a5fa' });
+    updates.push({
+      icon: '🌦️',
+      text: isHi
+        ? `मध्यम वर्षा की संभावना (${rain}%) — ${city} में हल्की से मध्यम बारिश हो सकती है। रेनकोट या छाता रखें।`
+        : `Moderate rain expected (${rain}% probability). Light to moderate showers likely in ${city} — carry rain gear.`,
+      color: '#60a5fa',
+    });
   } else if (rain >= 25) {
-    updates.push({ icon: '🌂', text: `Low-moderate rain chance (${rain}%) in ${city}. Scattered light showers possible in the evening.`, color: '#93c5fd' });
+    updates.push({
+      icon: '🌂',
+      text: isHi
+        ? `${city} में हल्की बूंदाबांदी की संभावना (${rain}%)। शाम को कुछ स्थानों पर फुहारें पड़ सकती हैं।`
+        : `Low-moderate rain chance (${rain}%) in ${city}. Scattered light showers possible in the evening.`,
+      color: '#93c5fd',
+    });
   } else {
-    updates.push({ icon: '☀️', text: `Dry conditions expected in ${city} today with only ${rain}% rain probability. Good day for outdoor activities.`, color: '#facc15' });
+    updates.push({
+      icon: '☀️',
+      text: isHi
+        ? `${city} में आज मौसम मुख्यतः शुष्क रहेगा (वर्षा संभावना मात्र ${rain}%)। बाहरी कार्यों के लिए उत्तम दिन।`
+        : `Dry conditions expected in ${city} today with only ${rain}% rain probability. Good day for outdoor activities.`,
+      color: '#facc15',
+    });
   }
 
   // Wind advisory
   if (wind >= 50) {
-    updates.push({ icon: '🌬️', text: `STRONG WIND ALERT: ${wind} km/h winds in ${city}. Avoid open areas, secure outdoor furniture and signboards.`, color: '#f97316' });
+    updates.push({
+      icon: '🌬️',
+      text: isHi
+        ? `तेज़ आंधी चेतावनी: ${city} में ${wind} km/h की गति से हवाएं। खुले मैदानों से दूर रहें और सुरक्षित स्थान पर रहें।`
+        : `STRONG WIND ALERT: ${wind} km/h winds in ${city}. Avoid open areas, secure outdoor furniture and signboards.`,
+      color: '#f97316',
+    });
   } else if (wind >= 30) {
-    updates.push({ icon: '💨', text: `Moderate to strong winds (${wind} km/h) reported. Caution for two-wheelers and cyclists in ${city}.`, color: '#fb923c' });
+    updates.push({
+      icon: '💨',
+      text: isHi
+        ? `मध्यम से तेज़ हवाएं (${wind} km/h)। ${city} में दोपहिया वाहन चालकों को सावधानी बरतने की सलाह।`
+        : `Moderate to strong winds (${wind} km/h) reported. Caution for two-wheelers and cyclists in ${city}.`,
+      color: '#fb923c',
+    });
   } else {
-    updates.push({ icon: '🍃', text: `Light breeze at ${wind} km/h — pleasant and comfortable conditions in ${city}.`, color: '#4ade80' });
+    updates.push({
+      icon: '🍃',
+      text: isHi
+        ? `${wind} km/h की मंद बयार — ${city} में सुखद एवं अनुकूल मौसम बना हुआ है।`
+        : `Light breeze at ${wind} km/h — pleasant and comfortable conditions in ${city}.`,
+      color: '#4ade80',
+    });
   }
 
   // Temperature advisory
   if (temp >= 42) {
-    updates.push({ icon: '🔥', text: `HEAT ALERT: Extreme heat (${temp}°C) in ${city}. Stay hydrated, avoid outdoor exposure between 11 AM – 4 PM. Heatstroke risk HIGH.`, color: '#ef4444' });
+    updates.push({
+      icon: '🔥',
+      text: isHi
+        ? `भीषण गर्मी अलर्ट: ${city} में ${temp}°C तापमान। पर्याप्त पानी पिएं और दोपहर 12 से 4 बजे के बीच धूप से बचें।`
+        : `HEAT ALERT: Extreme heat (${temp}°C) in ${city}. Stay hydrated, avoid outdoor exposure between 11 AM – 4 PM. Heatstroke risk HIGH.`,
+      color: '#ef4444',
+    });
   } else if (temp >= 37) {
-    updates.push({ icon: '🌡️', text: `Hot day ahead in ${city} — ${temp}°C expected. Drink plenty of water. Light cotton clothing recommended.`, color: '#f97316' });
+    updates.push({
+      icon: '🌡️',
+      text: isHi
+        ? `${city} में आज गर्म दिन रहेगा — ${temp}°C तापमान की संभावना। सूती कपड़े पहनें और तरल पदार्थों का सेवन करें।`
+        : `Hot day ahead in ${city} — ${temp}°C expected. Drink plenty of water. Light cotton clothing recommended.`,
+      color: '#f97316',
+    });
   } else if (temp <= 10) {
-    updates.push({ icon: '🧥', text: `Cold conditions in ${city}: ${temp}°C. Wear warm layers. Fog possible in early morning hours.`, color: '#93c5fd' });
-  } else {
-    updates.push({ icon: '🌤️', text: `Comfortable temperature of ${temp}°C in ${city}. Good conditions for outdoor work and travel.`, color: '#86efac' });
+    updates.push({
+      icon: '🧥',
+      text: isHi
+        ? `${city} में शीतलहर का प्रभाव: ${temp}°C तापमान। गर्म कपड़े पहनें। सुबह के समय कोहरा संभव।`
+        : `Cold conditions in ${city}: ${temp}°C. Wear warm layers. Fog possible in early morning hours.`,
+      color: '#93c5fd',
+    });
   }
 
-  // Humidity
+  // Humidity & Visibility
   if (humidity >= 85) {
-    updates.push({ icon: '💧', text: `HIGH HUMIDITY (${humidity}%) — feels very muggy in ${city}. Stay hydrated and limit strenuous outdoor activity.`, color: '#38bdf8' });
-  } else if (humidity >= 65) {
-    updates.push({ icon: '🌫️', text: `Elevated humidity (${humidity}%) may cause discomfort. Expect a "feels hotter" effect outdoors in ${city}.`, color: '#60a5fa' });
+    updates.push({
+      icon: '💧',
+      text: isHi
+        ? `अत्यधिक उमस (${humidity}%) — ${city} में चिपचिपी गर्मी महसूस होगी। हाइड्रेटेड रहें।`
+        : `HIGH HUMIDITY (${humidity}%) — feels very muggy in ${city}. Stay hydrated and limit strenuous outdoor activity.`,
+      color: '#38bdf8',
+    });
   }
 
-  // Visibility
-  if (visibility < 1) {
-    updates.push({ icon: '🌁', text: `LOW VISIBILITY ALERT: Only ${visibility} km in ${city}. Extreme caution for road travel. Fog lights mandatory.`, color: '#fbbf24' });
-  } else if (visibility < 5) {
-    updates.push({ icon: '🌫️', text: `Reduced visibility (${visibility} km) in ${city} — drive slowly and maintain safe distances.`, color: '#fcd34d' });
+  if (visibility < 5) {
+    updates.push({
+      icon: '🌫️',
+      text: isHi
+        ? `कम दृश्यता (${visibility} km) अलर्ट — ${city} में वाहन धीमी गति से चलाएं और फॉग लाइट का उपयोग करें।`
+        : `Reduced visibility (${visibility} km) in ${city} — drive slowly and maintain safe distances.`,
+      color: '#fbbf24',
+    });
   }
 
   // IMD alert
   if (imdColor !== 'GREEN') {
     const alertMap = {
-      YELLOW: { icon: '🟡', msg: `IMD YELLOW ALERT active for ${city}. Be alert — adverse weather conditions expected. Monitor local updates.`, color: '#eab308' },
-      ORANGE: { icon: '🟠', msg: `IMD ORANGE ALERT: Severe weather warning for ${city}. Prepare for heavy rain, strong winds, or thunderstorms.`, color: '#f97316' },
-      RED:    { icon: '🔴', msg: `IMD RED ALERT — EXTREME WEATHER WARNING for ${city}. Do NOT venture outdoors unless absolutely necessary.`, color: '#ef4444' },
+      YELLOW: { icon: '🟡', msg: isHi ? `आईएमडी येलो अलर्ट: ${city} में मौसम में बदलाव की संभावना। स्थानीय बुलेटिन पर नज़र रखें।` : `IMD YELLOW ALERT active for ${city}. Be alert — adverse weather conditions expected. Monitor local updates.`, color: '#eab308' },
+      ORANGE: { icon: '🟠', msg: isHi ? `आईएमडी ऑरेंज अलर्ट: ${city} में भारी वर्षा एवं आंधी-तूफान की चेतावनी। सतर्क व तैयार रहें।` : `IMD ORANGE ALERT: Severe weather warning for ${city}. Prepare for heavy rain, strong winds, or thunderstorms.`, color: '#f97316' },
+      RED:    { icon: '🔴', msg: isHi ? `आईएमडी रेड अलर्ट — ${city} में अत्यंत गंभीर मौसम की चेतावनी! आपातकाल के बिना बाहर न निकलें।` : `IMD RED ALERT — EXTREME WEATHER WARNING for ${city}. Do NOT venture outdoors unless absolutely necessary.`, color: '#ef4444' },
     };
     const a = alertMap[imdColor];
     if (a) updates.push({ icon: a.icon, text: a.msg, color: a.color });
   }
 
   // Farmer advisory from IMD if present
-  const farmerAdvisory = imdRisk?.farmerAdvisory?.en || imdRisk?.statusText;
+  const farmerAdvisory = isHi ? (imdRisk?.farmerAdvisory?.hi || imdRisk?.statusTextHi || imdRisk?.farmerAdvisory?.en) : (imdRisk?.farmerAdvisory?.en || imdRisk?.statusText);
   if (farmerAdvisory) {
-    updates.push({ icon: '🌾', text: `Farmer Advisory: ${farmerAdvisory}`, color: '#86efac' });
+    updates.push({ icon: '🌾', text: isHi ? `कृषि मौसम परामर्श: ${farmerAdvisory}` : `Farmer Advisory: ${farmerAdvisory}`, color: '#86efac' });
   }
 
   // Always return at least 2 items
   if (updates.length < 2) {
-    updates.push({ icon: '📡', text: `Live weather intelligence active for ${city}. All systems nominal.`, color: '#94a3b8' });
+    updates.push({
+      icon: '📡',
+      text: isHi
+        ? `${city} के लिए लाइव वायुमंडलीय मौसम सक्रिय है। सभी स्थितियां सामान्य हैं।`
+        : `Live weather intelligence active for ${city}. All systems nominal.`,
+      color: '#94a3b8',
+    });
   }
 
   return updates;
@@ -144,8 +234,8 @@ function generateWeatherUpdates(weatherData, imdColor, imdRisk) {
 
 /** Live scrolling Early Weather Updates ticker */
 function EarlyWeatherUpdates({ weatherData, imdColor, imdRisk }) {
-  const { t } = useLanguage();
-  const updates = generateWeatherUpdates(weatherData, imdColor, imdRisk);
+  const { t, lang } = useLanguage();
+  const updates = generateWeatherUpdates(weatherData, imdColor, imdRisk, t, lang);
   const [activeIdx, setActiveIdx] = useState(0);
   const [visible, setVisible] = useState(true);
   const intervalRef = useRef(null);
@@ -437,9 +527,11 @@ export default function WeatherIntelligencePanel({
 
         <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 12, padding: '9px 10px' }}>
           <span style={{ fontSize: 11, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <PressureIcon size={12} style={{ color: 'var(--color-primary)' }} /> {t('rainMm')}
+            <CloudRain size={12} style={{ color: 'var(--color-primary)' }} /> {t('rainMm')}
           </span>
-          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2, color: 'var(--color-text-primary)' }}>{rainProb}%</div>
+          <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2, color: 'var(--color-text-primary)' }}>
+            {(data.recentPrecip1h || data.recentPrecip3h || data.rainMm || 0).toFixed(1)} mm
+          </div>
         </div>
       </div>
 

@@ -1,14 +1,10 @@
 import { useState, useCallback, useRef } from 'react';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
-/**
- * SpeakButton — Text-to-Speech "Listen" button for AI chat responses.
- * Uses browser SpeechSynthesis API with Hindi/English voice selection.
- * Provides visual speaking indicator and stop functionality.
- *
- * This component is critical for PS 26068's "voice-enabled rural accessibility" requirement.
- */
-export default function SpeakButton({ text, lang = 'en', size = 'sm' }) {
+export default function SpeakButton({ text, lang: propLang, size = 'sm' }) {
+  const { t, lang: ctxLang } = useLanguage();
+  const lang = propLang || ctxLang || 'en';
   const [speaking, setSpeaking] = useState(false);
   const [loading, setLoading] = useState(false);
   const utteranceRef = useRef(null);
@@ -156,7 +152,7 @@ export default function SpeakButton({ text, lang = 'en', size = 'sm' }) {
       ) : (
         <Volume2 size={isSmall ? 12 : 14} />
       )}
-      <span>{speaking ? 'Stop' : '🔊 Listen'}</span>
+      <span>{speaking ? t('chat.stopSpeaking', 'Stop') : (`🔊 ${t('chat.listen', 'Listen')}`)}</span>
     </button>
   );
 }

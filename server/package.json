@@ -26,6 +26,7 @@
     "morgan": "^1.10.0",
     "nodemailer": "^10.0.10",
     "socket.io": "^4.8.3",
+    "weathergpt": "file:..",
     "winston": "^3.15.0",
     "xss-clean": "^0.1.4"
   },

@@ -118,11 +118,11 @@ export default function SystemStatusModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Python ML Microservice */}
+              {/* WeatherGPT 2.0 Cloud AI Microservice */}
               <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Cpu size={16} style={{ color: '#a855f7' }} /> Python ML Microservice (ML-1 + ML-2)
+                    <Cpu size={16} style={{ color: '#a855f7' }} /> WeatherGPT 2.0 Cloud AI Engine
                   </span>
                   <span style={{
                     fontSize: 11,
@@ -136,7 +136,7 @@ export default function SystemStatusModal({ isOpen, onClose }) {
                   </span>
                 </div>
                 <div style={{ fontSize: 12, color: '#cbd5e1' }}>
-                  MoES Severe Weather Random Forest Predictor + Natural Language Tool Engine
+                  Deployed Cloud Suite: Multi-Hazard Risk (rule-v1), Multi-Model NWP (GFS + ECMWF), ERA5 Climate Reanalysis, 12 Indic Languages.
                 </div>
               </div>
 

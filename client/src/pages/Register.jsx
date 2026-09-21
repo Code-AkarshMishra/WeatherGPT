@@ -109,7 +109,7 @@ export default function Register() {
             <button
               type="submit"
               className="btn btn-primary"
-              style={{ width: '100%' }}
+              style={{ width: '100%', color: '#ffffff' }}
               disabled={loading}
               id="register-submit-btn"
             >
