@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: weathergpt-backend
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: AI_SERVICE_URL
+        value: https://weathergpt-aiml.onrender.com
+      - key: IMD_BASE_URL
+        value: https://mausam.imd.gov.in/backend/api
+      - key: MOCK_EXTERNAL_APIS
+        value: "false"
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: LOG_LEVEL
+        value: info

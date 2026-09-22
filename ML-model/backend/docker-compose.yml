@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: weathergpt-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017/weathergpt
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=super-secret-jwt-key-weathergpt-sih-2024
+      - MOCK_EXTERNAL_APIS=false
+    depends_on:
+      - mongodb
+      - redis
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7.0
+    container_name: weathergpt-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: weathergpt-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  mongo_data:

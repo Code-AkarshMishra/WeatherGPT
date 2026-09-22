@@ -1,0 +1,17 @@
+=== mixed ===
+message: Lucknow में कल बारिश होगी क्या?
+detected_by_helper: hi
+api_language: hi
+response: हाँ, लखनऊ में कल (7 सितंबर) बारिश होने की पूरी संभावना है। मौसम विभाग के अनुसार गरज के साथ हल्की से मध्यम बारिश या गरज के साथ बौछारें (लगभग 22 मिमी) पड़ सकती हैं। यदि आप बाहर जा रहे हैं, तो अपने साथ छाता जरूर रखें।
+
+=== mixed ===
+message: Will it rain tomorrow in लखनऊ?
+detected_by_helper: en
+api_language: en
+response: Yes, it is expected to rain tomorrow in Lucknow, with thunderstorms and slight hail likely. The precipitation probability is high at around 96%, so you might want to keep an umbrella handy.
+
+=== mixed ===
+message: लखनऊ का weather tomorrow कैसा रहेगा?
+detected_by_helper: hi
+api_language: hi
+response: कल लखनऊ में मौसम खराब रहने की संभावना है और गरज के साथ हल्की ओलावृष्टि व बारिश हो सकती है। तापमान लगभग 24.8°C से 30°C के बीच रहेगा। घर से बाहर निकलते समय छाता साथ रखना न भूलें!

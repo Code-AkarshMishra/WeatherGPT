@@ -1,0 +1,38 @@
+{
+  "name": "india_ml_v1",
+  "description": "India-wide WeatherGPT ML raw acquisition: GFS+ECMWF Previous Runs + GHCN-Daily PRCP. No labels/training.",
+  "countries": ["IN"],
+  "bbox": {
+    "min_lat": 8.0,
+    "max_lat": 37.0,
+    "min_lon": 68.0,
+    "max_lon": 97.0,
+    "comment": "Approximate India geographic envelope; configurable, not city-hardcoded."
+  },
+  "nwp_grid": {
+    "step_deg": 3.0,
+    "comment": "Configurable grid spacing. Reduce for denser coverage."
+  },
+  "ghcn": {
+    "elements": ["PRCP"],
+    "min_years_coverage": 1,
+    "max_stations": null,
+    "use_bbox": true,
+    "comment": "null max_stations = all matching IN stations in bbox with PRCP inventory overlap."
+  },
+  "nwp": {
+    "models": ["gfs", "ecmwf"],
+    "lead_days": [1],
+    "chunk_days": 31,
+    "timezone": "UTC"
+  },
+  "default_date_range": {
+    "start": "2024-02-01",
+    "end": "2026-09-16",
+    "notes": "Verified by discover_overlap.py (first non-null Previous Runs month through recent probe end)."
+  },
+  "availability_notes": {
+    "open_meteo_previous_runs": "Most models including gfs_global and ecmwf_ifs025 from ~2024-01-01",
+    "ghcn_daily": "Station observations often extend decades; overlap with NWP previous-runs starts ~2024-01-01"
+  }
+}

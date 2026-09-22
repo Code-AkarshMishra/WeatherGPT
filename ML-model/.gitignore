@@ -1,0 +1,20 @@
+# Raw ML training downloads (do not commit large files)
+/data/raw/
+/data/processed/
+# Keep configs and empty directory placeholders
+!/data/raw/.gitkeep
+!/data/processed/.gitkeep
+!/data/configs/
+*.parquet
+*.csv.gz
+*.dly
+ghcnd-stations.txt
+ghcnd-inventory.txt
+ghcnd-countries.txt
+
+.env
+**/.env
+node_modules/
+__pycache__/
+.venv/
+

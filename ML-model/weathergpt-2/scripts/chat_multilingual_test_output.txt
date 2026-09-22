@@ -1,0 +1,77 @@
+=== english ===
+expect: en
+helper: en
+api_language: en
+status: 200
+response: **Situation:** Today in Lucknow, the weather features thunderstorms with a maximum temperature around 32.5°C, an 83% chance of precipitation bringing about 2.3 mm of rain, and wind gusts reaching up to 29.5 km/h. 
+
+**Role-specific impact:** High outdoor activity and travel risks mean that stepping outside exposes you to sudden rain and gusty winds, which can disrupt commuting and outdoor plans.
+
+**Recommended action:** If your outdoor activity can shift by a few hours, prefer a drier part of the day; if thunderstorms develop while you are out, delay your exposure and seek indoor shelter.
+
+**Timing:** These thunderstorm conditions apply throughout today, though exact rainfall timing can still shift as the forecast updates.
+
+**Important caveat:** Verify local conditions right at your start time and avoid relying solely on a single go/no-go decision from this chat while thunderstorm risks remain active.
+
+=== hindi ===
+expect: hi
+helper: hi
+api_language: hi
+status: 200
+response: लखनऊ में आज (16 सितंबर 2026) मौसम गरज के साथ आंधी (Thunderstorm) वाला है, जिसमें अधिकतम तापमान 32.5°C, आर्द्रता 77%, बारिश की संभावना 83.0% (~2.3 मिमी वर्षा) और हवा के झोंके 29.5 किमी/घंटा तक रहने की उम्मीद है। 
+
+इस स्थिति के कारण बाहरी गतिविधियों और यात्रा में उच्च जोखिम (हाई रिस्क) बना हुआ है। 
+
+यदि आपको बाहर जाना आवश्यक है, तो अपनी गतिविधि को कुछ घंटों के लिए स्थगित कर दें या बारिश और आंधी के थमने का इंतजार करें; अन्यथा बाहरी गतिविधियों से फिलहाल बचें। 
+
+यदि आप कुछ समय बाद निकलना चाहते हैं, तो बेहतर है कि आप कल (17 सितंबर) के मौसम (हल्की बूंदाबांदी) को ध्यान में रखें जब आंधी का खतरा कम रहेगा। 
+
+कृपया ध्यान दें कि वर्षा का सटीक समय बदल सकता है, इसलिए घर से निकलने से पहले स्थानीय परिस्थितियों की पुष्टि अवश्य कर लें।
+
+=== tamil ===
+expect: ta
+helper: ta
+api_language: ta
+status: 200
+response: **சூழ்நிலை:** லக்னோவில் இன்று இடிமின்னலுடன் கூடிய மழைக்கு வாய்ப்புள்ளது (வெப்பநிலை அதிகபட்சம் 32.5°C, ஈரப்பதம் 77%, மழை வாய்ப்பு 83% மற்றும் 2.3 மிமீ மழை பெய்யக்கூடும்). 
+
+**பாதிப்பு:** அதிக காற்று வீசும் வேகம் (29.5 கிமீ/மணி வரை பலத்த காற்று) மற்றும் இடிமின்னல் எச்சரிக்கை உள்ளதால், வெளிப்புற செயல்பாடுகளுக்கும் பயணங்களுக்கும் இடையூறு ஏற்பட அதிக வாய்ப்புள்ளது.
+
+**செய்ய வேண்டியது:** நீங்கள் வெளியே செல்ல வேண்டுமெனில், இடிமின்னல் மற்றும் மழை குறையும் வரை காத்திருந்து, பாதுகாப்புடன் பயணிக்கவும்; ஒரே நேரத்தில் அனைத்து வெளிப்புற வேலைகளையும் திட்டமிடாமல் தவிர்ப்பது நல்லது.
+
+**சரியான நேரம்:** மழை மற்றும் காற்று நிலவரம் மாறக்கூடும் என்பதால், அப்போதைய உள்ளூர் சூழலைச் சரிபார்த்துச் செயல்படவும்.
+
+**முக்கிய எச்சரிக்கை:** இடிமின்னல் அபாயம் உள்ளதால், இந்தத் தகவலை மட்டும் கொண்டு முழுமையான முடிவுகளை எடுப்பதைத் தவிர்க்கவும்.
+
+=== kannada ===
+expect: kn
+helper: kn
+api_language: kn
+status: 200
+response: ಪ್ರಸ್ತುತ ಲಕ್ನೋದಲ್ಲಿ (ಹವಾಮಾನ ವರದಿಯ ಸ್ಥಳದ ಪ್ರಕಾರ) ವಾತಾವರಣವು ಗುಡುಗು ಸಹಿತ ಮಳೆಯಿಂದ ಕೂರಿದ್ದು, ಗರಿಷ್ಠ ತಾಪಮಾನ 32.5°C ಇದೆ ಮತ್ತು ಮಳೆಯಾಗುವ ಸಂಭವನೀಯತೆ ಶೇಕಡಾ 83.0 ರಷ್ಟಿದೆ; ಜೊತೆಗೆ 29.5 ಕಿ.ಮೀ/ಗಂಟೆ ವೇಗದ ಗಾಳಿಯ ಬಿರುಗಾಳಿಯ ಮುನ್ಸೂಚನೆ ಇದೆ. 
+
+ಈ ಹವಾಮಾನವು ಹೊರಾಂಗಣ ಚಟುವಟಿಕೆಗಳು ಮತ್ತು ಪ್ರಯಾಣದ ಮೇಲೆ ಹೆಚ್ಚಿನ ಅಡಚಣೆಯನ್ನು ಉಂಟುಮಾಡಬಹುದು, ಏಕೆಂದರೆ ಗುಡುಗು ಮತ್ತು ಮಳೆಯ ಅಪಾಯವು ಹೆಚ್ಚಿದೆ. 
+
+ಹಾಗಾಗಿ, ನೀವು ಹೊರಗೆ ಹೋಗುವುದನ್ನು ಅಥವಾ ಪ್ರಯಾಣಿಸುವುದನ್ನು ಸಾಧ್ಯವಾದರೆ ಸ್ವಲ್ಪ ಸಮಯ ಮುಂದೂಡಿ ಮತ್ತು ಸುರಕ್ಷಿತ ಸ್ಥಳದಲ್ಲಿರಿ. ಚಟುವಟಿಕೆಯ ಅವಧಿ ಮತ್ತು ಸ್ಥಳೀಯ ಪರಿಸ್ಥಿತಿಯನ್ನು ಪರಿಗಣಿಸಿ ನಿರ್ಧಾರ ತೆಗೆದುಕೊಳ್ಳಿ. 
+
+ನಿಖರವಾದ ಮಳೆಯ ಸಮಯವು ಬದಲಾಗಬಹುದು, ಆದ್ದರಿಂದ ನಿಮ್ಮ ಪ್ರಯಾಣ ಅಥವಾ ಹೊರಾಂಗಣ ಚಟುವಟಿಕೆಯನ್ನು ಆರಂಭಿಸುವ ಮುನ್ನ ಸ್ಥಳೀಯ ಪರಿಸ್ಥಿತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ.
+
+=== mixed_majority_english ===
+expect: en
+helper: en
+api_language: en
+status: 200
+response: **Situation:** 
+Lucknow is experiencing an active week of weather starting September 16, 2026, featuring daytime maximum temperatures around 31.6°C to 32.7°C, high humidity (77%), and frequent thunderstorms with rain chances peaking early in the week (up to 83% today) before gradually easing. 
+
+**Role-Specific Impact:** 
+High outdoor activity and travel disruption risks apply due to recurrent thunderstorms, wind gusts up to 29.5 km/h, and variable rainfall amounts (ranging from light drizzles of 0.4 mm on Sept 17 to heavier totals like 6.6 mm on Sept 20). 
+
+**Recommended Action:** 
+If your schedule allows, shift outdoor tasks to drier or calmer parts of the day, and delay exposure immediately if thunderstorms develop. 
+
+**Timing:** 
+Expect the highest thunderstorm and rain probabilities during the first few days (September 16–20), with conditions becoming somewhat more settled by September 21–22. 
+
+**Important Caveat:** 
+Exact rainfall timing and localized intensities can shift as the forecast updates, so verify real-time conditions before heading out and avoid relying on a single go/no-go decision.

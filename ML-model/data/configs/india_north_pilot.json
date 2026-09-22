@@ -1,0 +1,29 @@
+{
+  "name": "india_north_pilot",
+  "description": "Pilot region for WeatherGPT extreme-rainfall ML data acquisition. Expand via bbox / countries / stations.",
+  "countries": ["IN"],
+  "bbox": {
+    "min_lat": 24.0,
+    "max_lat": 30.0,
+    "min_lon": 75.0,
+    "max_lon": 85.0
+  },
+  "nwp_grid": {
+    "step_deg": 2.0,
+    "comment": "Coarse grid for manageable first download; reduce step_deg to densify."
+  },
+  "ghcn": {
+    "elements": ["PRCP"],
+    "min_years_coverage": 2,
+    "max_stations": 25
+  },
+  "default_date_range": {
+    "start": "2024-06-01",
+    "end": "2024-06-07",
+    "notes": "Short pilot window inside Open-Meteo Previous Runs common coverage (mostly from 2024-01-01)."
+  },
+  "availability_notes": {
+    "open_meteo_previous_runs": "Most models including gfs_global and ecmwf_ifs025 from ~2024-01-01",
+    "ghcn_daily": "Station observations often extend decades; overlap with NWP previous-runs starts ~2024-01-01"
+  }
+}

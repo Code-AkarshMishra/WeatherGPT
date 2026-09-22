@@ -1,0 +1,80 @@
+const ALERT_SEVERITIES = {
+  LOW: 'LOW',
+  MODERATE: 'MODERATE',
+  HIGH: 'HIGH',
+  EXTREME: 'EXTREME',
+};
+
+const ALERT_TYPES = {
+  THUNDERSTORM: 'THUNDERSTORM',
+  HEAVY_RAIN: 'HEAVY_RAIN',
+  HEATWAVE: 'HEATWAVE',
+  CYCLONE: 'CYCLONE',
+  FLOOD: 'FLOOD',
+  COLD_WAVE: 'COLD_WAVE',
+  FOG: 'FOG',
+  GALE_WIND: 'GALE_WIND',
+  LIGHTNING: 'LIGHTNING',
+  OTHER: 'OTHER',
+};
+
+const ADVISORY_DOMAINS = {
+  AGRICULTURE: 'agriculture',
+  DISASTER: 'disaster',
+  AVIATION: 'aviation',
+  MARINE: 'marine',
+  URBAN_PLANNING: 'urban_planning',
+  PUBLIC_HEALTH: 'public_health',
+  TOURISM: 'tourism',
+  GENERAL: 'general',
+};
+
+const SUPPORTED_LANGUAGES = ['en', 'hi', 'bn', 'te', 'mr', 'ta', 'ur', 'gu', 'kn', 'ml', 'pa', 'or'];
+
+// UI SELECT ROLE values forwarded to the AIML /chat service (Flood & Disaster skipped)
+const USER_ROLES = [
+  'citizen',
+  'farmer',
+  'researcher',
+  'aviation',
+  'marine',
+  'climate_analyst',
+  'urban_planner',
+  'air_quality',
+];
+
+const ERROR_CODES = {
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  CONFLICT: 'CONFLICT',
+  RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
+  WEATHER_PROVIDER_TIMEOUT: 'WEATHER_PROVIDER_TIMEOUT',
+  WEATHER_PROVIDER_ERROR: 'WEATHER_PROVIDER_ERROR',
+  IMD_ALERT_INGESTION_FAILURE: 'IMD_ALERT_INGESTION_FAILURE',
+  AI_SERVICE_TIMEOUT: 'AI_SERVICE_TIMEOUT',
+  AI_SERVICE_ERROR: 'AI_SERVICE_ERROR',
+  DATABASE_ERROR: 'DATABASE_ERROR',
+  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
+};
+
+const CACHE_TTL = {
+  CURRENT_WEATHER: 300, // 5 minutes
+  HOURLY_FORECAST: 1800, // 30 minutes
+  DAILY_FORECAST: 3600, // 1 hour
+  ALERTS: 600, // 10 minutes
+  RISK_SCORE: 900, // 15 minutes
+  LOCATION_SEARCH: 86400, // 24 hours
+  CLIMATE_HISTORY: 86400, // 24 hours
+};
+
+module.exports = {
+  ALERT_SEVERITIES,
+  ALERT_TYPES,
+  ADVISORY_DOMAINS,
+  SUPPORTED_LANGUAGES,
+  USER_ROLES,
+  ERROR_CODES,
+  CACHE_TTL,
+};

@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: weathergpt-aiml
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: MOCK_MODE
+        value: "false"
+      - key: GEMINI_MODEL
+        value: "models/gemma-4-26b-a4b-it"
+      - key: GEMINI_API_KEY_1
+        sync: false
+      - key: GEMINI_API_KEY_2
+        sync: false
+      - key: GEMINI_API_KEY_3
+        sync: false
+      - key: OPEN_METEO_API_KEY
+        sync: false
+      - key: OPEN_METEO_BASE_URL
+        value: "https://api.open-meteo.com/v1"
+      - key: OPEN_METEO_HISTORICAL_URL
+        value: "https://archive-api.open-meteo.com/v1"
+      - key: INTERNAL_API_SECRET
+        sync: false

@@ -1,0 +1,18 @@
+# Render.com blueprint for WeatherGPT AI service
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: weathergpt-ai
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: PYTHON_VERSION
+        value: "3.11.9"
