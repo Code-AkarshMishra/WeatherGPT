@@ -14,9 +14,9 @@
 </p>
 
 ### 🇮🇳 Grounded Meteorological Reasoning, Multi-Model NWP Ensembles & Ministry of Earth Sciences (MoES) Disaster Resilience
-**Empowering Farmers, Coastal Fishers, Aviators, Disaster Response Teams, Urban Planners, Climate Researchers, and Citizens across 11 Indian Languages.**
+**Empowering Farmers, Coastal Fishers, Aviators, Disaster Response Teams, Urban Planners, Climate Researchers, and Citizens across 22 Indian Languages.**
 
-[✨ Key Capabilities](#-key-capabilities--user-features) • [🏗️ System Architecture](#️-system-architecture--data-topology) • [🛠️ Tech Stack](#️-comprehensive-tech-stack) • [🔄 How It Works](#-how-weathergpt-works-end-to-end) • [🧑‍🌾 8 Persona Roles](#-8-specialized-persona-roles) • [🌐 11 Regional Languages](#-11-indian-regional-languages) • [🚀 Quick Start](#-step-by-step-quick-start) • [📖 Full Architecture Doc](ARCHITECTURE.md)
+[✨ Key Capabilities](#-key-capabilities--user-features) • [🏗️ System Architecture](#️-system-architecture--data-topology) • [🛠️ Tech Stack](#️-comprehensive-tech-stack) • [🔄 How It Works](#-how-weathergpt-works-end-to-end) • [🧑‍🌾 8 Persona Roles](#-8-specialized-persona-roles) • [🌐 22 Regional Languages](#-22-indian-regional-languages) • [🚀 Quick Start](#-step-by-step-quick-start) • [📖 Full Architecture Doc](ARCHITECTURE.md)
 
 </div>
 
